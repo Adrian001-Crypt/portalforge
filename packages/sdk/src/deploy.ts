@@ -37,6 +37,7 @@ export interface DeploymentPlan {
 }
 
 export const DEPLOY_PROFILES = {
+  jobs: ['JobRegistry'],
   minimal: ['JobRegistry', 'EvidenceRegistry'],
   full: ['JobRegistry', 'EvidenceRegistry', 'WorkflowExecutionRegistry'],
 } as const;

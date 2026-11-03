@@ -39,6 +39,8 @@ export function seedDemo(db: Db, engine: WorkflowEngine, cfg: PfConfig, log: Log
     db.run(`INSERT INTO connectors (id, project_id, name, url, query_url, allow_private_host, created_at) VALUES (?, ?, 'demo', ?, ?, ?, ?)`, newId('con'), pid, `${demoUrl}/v1/square`, `${demoUrl}/v1/square`, demoUrl.includes('127.0.0.1') || demoUrl.includes('localhost') ? 1 : 0, t);
     const def = JSON.parse(readFileSync('examples/workflows/job-square.json', 'utf8'));
     if (net.kind === 'local-dev') def.trigger.minFinality = 'unconfirmed';
+    // Without a deployed EvidenceRegistry the evidence is hashed and kept locally (labelled), not registered.
+    if (!db.get(`SELECT 1 FROM contracts WHERE project_id = ? AND alias = 'evidence'`, pid)) { const proof = def.steps.find((s: any) => s.id === 'proof'); if (proof) proof.register = false; }
     const wid = newId('wf');
     const startBlock = db.get(`SELECT MIN(deploy_block) b FROM contracts WHERE project_id = ?`, pid)?.b ?? 0;
     db.run('INSERT INTO workflows (id, project_id, name, enabled, start_block, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)', wid, pid, 'job-square', existsSync(mpath) ? 1 : 0, startBlock, t, t);

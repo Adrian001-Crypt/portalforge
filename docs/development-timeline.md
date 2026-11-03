@@ -5,6 +5,14 @@
 | 时间 (UTC) | 阶段 | 内容 |
 |---|---|---|
 | 2026-11-03 16:30 | 规则核实 | 读取 DoraHacks 活动页与赛道页，记录于 docs/hackathon-requirements.md |
-| 2026-11-03 16:35 | 能力探测 | 实时探测 Portaldot V3 EVM RPC 与 Native WS，结果见 docs/probe/ |
+| 2026-11-03 16:35 | 能力探测 | 实时探测 Portaldot V3 EVM RPC 与 Native WS，结果见 docs/probe/（commit c02b50a） |
+| 2026-11-03 17:00 | 合约与部署 | 发现存储押金约束，合约改为存储精简；部署规划器加入精确押金 dry-run（b73d76c） |
+| 2026-11-03 17:10 | 核心引擎 | 存储层、双接口索引器、可恢复工作流引擎、示例服务及测试（a58f8d5） |
+| 2026-11-03 18:05 | API 与服务 | API、worker/indexer 主进程、事件规则、RPC 健康监控（58a388d） |
+| 2026-11-03 18:20 | 控制台与 CLI | Web 控制台、SDK 客户端、pf CLI、多进程本地 E2E（991bacf） |
+| 2026-11-03 18:30 | 浏览器验证 | 真实 Chrome 双会话测试与 UI 修复（33e486e） |
+| 2026-11-03 18:35 | 测试网冒烟 | 只读冒烟：实时 EVM/native 关联验证；ops 与 native 测试（ea1fa63） |
+| 2026-11-03 18:50 | 文档 | README 与 docs/*（本次提交） |
+| 待定 | 测试网部署 | 需要你为部署者账户充值后执行 |
 
 AI 辅助：本项目使用 Claude Code（Anthropic）辅助编码与文档编写；所有链上证据均由真实 RPC 产生。

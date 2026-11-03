@@ -21,7 +21,7 @@ const base = BUILTIN_NETWORKS[id];
 const rpcOverride = process.env[`PF_EVM_RPC_${(id ?? '').toUpperCase().replace(/-/g, '_')}`];
 const profile = base && rpcOverride ? { ...base, evm: { ...base.evm, rpcUrl: rpcOverride } } : base;
 const depDir = process.env.PF_DEPLOYMENTS_DIR ?? 'deployments';
-if (!profile || !['plan', 'apply', 'verify'].includes(mode)) { console.error('usage: deploy.ts plan|apply|verify <networkId> [--profile minimal|full] [--confirm]'); process.exit(2); }
+if (!profile || !['plan', 'apply', 'verify'].includes(mode)) { console.error('usage: deploy.ts plan|apply|verify <networkId> [--profile jobs|minimal|full] [--confirm]'); process.exit(2); }
 const sym = profile.evm.nativeCurrency.symbol;
 const fmt = (wei: bigint | null) => (wei === null ? 'n/a' : `${formatUnits(wei, 18, 4)} ${sym}`);
 const manifestPath = `${depDir}/${id}.json`;
