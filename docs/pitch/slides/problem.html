@@ -1,0 +1,18 @@
+<section id="problem" style="background:#F5F6F8;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:56px">
+<h2 style="font-size:72px;font-weight:600;line-height:1.1">The problem: Portaldot apps live on two interfaces at once</h2>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px">
+<div style="background:#FFFFFF;border:1px solid #DDE2EA;border-radius:16px;padding:40px;display:flex;flex-direction:column;gap:16px">
+<h3 style="font-size:36px;font-weight:600;color:#1D4ED8">Two views of one event</h3>
+<p style="font-size:28px;line-height:1.4;color:#4A5568">Solidity runs inside pallet-revive. Every event is an EVM log <b>and</b> a native Revive event. EVM tools miss dispatch errors and runtime versions; Substrate tools miss ABIs.</p>
+</div>
+<div style="background:#FFFFFF;border:1px solid #DDE2EA;border-radius:16px;padding:40px;display:flex;flex-direction:column;gap:16px">
+<h3 style="font-size:36px;font-weight:600;color:#1D4ED8">Fragile automation</h3>
+<p style="font-size:28px;line-height:1.4;color:#4A5568">Teams glue scripts, cron jobs and webhooks. A lost response or a crashed worker means a job runs twice — or never — and nobody can prove which.</p>
+</div>
+<div style="background:#FFFFFF;border:1px solid #DDE2EA;border-radius:16px;padding:40px;display:flex;flex-direction:column;gap:16px">
+<h3 style="font-size:36px;font-weight:600;color:#1D4ED8">Unclear costs and state</h3>
+<p style="font-size:28px;line-height:1.4;color:#4A5568">Storage deposits hide inside “gas”, 14-dp tPOT shows as 18 dp, and there is no event filter API. Deployments are hard to plan and to verify later.</p>
+</div>
+</div>
+<aside>Measured on the live V3 testnet, not assumed. The EVM endpoint is the pallet-revive eth-rpc proxy; eth_newFilter is unsupported; a 2 KB contract holds about 160 tPOT of storage deposit.</aside>
+</section>

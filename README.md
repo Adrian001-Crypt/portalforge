@@ -43,11 +43,11 @@ Not used / not claimed: ink! on pallet-contracts, EVM↔WASM calls, cross-chain 
 |---|---|---|
 | Contracts | `JobRegistry` (DemoService), `EvidenceRegistry`, `WorkflowExecutionRegistry` — storage-lean, no proxies, no payable/arbitrary-call entry points | 21 Foundry tests incl. fuzz |
 | Deploy | plan (simulation + exact deposit + balance), journaled apply that resumes after crashes, live manifest verification (32 checks), browser-wallet deploy | `scripts/test-deploy-resume.ts` (7/7) |
-| Indexer | EVM logs per contract from its deploy block, native Revive/Contracts events, atomic cursor + events, adaptive ranges, reorg (incl. A→B→A), finality, decode isolation, ABI re-decode | 11 indexer tests, live V3 smoke |
-| Workflows | DAG definitions (condition, map, task, http, validate, approval, wait, contract_call, evidence), immutable versions, deterministic execution ids, leases, retries + backoff + jitter, dead-letter, approvals, schedules, replay | 13 engine tests + 5 on-chain tests (Anvil) |
+| Indexer | EVM logs per contract from its deploy block, native Revive/Contracts events, atomic cursor + events, adaptive ranges, reorg (incl. A→B→A), finality, decode isolation, ABI re-decode | 12 indexer tests, live V3 smoke |
+| Workflows | DAG definitions (condition, map, task, http, validate, approval, wait, contract_call, evidence), immutable versions, deterministic execution ids, leases, retries + backoff + jitter, dead-letter, approvals, schedules, replay | 12 engine tests + 5 on-chain tests (Anvil) |
 | Recovery | intent persisted before every side effect; query-before-retry; sign → persist → broadcast; same-hash re-broadcast; business reconciliation | multi-process E2E (7/7) incl. worker SIGKILL |
 | Execution policy | allowlisted nonpayable functions only, per-call fee cap, calls/hour, network identity check, dedicated low-privilege key | on-chain tests |
-| Ops | RPC sampling, finality/stall/indexer-lag/workflow/revert/code-drift/runtime-upgrade rules, incident aggregation + cooldown + auto-resolve, webhook notifications | 8 ops tests, E2E outage |
+| Ops | RPC sampling, finality/stall/indexer-lag/workflow/revert/code-drift/runtime-upgrade rules, incident aggregation + cooldown + auto-resolve, webhook notifications | 7 ops tests, E2E outage |
 | API | sessions + CSRF + Origin checks, project RBAC (Owner/Developer/Operator/Viewer), scoped API keys, public read-only mode, rate & body limits, SSRF-safe connectors, OpenAPI 3.1 | 14 API tests, 17 public-visitor checks |
 | Console | 13 areas incl. Deployment Workbench, Contract Workspace, Event Explorer, Workflow Builder (visual ⇄ JSON), Executions, Incidents, Evidence | 3 real-Chrome tests |
 | SDK / CLI | `@portalforge/sdk` (probe, planner, verifiers, API client), `pf` CLI (10 commands, `--json`, exit codes) | examples below were run |
@@ -94,7 +94,7 @@ Tested on macOS (arm64). Linux should work for everything except the video tooli
 git clone <repo-url> portalforge && cd portalforge
 npm ci
 npm run contracts:build          # forge build + export ABIs
-npm run verify                   # typecheck · 21 contract tests · Vitest (incl. real Anvil) · web build
+npm run verify                   # typecheck · 21 contract tests · 59 Vitest tests (incl. real Anvil) · web build
 npm run dev                      # Anvil :8547 → deploy contracts → demo service :4310 → API :4300 → indexer → worker → console :5180
 ```
 

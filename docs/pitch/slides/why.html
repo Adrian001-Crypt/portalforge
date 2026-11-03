@@ -1,0 +1,14 @@
+<section id="why" style="background:#F5F6F8;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-size:72px;font-weight:600;line-height:1.1">Why Portaldot: built on what we measured</h2>
+<table style="font-size:28px;color:#14213D">
+<tr><th style="width:38%;text-align:left">Measured on V3 testnet</th><th style="width:62%;text-align:left">What PortalForge does with it</th></tr>
+<tr><td>EVM block hash = reviveApi.ethBlockHash(n)</td><td>Links EVM logs to native Revive events only when this check passes</td></tr>
+<tr><td>Storage deposit ≈ 0.06 tPOT per byte; 3.84 tPOT per slot</td><td>Exact deposit preview via reviveApi.instantiate; one slot per job</td></tr>
+<tr><td>H160 ↔ SS58 mapping rule</td><td>Verified against reviveApi; shows which SS58 funds a 0x key</td></tr>
+<tr><td>GRANDPA safe/finalized, ~2-block lag</td><td>Triggers gated on finality; reorgs orphan events and cancel queued runs</td></tr>
+<tr><td>Cancun opcodes, solc 0.8.28 artifacts</td><td>Simulated runtime equals the compiled artifact before any signature</td></tr>
+<tr><td>No eth_newFilter</td><td>Polling indexer with persisted cursors and adaptive ranges</td></tr>
+</table>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4A5568">Source: live probe 2026-11-03 · docs/network-capabilities.md · docs/probe/*.json</p>
+<aside>Every row comes from the capability probe that ships with PortalForge (pf network inspect). The smoke test also linked a real EVM log on V3 to its native ContractEmitted event and verified the block-hash rule.</aside>
+</section>

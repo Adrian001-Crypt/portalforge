@@ -1,0 +1,13 @@
+<section id="recovery" style="background:#F5F6F8;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-size:72px;font-weight:600;line-height:1.1">Failure is part of the demo</h2>
+<table style="font-size:28px;color:#14213D">
+<tr><th style="width:30%;text-align:left">Injected fault</th><th style="width:44%;text-align:left">What PortalForge does</th><th style="width:26%;text-align:left">Observed result</th></tr>
+<tr><td>Response lost after the receiver processed</td><td>Outcome “unknown” → query by executionId → reuse stored result</td><td>Processed once</td></tr>
+<tr><td>Worker SIGKILL mid-request</td><td>Lease expires → second worker reconciles the intent</td><td>Job completed once</td></tr>
+<tr><td>RPC outage (TCP proxy cut)</td><td>Cursor holds, incident opens, catch-up after recovery</td><td>Incident auto-resolved</td></tr>
+<tr><td>Crash between signing and broadcast</td><td>Same signed tx re-broadcast — same hash</td><td>No duplicate nonce</td></tr>
+<tr><td>Full replay of a finished job</td><td>Contract dedup + business reconciliation</td><td>Refused as conflict</td></tr>
+</table>
+<p style="font-size:28px;line-height:1.4;color:#4A5568">Guarantee stated honestly: no duplicate business effect when the receiver deduplicates by executionId. Not exactly-once against arbitrary services.</p>
+<aside>All five rows are automated: the first three in the multi-process E2E with real processes, the last two on a real local chain. The demo video shows the first two live.</aside>
+</section>

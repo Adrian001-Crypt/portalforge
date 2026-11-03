@@ -1,0 +1,28 @@
+<section id="architecture" style="background:#F5F6F8;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-size:72px;font-weight:600;line-height:1.1">Architecture</h2>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px">
+<div style="background:#E6EEFF;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:12px">
+<h3 style="font-size:32px;font-weight:600;color:#1D4ED8">Portaldot V3</h3>
+<p style="font-size:26px;line-height:1.4;color:#14213D">eth-rpc (pallet-revive)<br>Native WS (Revive · Contracts · System)<br>reviveApi runtime calls</p>
+</div>
+<div style="background:#FFFFFF;border:1px solid #DDE2EA;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:12px">
+<h3 style="font-size:32px;font-weight:600;color:#1D4ED8">Services</h3>
+<p style="font-size:26px;line-height:1.4;color:#4A5568"><b>indexer</b> — EVM + native streams<br><b>worker</b> — router, scheduler, engine, executor, monitor<br><b>API</b> — auth, RBAC, OpenAPI</p>
+</div>
+<div style="background:#FFFFFF;border:1px solid #DDE2EA;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:12px">
+<h3 style="font-size:32px;font-weight:600;color:#1D4ED8">Interfaces</h3>
+<p style="font-size:26px;line-height:1.4;color:#4A5568">Web console<br>TypeScript SDK · pf CLI<br>Idempotent receivers (demo service)</p>
+</div>
+</div>
+<div style="display:flex;gap:28px">
+<div style="flex:1;background:#0F1729;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:10px">
+<h3 style="font-size:32px;font-weight:600;color:#F5F6F8">Shared state: SQLite (WAL)</h3>
+<p style="font-size:26px;line-height:1.4;color:#C9D3E3">Every multi-step write is one BEGIN IMMEDIATE transaction: cursor + events together; leases and state changes guarded by owner and expiry.</p>
+</div>
+<div style="flex:1;background:#0F1729;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:10px">
+<h3 style="font-size:32px;font-weight:600;color:#F5F6F8">Least privilege</h3>
+<p style="font-size:26px;line-height:1.4;color:#C9D3E3">The API holds no chain key. The worker’s executor only calls allowlisted, nonpayable functions within a fee and rate budget.</p>
+</div>
+</div>
+<aside>Single-host design today: one database file, many processes. A hosted, multi-tenant version would move the store to PostgreSQL; the store interface was kept narrow for that.</aside>
+</section>

@@ -1,0 +1,197 @@
+<!doctype html><html><head><meta charset="utf-8"><title>PortalForge — Build, observe, and automate on Portaldot</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  @page { size: 1920px 1080px; margin: 0 }
+  html, body { margin: 0; padding: 0 }
+  section { width: 1920px; height: 1080px; box-sizing: border-box; position: relative; overflow: hidden; break-after: page; }
+  section * { margin: 0; box-sizing: border-box }
+  section ul, section ol { padding-left: 1.2em }
+  section li + li { margin-top: 0.25em }
+  section table { border-collapse: collapse; width: 100% }
+  section th { font-weight: 600; text-align: left; border-bottom: 2px solid #CBD2DC }
+  section th, section td { padding: 0.35em 0.6em; vertical-align: top }
+  section td { border-bottom: 1px solid #DDE2EA }
+  aside { display: none }
+</style></head><body><section id="cover" data-transition="fade" style="background:#0F1729;color:#F5F6F8;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:space-between">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:28px;color:#7DB3FF;letter-spacing:2px">PORTALDOT HACKER HOUSE 2026 · MODULAR CLOUD &amp; MIDDLEWARE</p>
+<div style="display:flex;flex-direction:column;gap:32px">
+<h1 style="font-size:144px;font-weight:700;line-height:1.05;color:#F5F6F8">PortalForge</h1>
+<p style="font-size:56px;line-height:1.25;color:#C9D3E3;width:1400px">Build, observe, and automate on Portaldot — with evidence you can verify on-chain.</p>
+</div>
+<div style="display:flex;gap:48px;align-items:center">
+<p style="font-size:28px;color:#9FB0C8">Deploy · Index · Automate · Recover · Verify</p>
+<div style="flex:1"></div>
+<p style="font-size:28px;color:#9FB0C8">Team: [to fill] · Repository: [to fill]</p>
+</div>
+<aside>PortalForge is open-source middleware for teams building on Portaldot V3. One product line: deploy and register contracts, index the chain, run workflows that survive failures, and verify the results on-chain. Fill in team name and repository link before presenting.</aside>
+</section>
+
+<section id="problem" style="background:#F5F6F8;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:56px">
+<h2 style="font-size:72px;font-weight:600;line-height:1.1">The problem: Portaldot apps live on two interfaces at once</h2>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px">
+<div style="background:#FFFFFF;border:1px solid #DDE2EA;border-radius:16px;padding:40px;display:flex;flex-direction:column;gap:16px">
+<h3 style="font-size:36px;font-weight:600;color:#1D4ED8">Two views of one event</h3>
+<p style="font-size:28px;line-height:1.4;color:#4A5568">Solidity runs inside pallet-revive. Every event is an EVM log <b>and</b> a native Revive event. EVM tools miss dispatch errors and runtime versions; Substrate tools miss ABIs.</p>
+</div>
+<div style="background:#FFFFFF;border:1px solid #DDE2EA;border-radius:16px;padding:40px;display:flex;flex-direction:column;gap:16px">
+<h3 style="font-size:36px;font-weight:600;color:#1D4ED8">Fragile automation</h3>
+<p style="font-size:28px;line-height:1.4;color:#4A5568">Teams glue scripts, cron jobs and webhooks. A lost response or a crashed worker means a job runs twice — or never — and nobody can prove which.</p>
+</div>
+<div style="background:#FFFFFF;border:1px solid #DDE2EA;border-radius:16px;padding:40px;display:flex;flex-direction:column;gap:16px">
+<h3 style="font-size:36px;font-weight:600;color:#1D4ED8">Unclear costs and state</h3>
+<p style="font-size:28px;line-height:1.4;color:#4A5568">Storage deposits hide inside “gas”, 14-dp tPOT shows as 18 dp, and there is no event filter API. Deployments are hard to plan and to verify later.</p>
+</div>
+</div>
+<aside>Measured on the live V3 testnet, not assumed. The EVM endpoint is the pallet-revive eth-rpc proxy; eth_newFilter is unsupported; a 2 KB contract holds about 160 tPOT of storage deposit.</aside>
+</section>
+
+<section id="users" style="background:#F5F6F8;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:56px">
+<h2 style="font-size:72px;font-weight:600;line-height:1.1">Who it is for</h2>
+<table style="font-size:32px;color:#14213D">
+<tr><th style="width:30%;text-align:left">User</th><th style="width:70%;text-align:left">What they get</th></tr>
+<tr><td>App teams on Portaldot</td><td>Deploy, register and automate contracts from one console, API and CLI</td></tr>
+<tr><td>Contract developers</td><td>Live simulation, exact deposit preview, decoded events with raw evidence</td></tr>
+<tr><td>Operators</td><td>Execution traces, approvals, replay, dead-letter queue, incidents</td></tr>
+<tr><td>Node / RPC maintainers</td><td>Reachability, latency, block growth and finality from real samples</td></tr>
+<tr><td>Ecosystem teams</td><td>Verifiable deployment manifests and on-chain execution evidence</td></tr>
+</table>
+<aside>Five roles, one data model. Platform roles (Owner, Developer, Operator, Viewer) are separate from on-chain permissions, and the console shows both side by side.</aside>
+</section>
+
+<section id="product" style="background:#0F1729;color:#F5F6F8;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:64px">
+<h2 style="font-size:72px;font-weight:600;line-height:1.1;color:#F5F6F8">One loop, end to end</h2>
+<div style="display:flex;gap:16px;align-items:stretch">
+<div style="flex:1;background:#1B2A44;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:12px"><p style="font-family:'JetBrains Mono', monospace;font-size:24px;color:#7DB3FF">01</p><h3 style="font-size:36px;font-weight:600">Deploy</h3><p style="font-size:26px;line-height:1.35;color:#C9D3E3">Simulate on V3, exact deposit, journaled broadcast, manifest</p></div>
+<div style="flex:1;background:#1B2A44;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:12px"><p style="font-family:'JetBrains Mono', monospace;font-size:24px;color:#7DB3FF">02</p><h3 style="font-size:36px;font-weight:600">Index</h3><p style="font-size:26px;line-height:1.35;color:#C9D3E3">EVM logs + native events, cursors, reorgs, finality</p></div>
+<div style="flex:1;background:#1B2A44;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:12px"><p style="font-family:'JetBrains Mono', monospace;font-size:24px;color:#7DB3FF">03</p><h3 style="font-size:36px;font-weight:600">Automate</h3><p style="font-size:26px;line-height:1.35;color:#C9D3E3">Versioned workflows: condition, HTTP, contract call, evidence</p></div>
+<div style="flex:1;background:#1B2A44;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:12px"><p style="font-family:'JetBrains Mono', monospace;font-size:24px;color:#7DB3FF">04</p><h3 style="font-size:36px;font-weight:600">Recover</h3><p style="font-size:26px;line-height:1.35;color:#C9D3E3">Intent first, query before retry, leases, dead-letter</p></div>
+<div style="flex:1;background:#1B2A44;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:12px"><p style="font-family:'JetBrains Mono', monospace;font-size:24px;color:#F5B454">05</p><h3 style="font-size:36px;font-weight:600">Verify</h3><p style="font-size:26px;line-height:1.35;color:#C9D3E3">Console and pf CLI re-read every claim from chain</p></div>
+</div>
+<p style="font-size:32px;line-height:1.4;color:#C9D3E3">Delivered as a web console, HTTP API (OpenAPI), TypeScript SDK, <span style="color:#7DB3FF">pf</span> CLI, three template contracts and a reference receiver.</p>
+<aside>The demo scenario walks this loop: a user requests a job on JobRegistry, the indexer picks up JobRequested, the workflow calls an idempotent service, completes the job on-chain once, and registers evidence.</aside>
+</section>
+
+<section id="architecture" style="background:#F5F6F8;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-size:72px;font-weight:600;line-height:1.1">Architecture</h2>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px">
+<div style="background:#E6EEFF;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:12px">
+<h3 style="font-size:32px;font-weight:600;color:#1D4ED8">Portaldot V3</h3>
+<p style="font-size:26px;line-height:1.4;color:#14213D">eth-rpc (pallet-revive)<br>Native WS (Revive · Contracts · System)<br>reviveApi runtime calls</p>
+</div>
+<div style="background:#FFFFFF;border:1px solid #DDE2EA;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:12px">
+<h3 style="font-size:32px;font-weight:600;color:#1D4ED8">Services</h3>
+<p style="font-size:26px;line-height:1.4;color:#4A5568"><b>indexer</b> — EVM + native streams<br><b>worker</b> — router, scheduler, engine, executor, monitor<br><b>API</b> — auth, RBAC, OpenAPI</p>
+</div>
+<div style="background:#FFFFFF;border:1px solid #DDE2EA;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:12px">
+<h3 style="font-size:32px;font-weight:600;color:#1D4ED8">Interfaces</h3>
+<p style="font-size:26px;line-height:1.4;color:#4A5568">Web console<br>TypeScript SDK · pf CLI<br>Idempotent receivers (demo service)</p>
+</div>
+</div>
+<div style="display:flex;gap:28px">
+<div style="flex:1;background:#0F1729;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:10px">
+<h3 style="font-size:32px;font-weight:600;color:#F5F6F8">Shared state: SQLite (WAL)</h3>
+<p style="font-size:26px;line-height:1.4;color:#C9D3E3">Every multi-step write is one BEGIN IMMEDIATE transaction: cursor + events together; leases and state changes guarded by owner and expiry.</p>
+</div>
+<div style="flex:1;background:#0F1729;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:10px">
+<h3 style="font-size:32px;font-weight:600;color:#F5F6F8">Least privilege</h3>
+<p style="font-size:26px;line-height:1.4;color:#C9D3E3">The API holds no chain key. The worker’s executor only calls allowlisted, nonpayable functions within a fee and rate budget.</p>
+</div>
+</div>
+<aside>Single-host design today: one database file, many processes. A hosted, multi-tenant version would move the store to PostgreSQL; the store interface was kept narrow for that.</aside>
+</section>
+
+<section id="why" style="background:#F5F6F8;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-size:72px;font-weight:600;line-height:1.1">Why Portaldot: built on what we measured</h2>
+<table style="font-size:28px;color:#14213D">
+<tr><th style="width:38%;text-align:left">Measured on V3 testnet</th><th style="width:62%;text-align:left">What PortalForge does with it</th></tr>
+<tr><td>EVM block hash = reviveApi.ethBlockHash(n)</td><td>Links EVM logs to native Revive events only when this check passes</td></tr>
+<tr><td>Storage deposit ≈ 0.06 tPOT per byte; 3.84 tPOT per slot</td><td>Exact deposit preview via reviveApi.instantiate; one slot per job</td></tr>
+<tr><td>H160 ↔ SS58 mapping rule</td><td>Verified against reviveApi; shows which SS58 funds a 0x key</td></tr>
+<tr><td>GRANDPA safe/finalized, ~2-block lag</td><td>Triggers gated on finality; reorgs orphan events and cancel queued runs</td></tr>
+<tr><td>Cancun opcodes, solc 0.8.28 artifacts</td><td>Simulated runtime equals the compiled artifact before any signature</td></tr>
+<tr><td>No eth_newFilter</td><td>Polling indexer with persisted cursors and adaptive ranges</td></tr>
+</table>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4A5568">Source: live probe 2026-11-03 · docs/network-capabilities.md · docs/probe/*.json</p>
+<aside>Every row comes from the capability probe that ships with PortalForge (pf network inspect). The smoke test also linked a real EVM log on V3 to its native ContractEmitted event and verified the block-hash rule.</aside>
+</section>
+
+<section id="proof" style="background:#0F1729;color:#F5F6F8;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:56px">
+<h2 style="font-size:72px;font-weight:600;line-height:1.1;color:#F5F6F8">Proof of function</h2>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:28px">
+<div style="background:#1B2A44;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:8px"><p style="font-size:96px;font-weight:700;color:#7DB3FF;line-height:1">21</p><p style="font-size:28px;color:#C9D3E3">Foundry tests incl. fuzz</p></div>
+<div style="background:#1B2A44;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:8px"><p style="font-size:96px;font-weight:700;color:#7DB3FF;line-height:1">59</p><p style="font-size:28px;color:#C9D3E3">unit + integration tests, real Anvil chain</p></div>
+<div style="background:#1B2A44;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:8px"><p style="font-size:96px;font-weight:700;color:#7DB3FF;line-height:1">7/7</p><p style="font-size:28px;color:#C9D3E3">multi-process fault scenarios</p></div>
+<div style="background:#1B2A44;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:8px"><p style="font-size:96px;font-weight:700;color:#F5B454;line-height:1">8</p><p style="font-size:28px;color:#C9D3E3">live V3 smoke checks passed</p></div>
+</div>
+<p style="font-size:32px;line-height:1.45;color:#C9D3E3;width:1500px">Plus 3 real-Chrome tests (two sessions racing on one account), 7/7 deploy crash-and-resume checks and 17/17 public-visitor checks.</p>
+<p style="font-size:32px;line-height:1.45;color:#F5B454;width:1500px">Testnet contract addresses and transactions: pending — deployment is prepared and waits for faucet tPOT.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#9FB0C8">Source: docs/test-results.md · docs/verification-matrix.md · local results use Anvil, not testnet (run 2026-11-03)</p>
+<aside>Local results come from Anvil, which is plain EVM and not testnet evidence. Live V3 checks are read-only: identity, opcode compatibility, artifact simulation, exact deposits, live indexing and correlation. Replace the placeholder with real addresses and hashes only after the testnet deployment.</aside>
+</section>
+
+<section id="recovery" style="background:#F5F6F8;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-size:72px;font-weight:600;line-height:1.1">Failure is part of the demo</h2>
+<table style="font-size:28px;color:#14213D">
+<tr><th style="width:30%;text-align:left">Injected fault</th><th style="width:44%;text-align:left">What PortalForge does</th><th style="width:26%;text-align:left">Observed result</th></tr>
+<tr><td>Response lost after the receiver processed</td><td>Outcome “unknown” → query by executionId → reuse stored result</td><td>Processed once</td></tr>
+<tr><td>Worker SIGKILL mid-request</td><td>Lease expires → second worker reconciles the intent</td><td>Job completed once</td></tr>
+<tr><td>RPC outage (TCP proxy cut)</td><td>Cursor holds, incident opens, catch-up after recovery</td><td>Incident auto-resolved</td></tr>
+<tr><td>Crash between signing and broadcast</td><td>Same signed tx re-broadcast — same hash</td><td>No duplicate nonce</td></tr>
+<tr><td>Full replay of a finished job</td><td>Contract dedup + business reconciliation</td><td>Refused as conflict</td></tr>
+</table>
+<p style="font-size:28px;line-height:1.4;color:#4A5568">Guarantee stated honestly: no duplicate business effect when the receiver deduplicates by executionId. Not exactly-once against arbitrary services.</p>
+<aside>All five rows are automated: the first three in the multi-process E2E with real processes, the last two on a real local chain. The demo video shows the first two live.</aside>
+</section>
+
+<section id="model" style="background:#0F1729;color:#F5F6F8;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:56px">
+<h2 style="font-size:72px;font-weight:600;line-height:1.1;color:#F5F6F8">Advantages and a business hypothesis</h2>
+<div style="display:flex;gap:32px">
+<div style="flex:1;background:#1B2A44;border-radius:16px;padding:40px;display:flex;flex-direction:column;gap:16px">
+<h3 style="font-size:36px;font-weight:600;color:#7DB3FF">Why teams would pick it</h3>
+<ul style="font-size:28px;line-height:1.5;color:#C9D3E3">
+<li>Portaldot-specific: dual interface, deposits, mapping, finality</li>
+<li>Recovery semantics that are tested, not promised</li>
+<li>Evidence anyone can re-verify with the CLI</li>
+<li>Open source, self-hostable, one database file</li>
+</ul>
+</div>
+<div style="flex:1;background:#1B2A44;border-radius:16px;padding:40px;display:flex;flex-direction:column;gap:16px">
+<h3 style="font-size:36px;font-weight:600;color:#F5B454">Hypothesis (not validated)</h3>
+<ul style="font-size:28px;line-height:1.5;color:#C9D3E3">
+<li>Free: open-source core, self-hosted</li>
+<li>Paid: hosted indexing with long history</li>
+<li>Paid: team workspaces, SSO, alert channels</li>
+<li>Paid: RPC/node observability for operators</li>
+</ul>
+</div>
+</div>
+<p style="font-size:28px;color:#9FB0C8">No customers or revenue yet. Next step: interviews with Hacker House teams building on V3.</p>
+<aside>Be explicit that the business model is a hypothesis. The near-term value is for the ecosystem: it fills the middleware gap that every V3 app team currently rebuilds.</aside>
+</section>
+
+<section id="limits" style="background:#F5F6F8;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-size:72px;font-weight:600;line-height:1.1">Known limits and roadmap</h2>
+<div style="display:flex;gap:32px">
+<div style="flex:1;background:#FFFFFF;border:1px solid #DDE2EA;border-radius:16px;padding:40px;display:flex;flex-direction:column;gap:16px">
+<h3 style="font-size:36px;font-weight:600;color:#B45309">Not done / not claimed</h3>
+<ul style="font-size:28px;line-height:1.5;color:#4A5568">
+<li>ink!/WASM on pallet-contracts</li>
+<li>EVM↔WASM calls, cross-chain features</li>
+<li>Multi-tenant store (single-host SQLite)</li>
+<li>External identity provider; security audit</li>
+</ul>
+</div>
+<div style="flex:1;background:#FFFFFF;border:1px solid #DDE2EA;border-radius:16px;padding:40px;display:flex;flex-direction:column;gap:16px">
+<h3 style="font-size:36px;font-weight:600;color:#1D4ED8">Next</h3>
+<ul style="font-size:28px;line-height:1.5;color:#4A5568">
+<li>Testnet deployment evidence (pending funding)</li>
+<li>Public read-only demo over HTTPS</li>
+<li>ink! adapter once the toolchain is verified on V3</li>
+<li>PostgreSQL store for hosted multi-tenant use</li>
+</ul>
+</div>
+</div>
+<p style="font-size:32px;font-weight:600;color:#14213D">Open source · Apache-2.0 · Repository: [to fill]</p>
+<aside>Close with the ask: feedback from the Portaldot team on the dual-interface correlation rule and on the deposit planner, and ecosystem support to run a hosted read-only indexer for V3 builders.</aside>
+</section>
+</body></html>
