@@ -24,6 +24,7 @@ const common: Record<string, string> = {
 async function main() {
   if (mode === 'local') {
     // Anvil starts an empty chain every time, so local state from a previous chain is meaningless.
+    for (const f of ['local-anvil.json', 'local-anvil.journal.json', 'local-anvil.verification.json', 'local-anvil.plan.json']) rmSync(`deployments/${f}`, { force: true });
     if (process.env.PF_KEEP_LOCAL_DATA !== '1') for (const f of ['portalforge.db', 'portalforge.db-wal', 'portalforge.db-shm', 'demo-service.db', 'demo-service.db-wal', 'demo-service.db-shm']) rmSync(`${dataDir}/${f}`, { force: true });
     const anvilBin = `${process.env.HOME}/.local/toolchains/foundry/anvil`;
     svcs.push(startService('anvil', existsSync(anvilBin) ? anvilBin : 'anvil', ['--port', '8547', '--block-time', '2', '--silent'], {}, logs));

@@ -35,6 +35,13 @@ try {
   rec('resume.verified', /pass\s+EvidenceRegistry\.code_hash/.test(r.stdout) && !/^fail/m.test(r.stdout), 'manifest verification after resume: all checks pass');
   r = run(['apply', 'local-anvil', '--profile', 'minimal', '--confirm']);
   rec('rerun.idempotent', r.status === 0 && (await nonce()) === 2 && /already in manifest, skipping/.test(r.stdout), `exit ${r.status}, nonce still ${await nonce()}`);
+  // Same chainId, brand-new chain (dev restart): stale manifest entries must not be trusted.
+  await anvil.stop();
+  const anvil2 = startService('anvil-resume-2', `${process.env.HOME}/.local/toolchains/foundry/anvil`, ['--port', String(PORT), '--block-time', '1', '--silent'], {}, join(dir, 'logs'));
+  await waitFor('anvil restart', () => rpcUp(url), 20_000);
+  r = run(['apply', 'local-anvil', '--profile', 'minimal', '--confirm']);
+  rec('stale_manifest.redeploys', r.status === 0 && /no matching code on this chain/.test(r.stdout) && (await nonce()) === 2, `exit ${r.status}, nonce on fresh chain ${await nonce()}`);
+  await anvil2.stop();
   r = spawnSync(process.execPath, ['--import', 'tsx', 'scripts/deploy.ts', 'apply', 'portaldot-v3-testnet', '--profile', 'minimal', '--confirm'], { env: { ...process.env, PF_DEPLOYMENTS_DIR: dir }, encoding: 'utf8' });
   rec('testnet.insufficient_balance_refuses', r.status === 1 && /BLOCKER: deployer balance/.test(r.stdout) && /plan has blockers; not broadcasting/.test(r.stderr), `exit ${r.status}; "${(r.stdout.match(/BLOCKER: [^\n]+/) ?? [''])[0].slice(0, 80)}…"`);
 } finally { await anvil.stop(); }

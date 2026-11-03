@@ -91,7 +91,16 @@ async function waitReceipt(hash: Hex, timeoutMs = 180_000) {
   return null;
 }
 
-const confirmed: DeploymentManifest['contracts'] = existsSync(manifestPath) && JSON.parse(readFileSync(manifestPath, 'utf8')).network?.chainId === profile.evm.chainId ? JSON.parse(readFileSync(manifestPath, 'utf8')).contracts : [];
+const previous: DeploymentManifest['contracts'] = existsSync(manifestPath) && JSON.parse(readFileSync(manifestPath, 'utf8')).network?.chainId === profile.evm.chainId ? JSON.parse(readFileSync(manifestPath, 'utf8')).contracts : [];
+// Trust a previous manifest entry only if this chain really holds that code at that address
+// (a restarted dev chain has the same chainId but none of the old contracts).
+const confirmed: DeploymentManifest['contracts'] = [];
+for (const c of previous) {
+  const code = await evm.code(c.address as Hex);
+  if (code !== '0x' && keccak256(code) === c.runtimeCodeHash) confirmed.push(c);
+  else console.log(`${c.name}: manifest entry ${c.address} has no matching code on this chain; ignoring it`);
+}
+if (previous.length && !confirmed.length && existsSync(journalPath)) { journal.length = 0; saveJournal(); console.log('stale journal cleared (no manifest contract exists on this chain)'); }
 for (const pc of plan.contracts) {
   if (confirmed.find((c) => c.name === pc.name && c.artifactRuntimeHash === pc.artifact.artifactRuntimeHash)) { console.log(`${pc.name}: already in manifest, skipping`); continue; }
   let entry = journal.find((j) => j.name === pc.name && j.state !== 'failed');
