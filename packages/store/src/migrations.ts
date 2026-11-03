@@ -129,4 +129,19 @@ CREATE INDEX steps_state ON steps(execution_id, position);
 CREATE INDEX intents_exec ON intents(execution_id, step_id);
 `,
   },
+  {
+    version: 3,
+    name: 'api',
+    sql: `
+CREATE TABLE probe_reports (id INTEGER PRIMARY KEY AUTOINCREMENT, network_id TEXT NOT NULL, report TEXT NOT NULL, created_at TEXT NOT NULL);
+CREATE TABLE wallet_intents (
+  id TEXT PRIMARY KEY, project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE, user_id TEXT NOT NULL, kind TEXT NOT NULL CHECK (kind IN ('deploy','call')),
+  network_id TEXT NOT NULL, chain_id INTEGER NOT NULL, from_address TEXT NOT NULL, to_address TEXT, contract_alias TEXT, function_name TEXT, args TEXT, data TEXT NOT NULL, data_hash TEXT NOT NULL,
+  expected_nonce INTEGER, state TEXT NOT NULL CHECK (state IN ('awaiting_signature','submitted','confirmed','failed','rejected','unknown','replaced','expired')),
+  tx_hash TEXT, receipt TEXT, error TEXT, note TEXT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL, expires_at INTEGER NOT NULL
+);
+CREATE INDEX wallet_intents_open ON wallet_intents(project_id, from_address, state);
+CREATE UNIQUE INDEX wallet_intents_hash ON wallet_intents(tx_hash) WHERE tx_hash IS NOT NULL;
+`,
+  },
 ];

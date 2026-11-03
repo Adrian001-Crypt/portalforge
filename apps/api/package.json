@@ -1,0 +1,9 @@
+{
+  "name": "@portalforge/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "exports": { ".": "./src/app.ts" },
+  "dependencies": { "@portalforge/domain": "*", "@portalforge/store": "*", "@portalforge/workflow-engine": "*", "@portalforge/ops": "*", "@portalforge/sdk": "*", "@portalforge/portaldot-evm": "*", "@portalforge/portaldot-native": "*", "@portalforge/indexer": "*", "hono": "*", "@hono/node-server": "*", "viem": "*", "zod": "*" }
+}

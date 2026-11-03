@@ -35,8 +35,8 @@ export class Db {
     return this;
   }
 
-  get<T = Row>(q: string, ...p: Param[]): T | undefined { return this.sql.prepare(q).get(...norm(p)) as T | undefined; }
-  all<T = Row>(q: string, ...p: Param[]): T[] { return this.sql.prepare(q).all(...norm(p)) as T[]; }
+  get<T = any>(q: string, ...p: Param[]): T | undefined { return this.sql.prepare(q).get(...norm(p)) as T | undefined; }
+  all<T = any>(q: string, ...p: Param[]): T[] { return this.sql.prepare(q).all(...norm(p)) as T[]; }
   run(q: string, ...p: Param[]) { const r = this.sql.prepare(q).run(...norm(p)); return { changes: Number(r.changes), lastId: Number(r.lastInsertRowid) }; }
 
   /** Atomic write transaction. Nested calls join the outer transaction. */

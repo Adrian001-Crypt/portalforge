@@ -1,4 +1,4 @@
-import { decodeFunctionResult, encodeFunctionData, keccak256, type Hex } from 'viem';
+import { decodeEventLog, decodeFunctionResult, encodeEventTopics, encodeFunctionData, keccak256, type Hex } from 'viem';
 import { DeploymentManifest, EvidenceRegistryAbi, JobRegistryAbi, WorkflowExecutionRegistryAbi, hashCanonical, PfError, type NetworkProfile } from '@portalforge/domain';
 import { EvmReader } from '@portalforge/portaldot-evm';
 
@@ -76,9 +76,13 @@ export async function verifyManifest(input: unknown, profile: NetworkProfile, op
   return { ok: checks.every((c) => c.status !== 'fail'), checks, verifiedAt: new Date().toISOString(), networkId: profile.id };
 }
 
-export interface EvidenceVerifyInput { registry: Hex; evidenceId: Hex; content: unknown; expectedWriter?: Hex; expectedKind?: Hex }
+export interface EvidenceVerifyInput { registry: Hex; evidenceId: Hex; content: unknown; expectedWriter?: Hex; expectedKind?: Hex; fromBlock?: number }
 
-/** Recompute the canonical hash of local content and compare with the on-chain EvidenceRegistry record. */
+/**
+ * Verify evidence against the lean EvidenceRegistry: recompute the canonical content hash locally,
+ * read the EvidenceRegistered log for the id (fields), recompute the commitment, and compare with
+ * on-chain status(). Proves registration by `writer` — not that the content is true.
+ */
 export async function verifyEvidence(profile: NetworkProfile, input: EvidenceVerifyInput): Promise<VerifyReport & { localHash: Hex; onchain: Record<string, unknown> | null }> {
   const checks: VerifyCheck[] = [];
   const add = (id: string, ok: boolean | null, detail: string) => checks.push({ id, status: ok === null ? 'skip' : ok ? 'pass' : 'fail', detail });
@@ -88,18 +92,29 @@ export async function verifyEvidence(profile: NetworkProfile, input: EvidenceVer
   const localHash = hashCanonical(input.content);
   const code = await evm.code(input.registry);
   if (code === '0x') throw new PfError('VERIFICATION_FAILED', `no contract at ${input.registry}`);
-  const rec = (await read(evm, input.registry, EvidenceRegistryAbi, 'get', [input.evidenceId])) as any;
-  const writer = String(rec.writer);
-  const exists = writer !== '0x0000000000000000000000000000000000000000';
-  add('evidence.exists', exists, exists ? `registered by ${writer} at block ${rec.blockNumber}` : 'no record for this evidence id');
+  const commitment = (await read(evm, input.registry, EvidenceRegistryAbi, 'commitmentOf', [input.evidenceId])) as Hex;
+  const exists = !/^0x0+$/.test(commitment);
+  add('evidence.exists', exists, exists ? `commitment ${commitment}` : 'no record for this evidence id');
+  let onchain: Record<string, unknown> | null = null;
   if (exists) {
-    add('evidence.content_hash', rec.contentHash.toLowerCase() === localHash.toLowerCase(), `local ${localHash}; chain ${rec.contentHash}`);
-    add('evidence.not_revoked', !rec.revoked, rec.revoked ? 'record was revoked by its writer' : 'active');
-    if (input.expectedWriter) add('evidence.writer', writer.toLowerCase() === input.expectedWriter.toLowerCase(), `writer ${writer}`);
-    if (input.expectedKind) add('evidence.kind', rec.kind.toLowerCase() === input.expectedKind.toLowerCase(), `kind ${rec.kind}`);
+    const topic0 = encodeEventTopics({ abi: EvidenceRegistryAbi, eventName: 'EvidenceRegistered', args: { evidenceId: input.evidenceId } }) as Hex[];
+    const head = await evm.blockNumber();
+    const logs = await evm.logs({ fromBlock: input.fromBlock ?? 0, toBlock: head, address: input.registry, topics: topic0 });
+    if (logs.length !== 1) add('evidence.event', false, `expected 1 EvidenceRegistered log, found ${logs.length}`);
+    else {
+      const d = decodeEventLog({ abi: EvidenceRegistryAbi, data: logs[0].data, topics: logs[0].topics as [Hex, ...Hex[]] }) as any;
+      const { kind, subject, contentHash, writer } = d.args;
+      onchain = { contentHash, kind, subject, writer, blockNumber: logs[0].blockNumber, blockHash: logs[0].blockHash, txHash: logs[0].transactionHash, commitment };
+      add('evidence.event', true, `registered in tx ${logs[0].transactionHash} at block #${logs[0].blockNumber}`);
+      add('evidence.content_hash', contentHash.toLowerCase() === localHash.toLowerCase(), `local ${localHash}; event ${contentHash}`);
+      const st = Number(await read(evm, input.registry, EvidenceRegistryAbi, 'status', [input.evidenceId, kind, subject, localHash, writer]));
+      add('evidence.commitment', st === 1 || st === 2, ['unknown id', 'active, commitment matches', 'revoked, commitment matches', 'commitment does not match these fields'][st] ?? `status ${st}`);
+      add('evidence.not_revoked', st !== 2, st === 2 ? 'record was revoked by its writer' : 'active');
+      if (input.expectedWriter) add('evidence.writer', String(writer).toLowerCase() === input.expectedWriter.toLowerCase(), `writer ${writer}`);
+      if (input.expectedKind) add('evidence.kind', String(kind).toLowerCase() === input.expectedKind.toLowerCase(), `kind ${kind}`);
+      const blk = await evm.block(logs[0].blockNumber);
+      add('evidence.block_canonical', !!blk && blk.hash.toLowerCase() === logs[0].blockHash.toLowerCase(), `canonical #${logs[0].blockNumber} = ${blk?.hash}`);
+    }
   }
-  return {
-    ok: checks.every((c) => c.status !== 'fail'), checks, verifiedAt: new Date().toISOString(), networkId: profile.id, localHash,
-    onchain: exists ? { contentHash: rec.contentHash, kind: rec.kind, subject: rec.subject, writer, registeredAt: Number(rec.registeredAt), blockNumber: Number(rec.blockNumber), revoked: rec.revoked } : null,
-  };
+  return { ok: checks.every((c) => c.status !== 'fail'), checks, verifiedAt: new Date().toISOString(), networkId: profile.id, localHash, onchain };
 }

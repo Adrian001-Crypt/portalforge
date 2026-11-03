@@ -1,0 +1,14 @@
+{
+  "schema": "portalforge.workflow/v1",
+  "name": "job-square",
+  "description": "When JobRegistry emits JobRequested, compute input² with the idempotent demo service, validate the result, complete the job on-chain once, and register execution evidence.",
+  "trigger": { "type": "event", "contract": "jobs", "event": "JobRequested", "minFinality": "safe" },
+  "concurrency": 4,
+  "steps": [
+    { "id": "guard", "type": "condition", "name": "Input in range", "condition": { "op": "lte", "left": "trigger.args.input", "right": 4294967295 }, "ui": { "x": 40, "y": 120 } },
+    { "id": "compute", "type": "http", "name": "Square via demo service", "needs": ["guard"], "connector": "demo", "idempotency": "query-before-retry", "body": { "jobId": "{{trigger.args.jobId}}", "input": "{{trigger.args.input}}" }, "retry": { "maxAttempts": 5, "backoffMs": 1000, "maxBackoffMs": 15000, "jitter": true }, "timeoutMs": 10000, "ui": { "x": 260, "y": 120 } },
+    { "id": "check", "type": "validate", "name": "Result schema", "needs": ["compute"], "value": "steps.compute.output", "schema": { "type": "object", "required": ["result", "resultHash"], "properties": { "result": { "type": "integer", "min": 0 }, "resultHash": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" } } }, "ui": { "x": 480, "y": 120 } },
+    { "id": "complete", "type": "contract_call", "name": "completeJob (allowlisted)", "needs": ["check"], "contract": "jobs", "function": "completeJob", "mode": "write", "args": ["{{trigger.args.jobId}}", "{{execution.id}}", "{{steps.compute.output.result}}", "{{steps.compute.output.resultHash}}"], "retry": { "maxAttempts": 3, "backoffMs": 2000, "maxBackoffMs": 20000, "jitter": true }, "timeoutMs": 120000, "ui": { "x": 700, "y": 120 } },
+    { "id": "proof", "type": "evidence", "name": "Register execution evidence", "needs": ["complete"], "kind": "execution", "include": ["trigger.eventId", "trigger.txHash", "steps.compute.output", "steps.complete.output.txHash"], "register": true, "timeoutMs": 120000, "ui": { "x": 920, "y": 120 } }
+  ]
+}
