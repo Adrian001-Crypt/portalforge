@@ -28,7 +28,10 @@ export function loadConfig(env = process.env): PfConfig {
 export function seedNetworks(db: Db, networks: NetworkProfile[]) {
   for (const n of networks) {
     db.run('INSERT INTO networks (id, profile, builtin, created_at) VALUES (?, ?, 1, ?) ON CONFLICT (id) DO UPDATE SET profile = excluded.profile', n.id, json(n), now());
-    db.run(`INSERT INTO rpc_endpoints (id, network_id, interface, url, label, builtin, created_at) VALUES (?, ?, 'evm', ?, ?, 1, ?) ON CONFLICT (network_id, url) DO NOTHING`, `rpc_${n.id}_evm`, n.id, n.evm.rpcUrl, `${n.name} EVM RPC`, now());
-    if (n.native) db.run(`INSERT INTO rpc_endpoints (id, network_id, interface, url, label, builtin, created_at) VALUES (?, ?, 'native', ?, ?, 1, ?) ON CONFLICT (network_id, url) DO NOTHING`, `rpc_${n.id}_native`, n.id, n.native.wsUrl, `${n.name} native WS`, now());
+    // Built-in endpoints keep a fixed id per network; a changed URL (env override) updates that row.
+    const upsert = `INSERT INTO rpc_endpoints (id, network_id, interface, url, label, builtin, created_at) VALUES (?, ?, ?, ?, ?, 1, ?)
+      ON CONFLICT (id) DO UPDATE SET url = excluded.url, label = excluded.label ON CONFLICT DO NOTHING`;
+    db.run(upsert, `rpc_${n.id}_evm`, n.id, 'evm', n.evm.rpcUrl, `${n.name} EVM RPC`, now());
+    if (n.native) db.run(upsert, `rpc_${n.id}_native`, n.id, 'native', n.native.wsUrl, `${n.name} native WS`, now());
   }
 }

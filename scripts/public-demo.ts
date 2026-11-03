@@ -29,7 +29,8 @@ async function main() {
   if (!testnet) { rmSync(dir, { recursive: true, force: true }); }
   mkdirSync(dir, { recursive: true });
   const env: Record<string, string> = {
-    PF_MODE: testnet ? 'testnet' : 'local', PF_NETWORKS: testnet ? net : 'local-anvil,portaldot-v3-testnet', // local data + read-only V3 observation PF_DB: `${dir}/portalforge.db`, PF_API_PORT: String(API), PF_API_HOST: '127.0.0.1',
+    // Local data plus read-only observation of Portaldot V3.
+    PF_MODE: testnet ? 'testnet' : 'local', PF_NETWORKS: testnet ? net : 'local-anvil,portaldot-v3-testnet', PF_DB: `${dir}/portalforge.db`, PF_API_PORT: String(API), PF_API_HOST: '127.0.0.1',
     PF_DEV_LOGIN: '0', PF_PUBLIC_READONLY: '1', PF_SEED_DEMO: '1', PF_WEB_DIST: 'apps/web/dist',
     PF_PUBLIC_ORIGIN: process.env.PF_PUBLIC_ORIGIN ?? `http://127.0.0.1:${API}`, PF_ALLOW_PRIVATE_CONNECTORS: '1', PF_DEMO_SERVICE_URL: `http://127.0.0.1:${DEMO}`,
     PF_DEPLOYMENTS_DIR: testnet ? 'deployments' : `${dir}/deployments`,
