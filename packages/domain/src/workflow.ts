@@ -120,7 +120,7 @@ export const templateRefs = (v: unknown): string[] => {
 };
 
 const conditionPaths = (c: Condition): string[] => {
-  if (c.op === 'and' || c.op === 'or') return c.all.flatMap(conditionPaths);
+  if ('all' in c) return c.all.flatMap(conditionPaths);
   if (c.op === 'not') return conditionPaths(c.cond);
   if (c.op === 'exists') return [c.path];
   return [c.left];

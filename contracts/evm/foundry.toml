@@ -1,0 +1,16 @@
+[profile.default]
+src = "src"
+test = "test"
+script = "script"
+out = "out"
+libs = ["lib"]
+solc_version = "0.8.28"
+# pallet-revive on Portaldot V3 executed PUSH0, TSTORE/TLOAD and MCOPY in the live opcode probe
+# (docs/network-capabilities.md), so cancun is the highest verified target.
+evm_version = "cancun"
+optimizer = true
+optimizer_runs = 1
+via_ir = false
+bytecode_hash = "none"
+cbor_metadata = false
+remappings = ["forge-std/=lib/forge-std/src/"]

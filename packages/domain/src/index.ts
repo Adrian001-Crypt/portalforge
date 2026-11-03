@@ -6,3 +6,4 @@ export * from './events';
 export * from './manifest';
 export * from './rbac';
 export * from './workflow';
+export * from './abis.generated';
