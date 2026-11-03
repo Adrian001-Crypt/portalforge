@@ -1,0 +1,9 @@
+{
+  "name": "@portalforge/portaldot-native",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "exports": { ".": "./src/index.ts" },
+  "dependencies": { "@portalforge/domain": "*", "@polkadot/api": "*", "@polkadot/util": "*", "@polkadot/util-crypto": "*", "viem": "*" }
+}

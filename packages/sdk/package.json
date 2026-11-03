@@ -1,0 +1,10 @@
+{
+  "name": "@portalforge/sdk",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "description": "TypeScript SDK for PortalForge: network capability probe, manifest and evidence verification, API client.",
+  "exports": { ".": "./src/index.ts", "./client": "./src/client.ts" },
+  "dependencies": { "@portalforge/domain": "*", "@portalforge/portaldot-evm": "*", "@portalforge/portaldot-native": "*", "viem": "*" }
+}

@@ -1,0 +1,610 @@
+{
+  "schema": "portalforge.capabilities/v1",
+  "networkId": "portaldot-v3-testnet",
+  "probedAt": "2026-11-03T16:35:48.905Z",
+  "durationMs": 15125,
+  "endpoints": {
+    "evm": "https://test-evm-rpc-v3.portaldot.dev",
+    "native": "wss://test-node-v3.portaldot.dev"
+  },
+  "checks": [
+    {
+      "id": "evm.chain_id",
+      "area": "identity",
+      "status": "supported",
+      "summary": "chainId 420420777 (expected 420420777)",
+      "evidence": {
+        "chainId": 420420777,
+        "latencyMs": 830
+      }
+    },
+    {
+      "id": "evm.client_version",
+      "area": "evm",
+      "status": "info",
+      "summary": "eth-rpc/main-fddd431/x86_64-unknown-linux-gnu/rustc1.98.0"
+    },
+    {
+      "id": "evm.block_tag.latest",
+      "area": "evm",
+      "status": "supported",
+      "summary": "latest = #308473",
+      "evidence": {
+        "number": 308473,
+        "hash": "0xffda1ed906dfc4563024da520ae63bea207c5fc3297dff8c8597429ea22ea8b1",
+        "timestamp": 1793723730
+      }
+    },
+    {
+      "id": "evm.block_tag.safe",
+      "area": "evm",
+      "status": "supported",
+      "summary": "safe = #308471",
+      "evidence": {
+        "number": 308471,
+        "hash": "0x6140a3f9fe4f5c4651f6585c475baf91df6b6a826418ac6c0fa4dba6c62005e0",
+        "timestamp": 1793723718
+      }
+    },
+    {
+      "id": "evm.block_tag.finalized",
+      "area": "evm",
+      "status": "supported",
+      "summary": "finalized = #308471",
+      "evidence": {
+        "number": 308471,
+        "hash": "0x6140a3f9fe4f5c4651f6585c475baf91df6b6a826418ac6c0fa4dba6c62005e0",
+        "timestamp": 1793723718
+      }
+    },
+    {
+      "id": "evm.method.eth_gasPrice",
+      "area": "evm",
+      "status": "supported",
+      "summary": "\"0x5a50\""
+    },
+    {
+      "id": "evm.method.eth_maxPriorityFeePerGas",
+      "area": "evm",
+      "status": "supported",
+      "summary": "\"0x0\""
+    },
+    {
+      "id": "evm.method.eth_syncing",
+      "area": "evm",
+      "status": "supported",
+      "summary": "false"
+    },
+    {
+      "id": "evm.method.net_version",
+      "area": "evm",
+      "status": "supported",
+      "summary": "\"420420777\""
+    },
+    {
+      "id": "evm.method.eth_newFilter",
+      "area": "evm",
+      "status": "unsupported",
+      "summary": "Method not found"
+    },
+    {
+      "id": "evm.method.eth_subscribe",
+      "area": "evm",
+      "status": "error",
+      "summary": "Internal error"
+    },
+    {
+      "id": "evm.method.eth_feeHistory",
+      "area": "evm",
+      "status": "supported",
+      "summary": "baseFee 0x5a50"
+    },
+    {
+      "id": "evm.get_logs_range",
+      "area": "evm",
+      "status": "supported",
+      "summary": "50000-block range returned 1024 logs in 310ms",
+      "evidence": {
+        "span": 50000,
+        "ms": 310,
+        "count": 1024
+      }
+    },
+    {
+      "id": "evm.opcode.create_basic",
+      "area": "evm",
+      "status": "supported",
+      "summary": "frontier opcode probe returned 0x602a60005260206000…",
+      "evidence": {
+        "fork": "frontier",
+        "initCode": "0x600a600c600039600a6000f3602a60005260206000f3"
+      }
+    },
+    {
+      "id": "evm.opcode.push0",
+      "area": "evm",
+      "status": "supported",
+      "summary": "shanghai opcode probe returned 0x000000000000000000…",
+      "evidence": {
+        "fork": "shanghai",
+        "initCode": "0x5f5f5260206000f3"
+      }
+    },
+    {
+      "id": "evm.opcode.tstore_tload",
+      "area": "evm",
+      "status": "supported",
+      "summary": "cancun opcode probe returned 0x000000000000000000…",
+      "evidence": {
+        "fork": "cancun",
+        "initCode": "0x602a60015d60015c60005260206000f3"
+      }
+    },
+    {
+      "id": "evm.opcode.mcopy",
+      "area": "evm",
+      "status": "supported",
+      "summary": "cancun opcode probe returned 0x000000000000000000…",
+      "evidence": {
+        "fork": "cancun",
+        "initCode": "0x602a6000526020600060205e60206020f3"
+      }
+    },
+    {
+      "id": "evm.opcode.chainid",
+      "area": "evm",
+      "status": "supported",
+      "summary": "istanbul opcode probe returned 0x000000000000000000…",
+      "evidence": {
+        "fork": "istanbul",
+        "initCode": "0x4660005260206000f3"
+      }
+    },
+    {
+      "id": "evm.estimate_gas_create",
+      "area": "evm",
+      "status": "supported",
+      "summary": "estimate 399858879057663 gas units for a 22-byte create"
+    },
+    {
+      "id": "native.genesis",
+      "area": "identity",
+      "status": "supported",
+      "summary": "genesis 0xd4f9acbcf7f52388d8b095abe3c198d19fc510e0343e643e87cfbccb155283bd",
+      "evidence": {
+        "chain": "PortaldotV3 Test",
+        "nodeName": "PortaldotV3 Node",
+        "nodeVersion": "3.0.0-dev-fddd43141f2",
+        "genesisHash": "0xd4f9acbcf7f52388d8b095abe3c198d19fc510e0343e643e87cfbccb155283bd",
+        "specName": "portaldot-v3",
+        "specVersion": 3002,
+        "transactionVersion": 2,
+        "ss58Format": 42,
+        "tokenSymbol": "tPOT",
+        "tokenDecimals": 14
+      }
+    },
+    {
+      "id": "native.runtime",
+      "area": "native",
+      "status": "info",
+      "summary": "portaldot-v3 spec 3002 tx 2"
+    },
+    {
+      "id": "native.token",
+      "area": "native",
+      "status": "supported",
+      "summary": "tPOT, 14 decimals, ss58 42"
+    },
+    {
+      "id": "native.heads",
+      "area": "native",
+      "status": "info",
+      "summary": "best #308475, finalized #308473, lag 2",
+      "evidence": {
+        "best": 308475,
+        "bestHash": "0x3a2060b87525891d30292c22ee7c8dd9f9076eb65310d02122e929cfba342b5d",
+        "finalized": 308473,
+        "finalizedHash": "0xf5c077c2d8eea71fa6469b9da3500d1baee2ebaad76a9de6498951daa4a3397e"
+      }
+    },
+    {
+      "id": "native.metadata",
+      "area": "native",
+      "status": "info",
+      "summary": "api decoded metadata v16; state_getMetadata returns v14"
+    },
+    {
+      "id": "native.pallets",
+      "area": "native",
+      "status": "info",
+      "summary": "69 pallets",
+      "evidence": [
+        "System",
+        "Utility",
+        "Babe",
+        "Timestamp",
+        "Authorship",
+        "Indices",
+        "Balances",
+        "TransactionPayment",
+        "AssetConversionTxPayment",
+        "ElectionProviderMultiPhase",
+        "Staking",
+        "Session",
+        "TechnicalCommittee",
+        "TechnicalMembership",
+        "Grandpa",
+        "Treasury",
+        "AssetRate",
+        "Contracts",
+        "Sudo",
+        "ImOnline",
+        "AuthorityDiscovery",
+        "Offences",
+        "Historical",
+        "Identity",
+        "Recovery",
+        "Vesting",
+        "Scheduler",
+        "Preimage",
+        "Proxy",
+        "Multisig",
+        "Bounties",
+        "Assets",
+        "PoolAssets",
+        "Beefy",
+        "Mmr",
+        "MmrLeaf",
+        "Lottery",
+        "Uniques",
+        "Nfts",
+        "NftFractionalization",
+        "TransactionStorage",
+        "VoterList",
+        "ChildBounties",
+        "Remark",
+        "NominationPools",
+        "AssetConversion",
+        "FastUnstake",
+        "MessageQueue",
+        "TxPause",
+        "SafeMode",
+        "Statement",
+        "MultiBlockMigrations",
+        "Broker",
+        "Mixnet",
+        "Parameters",
+        "SkipFeelessPayment",
+        "AssetConversionMigration",
+        "Revive",
+        "VerifySignature",
+        "DelegatedStaking",
+        "AssetsFreezer",
+        "Oracle",
+        "MetaTx",
+        "MultiAssetBounties",
+        "AssetsPrecompiles",
+        "AssetsPrecompilesPermit",
+        "VestingPrecompiles",
+        "RegistrarPara",
+        "RegistrarRelay"
+      ]
+    },
+    {
+      "id": "native.pallet.revive",
+      "area": "native",
+      "status": "supported",
+      "summary": "pallet-revive (EVM/PVM contracts) present",
+      "evidence": {
+        "consts": {
+          "depositPerByte": "6000000000000",
+          "depositPerItem": "15000000000000",
+          "depositPerChildTrieItem": "150000000000",
+          "codeHashLockupDepositPercent": "300000000",
+          "allowEVMBytecode": "true",
+          "chainId": "420420777",
+          "nativeToEthRatio": "10000",
+          "maxEthExtrinsicWeight": "900000000000000000",
+          "debugEnabled": "false",
+          "autoMap": "true",
+          "gasScale": "5"
+        },
+        "calls": [
+          "ethTransact",
+          "call",
+          "instantiate",
+          "instantiateWithCode",
+          "ethInstantiateWithCode",
+          "ethCall",
+          "ethSubstrateCall",
+          "uploadCode",
+          "removeCode",
+          "setCode",
+          "mapAccount",
+          "batchMapAccounts",
+          "unmapAccount",
+          "dispatchAsFallbackAccount"
+        ],
+        "events": [
+          "ContractEmitted",
+          "Instantiated",
+          "EthExtrinsicRevert"
+        ]
+      }
+    },
+    {
+      "id": "native.pallet.contracts",
+      "area": "native",
+      "status": "supported",
+      "summary": "pallet-contracts (ink!/WASM) present",
+      "evidence": {
+        "consts": {
+          "depositPerByte": "6000000000000",
+          "defaultDepositLimit": "6306816000000000000",
+          "depositPerItem": "15000000000000",
+          "codeHashLockupDepositPercent": "300000000",
+          "maxCodeLen": "125952",
+          "maxStorageKeyLen": "128",
+          "maxTransientStorageSize": "1048576",
+          "maxDelegateDependencies": "32",
+          "unsafeUnstableInterface": "false",
+          "maxDebugBufferLen": "2097152",
+          "apiVersion": "4"
+        },
+        "calls": [
+          "callOldWeight",
+          "instantiateWithCodeOldWeight",
+          "instantiateOldWeight",
+          "uploadCode",
+          "removeCode",
+          "setCode",
+          "call",
+          "instantiateWithCode",
+          "instantiate",
+          "migrate"
+        ],
+        "events": [
+          "Instantiated",
+          "Terminated",
+          "CodeStored",
+          "ContractEmitted",
+          "CodeRemoved",
+          "ContractCodeUpdated",
+          "Called",
+          "DelegateCalled",
+          "StorageDepositTransferredAndHeld",
+          "StorageDepositTransferredAndReleased"
+        ]
+      }
+    },
+    {
+      "id": "native.rpc_methods",
+      "area": "native",
+      "status": "info",
+      "summary": "135 RPC methods",
+      "evidence": [
+        "account_nextIndex",
+        "archive_v1_body",
+        "archive_v1_call",
+        "archive_v1_finalizedHeight",
+        "archive_v1_genesisHash",
+        "archive_v1_hashByHeight",
+        "archive_v1_header",
+        "archive_v1_stopStorage",
+        "archive_v1_storage",
+        "archive_v1_storageDiff",
+        "archive_v1_storageDiff_stopStorageDiff",
+        "author_hasKey",
+        "author_hasSessionKeys",
+        "author_insertKey",
+        "author_pendingExtrinsics",
+        "author_removeExtrinsic",
+        "author_rotateKeys",
+        "author_rotateKeysWithOwner",
+        "author_submitAndWatchExtrinsic",
+        "author_submitExtrinsic",
+        "author_unwatchExtrinsic",
+        "babe_epochAuthorship",
+        "beefy_getFinalizedHead",
+        "beefy_subscribeJustifications",
+        "beefy_unsubscribeJustifications",
+        "bitswap_v1_get",
+        "chainHead_v1_body",
+        "chainHead_v1_call",
+        "chainHead_v1_continue",
+        "chainHead_v1_follow",
+        "chainHead_v1_header",
+        "chainHead_v1_stopOperation",
+        "chainHead_v1_storage",
+        "chainHead_v1_unfollow",
+        "chainHead_v1_unpin",
+        "chainSpec_v1_chainName",
+        "chainSpec_v1_genesisHash",
+        "chainSpec_v1_properties",
+        "chain_getBlock",
+        "chain_getBlockHash",
+        "chain_getFinalisedHead",
+        "chain_getFinalizedHead",
+        "chain_getHead",
+        "chain_getHeader",
+        "chain_getRuntimeVersion",
+        "chain_subscribeAllHeads",
+        "chain_subscribeFinalisedHeads",
+        "chain_subscribeFinalizedHeads",
+        "chain_subscribeNewHead",
+        "chain_subscribeNewHeads",
+        "chain_subscribeRuntimeVersion",
+        "chain_unsubscribeAllHeads",
+        "chain_unsubscribeFinalisedHeads",
+        "chain_unsubscribeFinalizedHeads",
+        "chain_unsubscribeNewHead",
+        "chain_unsubscribeNewHeads",
+        "chain_unsubscribeRuntimeVersion",
+        "childstate_getKeys",
+        "childstate_getKeysPaged",
+        "childstate_getKeysPagedAt",
+        "childstate_getStorage",
+        "childstate_getStorageEntries",
+        "childstate_getStorageHash",
+        "childstate_getStorageSize",
+        "dev_getBlockStats",
+        "grandpa_proveFinality",
+        "grandpa_roundState",
+        "grandpa_subscribeJustifications",
+        "grandpa_unsubscribeJustifications",
+        "mmr_generateAncestryProof",
+        "mmr_generateProof",
+        "mmr_root",
+        "mmr_verifyProof",
+        "mmr_verifyProofStateless",
+        "offchain_localStorageClear",
+        "offchain_localStorageGet",
+        "offchain_localStorageSet",
+        "payment_queryFeeDetails",
+        "payment_queryInfo",
+        "rpc_methods",
+        "state_call",
+        "state_callAt",
+        "state_callRecorded",
+        "state_getChildReadProof",
+        "state_getKeys",
+        "state_getKeysPaged",
+        "state_getKeysPagedAt",
+        "state_getMetadata",
+        "state_getPairs",
+        "state_getReadProof",
+        "state_getRuntimeVersion",
+        "state_getStorage",
+        "state_getStorageAt",
+        "state_getStorageHash",
+        "state_getStorageHashAt",
+        "state_getStorageSize",
+        "state_getStorageSizeAt",
+        "state_queryStorage",
+        "state_queryStorageAt",
+        "state_subscribeRuntimeVersion",
+        "state_subscribeStorage",
+        "state_traceBlock",
+        "state_trieMigrationStatus",
+        "state_unsubscribeRuntimeVersion",
+        "state_unsubscribeStorage",
+        "statement_submit",
+        "statement_subscribeStatement",
+        "statement_unsubscribeStatement",
+        "subscribe_newHead",
+        "sync_state_genSyncSpec",
+        "system_accountNextIndex",
+        "system_addLogFilter",
+        "system_addReservedPeer",
+        "system_chain",
+        "system_chainType",
+        "system_dryRun",
+        "system_dryRunAt",
+        "system_health",
+        "system_localListenAddresses",
+        "system_localPeerId",
+        "system_name",
+        "system_nodeRoles",
+        "system_peers",
+        "system_properties",
+        "system_removeReservedPeer",
+        "system_reservedPeers",
+        "system_resetLogFilter",
+        "system_syncState",
+        "system_unstable_networkState",
+        "system_version",
+        "transactionWatch_v1_submitAndWatch",
+        "transactionWatch_v1_unwatch",
+        "transaction_v1_broadcast",
+        "transaction_v1_stop",
+        "unsubscribe_newHead"
+      ]
+    },
+    {
+      "id": "native.method.system_dryRun",
+      "area": "native",
+      "status": "supported",
+      "summary": "listed by rpc_methods"
+    },
+    {
+      "id": "native.method.payment_queryInfo",
+      "area": "native",
+      "status": "supported",
+      "summary": "listed by rpc_methods"
+    },
+    {
+      "id": "native.method.state_call",
+      "area": "native",
+      "status": "supported",
+      "summary": "listed by rpc_methods"
+    },
+    {
+      "id": "native.method.archive_v1_body",
+      "area": "native",
+      "status": "supported",
+      "summary": "listed by rpc_methods"
+    },
+    {
+      "id": "native.method.chainHead_v1_follow",
+      "area": "native",
+      "status": "supported",
+      "summary": "listed by rpc_methods"
+    },
+    {
+      "id": "native.unsafe_rpc_listed",
+      "area": "native",
+      "status": "info",
+      "summary": "11 operator-class methods are listed (not called by PortalForge)",
+      "evidence": [
+        "author_insertKey",
+        "author_removeExtrinsic",
+        "author_rotateKeys",
+        "author_rotateKeysWithOwner",
+        "offchain_localStorageClear",
+        "offchain_localStorageGet",
+        "offchain_localStorageSet",
+        "system_addLogFilter",
+        "system_addReservedPeer",
+        "system_removeReservedPeer",
+        "system_resetLogFilter"
+      ]
+    },
+    {
+      "id": "native.peers",
+      "area": "native",
+      "status": "info",
+      "summary": "peers 1, syncing false"
+    },
+    {
+      "id": "mapping.account_to_h160",
+      "area": "mapping",
+      "status": "supported",
+      "summary": "reviveApi.address(dev pubkey) = 0x9621dde636de098b43efb0fa9b61facfe328f99d; local keccak rule = 0x9621dde636de098b43efb0fa9b61facfe328f99d"
+    },
+    {
+      "id": "mapping.h160_to_account",
+      "area": "mapping",
+      "status": "supported",
+      "summary": "reviveApi.accountId(0x1000000000000000000000000000000000000001) = 0x1000000000000000000000000000000000000001eeeeeeeeeeeeeeeeeeeeeeee; local fallback rule = 0x1000000000000000000000000000000000000001eeeeeeeeeeeeeeeeeeeeeeee"
+    },
+    {
+      "id": "correlation.block_numbers",
+      "area": "correlation",
+      "status": "supported",
+      "summary": "EVM block #308472 hash equals reviveApi.ethBlockHash(308472); native block hash at #308472 is a different (Substrate) hash",
+      "evidence": {
+        "number": 308472,
+        "evmHash": "0xdb82f7a71ec16319309db8cfded4b2147ddae33df63cb362d66f80af10c0b8ff",
+        "reviveEthBlockHash": "0xdb82f7a71ec16319309db8cfded4b2147ddae33df63cb362d66f80af10c0b8ff",
+        "nativeHash": "0x7fc11eea48db3a267b82c9aa5b45e66a28b54f9bad673efe7e4cd70cdf370e00"
+      }
+    },
+    {
+      "id": "correlation.heads",
+      "area": "correlation",
+      "status": "info",
+      "summary": "EVM latest #308473, native best #308475"
+    }
+  ]
+}
