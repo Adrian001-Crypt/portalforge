@@ -76,6 +76,11 @@ const saveJournal = () => writeFileSync(journalPath, JSON.stringify(journal, nul
 const commit = (() => { try { return execSync('git rev-parse HEAD').toString().trim(); } catch { return 'unknown'; } })();
 const dirty = (() => { try { return execSync('git status --porcelain contracts/evm/src').toString().trim().length > 0; } catch { return true; } })();
 
+/** Test hook: PF_DEPLOY_CRASH=intent:<Name>|sent:<Name> exits abruptly at that point (used by scripts/test-deploy-resume.ts). */
+function crashPoint(at: string) {
+  if (process.env.PF_DEPLOY_CRASH === at) { console.error(`[test] simulated crash at ${at}`); process.exit(70); }
+}
+
 async function waitReceipt(hash: Hex, timeoutMs = 180_000) {
   const t0 = Date.now();
   while (Date.now() - t0 < timeoutMs) {
@@ -95,6 +100,7 @@ for (const pc of plan.contracts) {
     entry = { name: pc.name, nonce, predictedAddress: predictCreateAddress(deployer.address, nonce), state: 'intent' };
     journal.push(entry); saveJournal(); // intent persisted before the wallet signs
   }
+  crashPoint(`intent:${pc.name}`);
   if (entry.state === 'intent') {
     const latestNonce = await evm.nonce(deployer.address, 'latest');
     if (latestNonce > entry.nonce) {
@@ -107,9 +113,19 @@ for (const pc of plan.contracts) {
     const hash = await wallet.sendTransaction({ data: pc.initCode, gas: pc.gas!, gasPrice: plan.gasPrice, nonce: entry.nonce, type: 'legacy', chain });
     entry.txHash = hash; entry.state = 'sent'; saveJournal();
     console.log(`${pc.name}: sent ${hash}`);
+    crashPoint(`sent:${pc.name}`);
   }
   const r = await waitReceipt(entry.txHash!);
-  if (!r) { console.error(`${pc.name}: receipt not found yet for ${entry.txHash}; re-run apply later — it will resume from the journal`); process.exit(4); }
+  if (!r) {
+    const known = await evm.transaction(entry.txHash!).catch(() => undefined);
+    const latest = await evm.nonce(deployer.address, 'latest').catch(() => undefined);
+    if (known === null && latest !== undefined && latest <= entry.nonce) {
+      // Not mined, not in the pool, nonce unused: the broadcast was dropped. Safe to send a fresh intent next run.
+      entry.state = 'failed'; entry.error = 'dropped: not mined, not in pool, nonce unused'; saveJournal();
+      console.error(`${pc.name}: ${entry.txHash} was dropped (nonce ${entry.nonce} unused); re-run apply to send it again`);
+    } else console.error(`${pc.name}: receipt not found yet for ${entry.txHash}; re-run apply later — it will resume from the journal`);
+    process.exit(4);
+  }
   if (r.status !== 'success' || !r.contractAddress) { entry.state = 'failed'; entry.error = `status ${r.status}`; saveJournal(); console.error(`${pc.name}: deploy reverted`); process.exit(1); }
   const code = await evm.code(r.contractAddress);
   confirmed.push(manifestContract(pc.artifact, pc.args, { address: r.contractAddress, txHash: r.transactionHash, blockNumber: r.blockNumber, blockHash: r.blockHash, deployer: deployer.address, runtimeCodeHash: keccak256(code) }));

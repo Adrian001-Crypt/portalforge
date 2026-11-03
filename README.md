@@ -45,7 +45,7 @@ Results and their scope are in [docs/test-results.md](docs/test-results.md) and 
 ```bash
 npm run -s pf -- network inspect                       # live capability probe
 npm run -s pf -- deploy plan --profile minimal          # simulation + exact deposit + balance
-npm run deploy:apply -- portaldot-v3-testnet --profile minimal --confirm --fund-executor 25   # after funding
+npm run deploy:apply -- portaldot-v3-testnet --profile minimal --confirm --fund-executor 60   # after funding
 PF_MODE=testnet npm run dev
 ```
 
