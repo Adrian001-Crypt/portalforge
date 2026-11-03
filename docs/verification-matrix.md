@@ -11,7 +11,10 @@ Status legend: **Verified-testnet** (observed on live Portaldot V3) · **Verifie
 | Deploy | Artifact runtime == simulated runtime on V3 | Verified-testnet | `pf deploy plan`, smoke `deploy.simulation` |
 | Deploy | Exact storage deposit dry-run | Verified-testnet | smoke `deploy.deposit` |
 | Deploy | Real testnet deployment + manifest verification | **Pending** | needs funded deployer (docs/deployment.md) |
-| Deploy | Deploy journal / resume, manifest verify (32 checks) | Verified-local | `deploy.ts apply local-anvil`, E2E F |
+| Deploy | Deploy journal: crash after intent / after send, idempotent rerun, stale manifest on a fresh chain | Verified-local | `scripts/test-deploy-resume.ts` (7/7) |
+| Deploy | Refuses to broadcast with insufficient balance | Verified-testnet (read-only) | `test-deploy-resume.ts` `testnet.insufficient_balance_refuses` |
+| Deploy | Exact per-slot call deposit (3.8415 tPOT) | Verified-testnet (dry-run) | `docs/probe/slot-deposit-latest.json` |
+| Deploy | Manifest verify (32 checks) | Verified-local | E2E F |
 | Deploy | Browser-wallet deploy with manifest | Implemented (local Chrome UI path exercised for calls; deploy path code-reviewed) | Deployments page |
 | Index | EVM logs live | Verified-testnet | smoke `index.evm` |
 | Index | Native Revive events live (per-block runtime) | Verified-testnet | smoke `index.native` |
@@ -39,4 +42,7 @@ Status legend: **Verified-testnet** (observed on live Portaldot V3) · **Verifie
 | CLI | events tail, workflow simulate, execution inspect, evidence verify | Verified-local | E2E F, manual |
 | WASM | ink! contracts on pallet-contracts | Not done | no Rust toolchain; registration returns NOT_SUPPORTED |
 | Cross-chain | any | Not done / not claimed | — |
-| Public hosting | HTTPS read-only demo | Pending (needs your approval/host) | docs/deployment.md §C |
+| Public demo | Read-only mode: dev sign-in off, visitor data limits, writes refused, no secrets in bundle | Verified-local | `scripts/check-public.ts` (17/17) |
+| Public hosting | HTTPS public URL | **Pending** — tunnel/host must be started by you | docs/final-delivery.md |
+| Docs | README from a fresh clone (install, build, verify, dev) | Verified-local | test-results.md “Fresh clone” |
+| Media | Narrated local demo video, screenshots, deck PDF | Produced (local footage labelled) | docs/media/, docs/pitch/ |

@@ -1,12 +1,13 @@
 # Handoff（交接说明）
 
-更新时间：2026-11-03。项目目录：仓库根目录（独立 Git 仓库，与本机其他项目分离）。
+更新时间：2026-11-03（第二轮）。本轮交付总表见 docs/final-delivery.md，提交清单见 docs/submission-checklist.md，到账后步骤见 docs/funding-handoff.md。项目目录：仓库根目录（独立 Git 仓库，与本机其他项目分离）。
 
 ## 已完成
 - 规则核实（docs/hackathon-requirements.md）、V3 实时能力探测（docs/network-capabilities.md）。
 - 三个存储精简合约 + 21 个 Foundry 测试；部署规划（模拟 + 精确押金）、带 journal 的部署、manifest 验证。
 - 双接口索引器、工作流引擎、执行器、监控与事件、API、Web 控制台、SDK、CLI。
-- 测试：56 Vitest（含真实 Anvil）、7 个多进程 E2E 故障场景、3 个真实 Chrome 测试、测试网只读冒烟 8 项通过。
+- 测试（第二轮）：59 Vitest（含真实 Anvil）、21 合约测试、7/7 多进程故障场景、7/7 部署恢复、3 个真实 Chrome 测试、17/17 公开只读访客检查、测试网只读冒烟 8 项通过。
+- 演示视频（本地画面，2:08，合成旁白）、16 张截图、Pitch Deck PDF 已生成。
 
 ## 需要你完成的步骤（按顺序）
 1. **询问主办方资格**：使用 docs/hackathon-requirements.md 末尾的问题模板（未参加 Check-in 是否仍可评审；能否多选赛道）。
