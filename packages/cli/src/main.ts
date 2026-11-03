@@ -95,7 +95,8 @@ async function main(): Promise<number> {
       catch (e) { add('native.ws', false, `${p.native.wsUrl}: ${(e as Error).message}`); }
     }
     for (const f of ['.secrets/portaldot-v3-testnet-deployer.json', '.secrets/portaldot-v3-testnet-executor.json']) if (existsSync(f)) add(`secrets.${f.split('-').at(-1)!.replace('.json', '')}`, (statSync(f).mode & 0o077) === 0, `${f} mode ${(statSync(f).mode & 0o777).toString(8)}`);
-    const ignored = (() => { try { execSync('git check-ignore -q .secrets/x .env data/x.db', { stdio: 'ignore' }); return true; } catch { return false; } })();
+    // `git check-ignore -q` accepts exactly one path, so check each separately.
+    const ignored = ['.secrets/x', '.env', 'data/x.db'].every((f) => { try { execSync(`git check-ignore -q ${f}`, { stdio: 'ignore' }); return true; } catch { return false; } });
     add('gitignore', ignored, ignored ? '.secrets/, .env and data/*.db are git-ignored' : 'secrets or databases may be committed — check .gitignore');
     const api = flag('api') ?? cfg.apiUrl ?? process.env.PF_API_URL;
     if (api) { try { const h = await client().health(); add('api', h.ok, `${api} mode ${h.mode}, services ${h.services.map((s: any) => `${s.service}:${s.alive ? 'alive' : 'stale'}`).join(' ') || 'none'}`); } catch (e) { add('api', false, (e as Error).message); } }

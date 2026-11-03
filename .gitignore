@@ -18,3 +18,4 @@ playwright-report/
 deployments/local-anvil*
 playwright-report/
 docs/media/raw/
+.claude/

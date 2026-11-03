@@ -1,6 +1,6 @@
 # Handoff（交接说明）
 
-更新时间：2026-11-03。项目目录：`/Users/adrian/hackson/portalforge`（独立 Git 仓库；父目录 FlowLedger 仓库通过 `.git/info/exclude` 忽略它；AgentProcure 未改动）。
+更新时间：2026-11-03。项目目录：仓库根目录（独立 Git 仓库，与本机其他项目分离）。
 
 ## 已完成
 - 规则核实（docs/hackathon-requirements.md）、V3 实时能力探测（docs/network-capabilities.md）。
