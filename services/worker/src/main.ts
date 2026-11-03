@@ -1,5 +1,5 @@
 /** PortalForge worker: event routing, schedules, execution, and (optionally) health monitoring. */
-import { hostname } from 'node:os';
+import { randomBytes } from 'node:crypto';
 import { Db, createLogger, loadConfig, seedNetworks } from '@portalforge/store';
 import { WorkflowEngine } from '@portalforge/workflow-engine';
 import { heartbeat, signalToIncident, deliverNotifications } from '@portalforge/ops';
@@ -10,7 +10,8 @@ const log = createLogger('worker');
 const cfg = loadConfig();
 const db = new Db(cfg.dbPath).migrate();
 seedNetworks(db, cfg.networks);
-const workerId = process.env.PF_WORKER_ID ?? `${hostname()}:${process.pid}`;
+// Instance ids are random, never the host name: they appear in traces visible to project members.
+const workerId = process.env.PF_WORKER_ID ?? `worker-${randomBytes(3).toString('hex')}`;
 const concurrency = Math.max(1, Number(process.env.PF_WORKER_CONCURRENCY ?? 4));
 const monitorEnabled = process.env.PF_MONITOR !== '0';
 const chains = buildExecutors(cfg.networks, log);

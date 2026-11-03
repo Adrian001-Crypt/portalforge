@@ -1,5 +1,5 @@
 /** PortalForge indexer service: EVM log streams + native event stream per configured network. */
-import { hostname } from 'node:os';
+import { randomBytes } from 'node:crypto';
 import { Db, createLogger, loadConfig, seedNetworks } from '@portalforge/store';
 import { EvmReader } from '@portalforge/portaldot-evm';
 import { NativeReader } from '@portalforge/portaldot-native';
@@ -11,7 +11,7 @@ const log = createLogger('indexer');
 const cfg = loadConfig();
 const db = new Db(cfg.dbPath).migrate();
 seedNetworks(db, cfg.networks);
-const instance = `${hostname()}:${process.pid}`;
+const instance = `indexer-${randomBytes(3).toString('hex')}`;
 const intervalMs = Number(process.env.PF_INDEX_INTERVAL_MS ?? 3000);
 const nativeEnabled = process.env.PF_NATIVE_INDEX !== '0';
 let stopping = false;

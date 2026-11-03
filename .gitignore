@@ -17,3 +17,4 @@ playwright-report/
 *.key
 deployments/local-anvil*
 playwright-report/
+docs/media/raw/
