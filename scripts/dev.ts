@@ -4,7 +4,7 @@
  *   npm run dev                 # local Anvil
  *   PF_MODE=testnet npm run dev # real Portaldot V3 (needs deployments/portaldot-v3-testnet.json + executor key)
  */
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, rmSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { startService, tsx, waitFor, rpcUp, httpOk, type Svc } from './lib/proc';
 
@@ -23,6 +23,8 @@ const common: Record<string, string> = {
 
 async function main() {
   if (mode === 'local') {
+    // Anvil starts an empty chain every time, so local state from a previous chain is meaningless.
+    if (process.env.PF_KEEP_LOCAL_DATA !== '1') for (const f of ['portalforge.db', 'portalforge.db-wal', 'portalforge.db-shm', 'demo-service.db', 'demo-service.db-wal', 'demo-service.db-shm']) rmSync(`${dataDir}/${f}`, { force: true });
     const anvilBin = `${process.env.HOME}/.local/toolchains/foundry/anvil`;
     svcs.push(startService('anvil', existsSync(anvilBin) ? anvilBin : 'anvil', ['--port', '8547', '--block-time', '2', '--silent'], {}, logs));
     await waitFor('anvil', () => rpcUp('http://127.0.0.1:8547'), 20_000);

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../api';
-import { useApi, Async, Card, PageHead, Stat, Tag, Time, ErrorBox, Hash, Src } from '../ui';
+import { useApi, Async, Card, PageHead, Stat, Tag, Time, ErrorBox, Hash, Src, NetworkBadge, NotDeployed } from '../ui';
 import { useSession } from '../session';
 
 export function Projects() {
@@ -24,7 +24,7 @@ export function Projects() {
           <Async q={q}>{(d) => {
             const rows = d.items.filter((p) => !filter || `${p.name} ${p.slug}`.toLowerCase().includes(filter.toLowerCase()));
             return rows.length ? <div className="table-wrap"><table className="t"><thead><tr><th>Project</th><th>Environment</th><th>Network</th><th>Your role</th><th>Visibility</th><th>Created</th></tr></thead>
-              <tbody>{rows.map((p) => <tr key={p.id} className="click" onClick={() => nav(`/p/${p.slug}`)}><td><b>{p.name}</b><div className="small faint">{p.slug}</div></td><td><Tag s="info">{p.environment}</Tag></td><td className="small">{p.network_id}</td><td>{p.role}</td><td>{p.visibility === 'public_readonly' ? <Tag s="info">public read-only</Tag> : <Tag s="">private</Tag>}</td><td><Time t={p.created_at} /></td></tr>)}</tbody></table></div>
+              <tbody>{rows.map((p) => <tr key={p.id} className="click" onClick={() => nav(`/p/${p.slug}`)}><td><b>{p.name}</b><div className="small faint">{p.slug}</div></td><td><Tag s="info">{p.environment}</Tag></td><td><NetworkBadge id={p.network_id} /></td><td>{p.role}</td><td>{p.visibility === 'public_readonly' ? <Tag s="info">public read-only</Tag> : <Tag s="">private</Tag>}</td><td><Time t={p.created_at} /></td></tr>)}</tbody></table></div>
               : <div className="empty"><b>No matching projects</b></div>;
           }}</Async>
         </Card>
@@ -55,8 +55,9 @@ export function ProjectHome({ p }: { p: any; reload: () => void }) {
   const base = `/p/${p.slug}`;
   return (
     <div className="content">
-      <PageHead crumbs={<Link to="/projects">Projects</Link>} title={p.name} sub={<>{p.description || 'No description'} · <Tag s="info">{p.environment}</Tag> · {p.network_id} · your role <b>{p.role}</b></>}
+      <PageHead crumbs={<Link to="/projects">Projects</Link>} title={p.name} sub={<>{p.description || 'No description'} · <NetworkBadge id={p.network_id} /> · environment {p.environment} · your role <b>{p.role}</b></>}
         actions={<><Link className="btn" to={`${base}/workflows`}>Workflows</Link><Link className="btn primary" to={`${base}/deployments`}>Deploy</Link></>} />
+      {p.stats.contracts === 0 && <NotDeployed networkId={p.network_id} />}
       {p.role === 'public' && <div className="notice" style={{ marginBottom: 14 }}>You are viewing a public read-only project. Data is real for its network; actions that change state are disabled.</div>}
       <div className="grid g4" style={{ marginBottom: 14 }}>
         <Stat label="Contracts" value={p.stats.contracts} hint={<Link to={`${base}/contracts`}>workspace →</Link>} />

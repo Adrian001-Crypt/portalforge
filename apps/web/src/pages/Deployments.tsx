@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { api } from '../api';
-import { useApi, Async, Card, PageHead, Tag, Time, Hash, ErrorBox, KV, Json, toast, Src, downloadJson } from '../ui';
+import { useApi, Async, Card, PageHead, Tag, Time, Hash, ErrorBox, KV, Json, toast, Src, downloadJson, NetworkBadge, NotDeployed } from '../ui';
 import { canWrite, useSession } from '../session';
 import { connect, sendWithIntent, switchChain } from '../wallet';
 import { formatUnits } from '../units';
@@ -21,6 +21,8 @@ export function Deployments({ p }: { p: any }) {
   return (
     <div className="content">
       <PageHead crumbs={<Link to={`/p/${p.slug}`}>{p.name}</Link>} title="Deployments" sub="Template deploys with live simulation and exact storage-deposit preview; manifests verified against the chain." />
+      <div className="row" style={{ marginBottom: 12 }}><NetworkBadge id={p.network_id} /></div>
+      {list.data && list.data.items.length === 0 && <NotDeployed networkId={p.network_id} />}
       {writable && <Workbench p={p} onDone={() => { list.reload(); intents.reload(); }} />}
       <div style={{ height: 14 }} />
       <Card title="Deployment records" flush>

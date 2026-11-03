@@ -81,4 +81,12 @@ describe('health rules', () => {
     signalToIncident(db, { kind: 'succeeded', projectId, executionId: 'x3', workflowId: 'w1', detail: 'ok' });
     expect(db.get(`SELECT state FROM incidents WHERE kind = 'workflow_failures'`).state).toBe('resolved');
   });
+
+  it('resolves unknown-outcome incidents once their execution succeeds', () => {
+    const { db, projectId } = seed();
+    signalToIncident(db, { kind: 'unknown_outcome', projectId, executionId: '0xabc', workflowId: 'w1', stepId: 'compute', detail: 'reset' });
+    expect(db.get(`SELECT state FROM incidents WHERE kind = 'unknown_outcome'`).state).toBe('open');
+    signalToIncident(db, { kind: 'succeeded', projectId, executionId: '0xabc', workflowId: 'w1', detail: 'ok' });
+    expect(db.get(`SELECT state FROM incidents WHERE kind = 'unknown_outcome'`).state).toBe('resolved');
+  });
 });

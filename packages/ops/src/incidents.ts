@@ -61,6 +61,12 @@ export function resolveByFingerprint(db: Db, fingerprint: string, actor: string,
   });
 }
 
+/** Resolve every open incident whose fingerprint starts with `prefix` (e.g. all unknown-outcome incidents of one execution). */
+export function resolveByPrefix(db: Db, prefix: string, actor: string, note: string, clock: () => number = Date.now) {
+  const fps = db.all(`SELECT DISTINCT fingerprint FROM incidents WHERE state IN ('open','acknowledged') AND substr(fingerprint, 1, ?) = ?`, prefix.length, prefix).map((r) => r.fingerprint as string);
+  return fps.reduce((n, fp) => n + resolveByFingerprint(db, fp, actor, note, 5 * 60_000, clock), 0);
+}
+
 export function transitionIncident(db: Db, id: string, action: 'acknowledge' | 'resolve', actor: string, note?: string, clock: () => number = Date.now) {
   const t = now();
   return db.tx(() => {

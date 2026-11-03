@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { encodeFunctionData, type Abi } from 'viem';
 import { api } from '../api';
-import { useApi, Async, Card, PageHead, Tag, Time, Hash, ErrorBox, KV, Json, Tabs, toast, Src, useSort } from '../ui';
+import { useApi, Async, Card, PageHead, Tag, Time, Hash, ErrorBox, KV, Json, Tabs, toast, Src, useSort, NotDeployed, NetworkBadge } from '../ui';
 import { canWrite, useSession } from '../session';
 import { sendWithIntent, onWalletBroadcast } from '../wallet';
 
@@ -23,6 +23,7 @@ export function Contracts({ p }: { p: any }) {
     <div className="content">
       <PageHead crumbs={<Link to={`/p/${p.slug}`}>{p.name}</Link>} title="Contract Workspace" sub="Registered contracts, their ABI versions, live on-chain permissions and indexed events."
         actions={me?.user && canWrite(p.role, 'resource') ? <button className="btn" onClick={() => setShow(!show)}>{show ? 'Close' : 'Register existing contract'}</button> : null} />
+      {q.data && q.data.items.length === 0 && <NotDeployed networkId={p.network_id} />}
       {show && <Card title="Register existing contract"><form className="form" onSubmit={register}>
         <div className="grid g3"><label className="f">Alias<input required pattern="[a-z][a-z0-9_-]{1,30}" value={f.alias} onChange={(e) => setF({ ...f, alias: e.target.value })} /></label>
           <label className="f">Address<input required pattern="0x[0-9a-fA-F]{40}" value={f.address} onChange={(e) => setF({ ...f, address: e.target.value })} /></label>
@@ -47,7 +48,7 @@ export function ContractDetail({ p }: { p: any }) {
   return (
     <div className="content">
       <Async q={q}>{(c) => <>
-        <PageHead crumbs={<Link to={`/p/${p.slug}/contracts`}>Contract Workspace</Link>} title={c.alias} sub={<><Hash v={c.address} n={20} /> · {c.network_id} · deploy block #{c.deploy_block} {c.templateKind && <Tag s="info">{c.templateKind}</Tag>}</>}
+        <PageHead crumbs={<Link to={`/p/${p.slug}/contracts`}>Contract Workspace</Link>} title={c.alias} sub={<><Hash v={c.address} n={20} /> · <NetworkBadge id={c.network_id} /> · deploy block #{c.deploy_block} {c.templateKind && <Tag s="info">{c.templateKind}</Tag>}</>}
           actions={<Link className="btn" to={`/p/${p.slug}/events?contract=${c.alias}`}>Events</Link>} />
         <Tabs value={tab} onChange={setTab} tabs={[{ id: 'interface', label: 'Read / write' }, { id: 'permissions', label: 'Permissions' }, { id: 'abi', label: `ABI versions (${c.abis.length})` }, { id: 'meta', label: 'Deployment metadata' }]} />
         {tab === 'interface' && <Interface p={p} c={c} />}

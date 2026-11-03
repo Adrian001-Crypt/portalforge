@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { NavLink, Route, Routes, useLocation, useNavigate, useParams, Navigate } from 'react-router-dom';
 import { SessionProvider, useSession } from './session';
-import { Toaster, useApi, ErrorBox } from './ui';
+import { Toaster, useApi, ErrorBox, NetworkBadge } from './ui';
 import { Overview } from './pages/Overview';
 import { Projects, ProjectHome } from './pages/Projects';
 import { NetworkHealth, IntegrationHealth } from './pages/Health';
@@ -43,6 +43,7 @@ function Sidebar({ open, close }: { open: boolean; close: () => void }) {
           </select>
         </div>
         {project && <>
+          <div style={{ padding: '0 8px 8px' }}><NetworkBadge id={project.network_id} /></div>
           {link(`/p/${project.slug}`, 'Project home', '⌂')}
           {link(`/p/${project.slug}/deployments`, 'Deployments', '⇪')}
           {link(`/p/${project.slug}/contracts`, 'Contract Workspace', '{}')}

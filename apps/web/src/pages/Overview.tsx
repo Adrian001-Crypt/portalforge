@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { useApi, Async, Card, PageHead, Stat, Tag, Time, Src, Hash } from '../ui';
+import { useApi, Async, Card, PageHead, Stat, Tag, Time, Src, Hash, NetworkBadge } from '../ui';
 import { useSession } from '../session';
 
 export function Overview() {
@@ -16,11 +16,12 @@ export function Overview() {
         <Stat label="Open incidents" value={projects.data?.items.reduce((s, p) => s + p.stats.openIncidents, 0) ?? '…'} />
         <Stat label="Services" value={health.data ? `${health.data.services.filter((s: any) => s.alive).length}/${health.data.services.length}` : '…'} hint="alive by heartbeat" />
       </div>
+      {projects.data?.items[0] && <StartHere p={projects.data.items[0]} />}
       <div className="split">
         <Card title="Projects" right={<Link className="btn sm" to="/projects">All projects</Link>} flush>
           <Async q={projects}>{(d) => d.items.length ? (
             <table className="t"><thead><tr><th>Name</th><th>Network</th><th>Role</th><th>Contracts</th><th>Workflows</th><th>Incidents</th></tr></thead><tbody>
-              {d.items.map((p) => <tr key={p.id}><td><Link to={`/p/${p.slug}`}>{p.name}</Link><div className="small faint">{p.environment}</div></td><td className="small">{p.network_id}</td><td><Tag s={p.role === 'public' ? 'info' : 'active'}>{p.role}</Tag></td><td>{p.stats.contracts}</td><td>{p.stats.workflows}</td><td>{p.stats.openIncidents ? <Tag s="open">{p.stats.openIncidents}</Tag> : 0}</td></tr>)}
+              {d.items.map((p) => <tr key={p.id}><td><Link to={`/p/${p.slug}`}>{p.name}</Link><div className="small faint">{p.environment}</div></td><td><NetworkBadge id={p.network_id} /></td><td><Tag s={p.role === 'public' ? 'info' : 'active'}>{p.role}</Tag></td><td>{p.stats.contracts}</td><td>{p.stats.workflows}</td><td>{p.stats.openIncidents ? <Tag s="open">{p.stats.openIncidents}</Tag> : 0}</td></tr>)}
             </tbody></table>) : <div className="empty"><b>No projects yet</b>Sign in and create one on the Projects page.</div>}</Async>
         </Card>
         <Card title="Networks" right={<Link className="btn sm" to="/network">Health</Link>}>
@@ -43,5 +44,27 @@ export function Overview() {
         </ol>
       </Card>
     </div>
+  );
+}
+
+/** A two-minute guided path through the real product for first-time visitors and judges. */
+function StartHere({ p }: { p: any }) {
+  const base = `/p/${p.slug}`;
+  const steps: [string, string, string][] = [
+    ['Network Health', '/network', 'Live capability probe: chain identity, opcodes, address mapping, RPC samples.'],
+    ['Deployments', `${base}/deployments`, 'Simulated deploy plan with exact storage deposit; manifest re-verified on chain.'],
+    ['Event Explorer', `${base}/events`, 'JobRequested / JobCompleted logs with finality and raw evidence.'],
+    ['Workflow Builder', `${base}/workflows`, 'job-square: condition → idempotent HTTP → allowlisted completeJob → evidence.'],
+    ['Executions', `${base}/executions`, 'Step traces with attempts, intents and reconciliation after faults.'],
+    ['Evidence', `${base}/evidence`, 'Local canonical hash compared with the on-chain commitment.'],
+  ];
+  return (
+    <section className="card" style={{ marginBottom: 14, padding: 16 }} aria-label="Start here">
+      <div className="row" style={{ marginBottom: 10 }}><h2 style={{ margin: 0 }}>Start here — the demo in six pages</h2><NetworkBadge id={p.network_id} /><span className="small muted">project “{p.name}”</span></div>
+      <div className="grid g3">{steps.map(([t, to, d], i) => (
+        <Link key={to} to={to} className="card" style={{ padding: 12, textDecoration: 'none', color: 'inherit' }}>
+          <div className="small faint">Step {i + 1}</div><b style={{ color: 'var(--accent)' }}>{t} →</b><div className="small muted" style={{ marginTop: 4 }}>{d}</div>
+        </Link>))}</div>
+    </section>
   );
 }

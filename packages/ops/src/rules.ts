@@ -1,6 +1,6 @@
 import { type Db, parse } from '@portalforge/store';
 import type { Signal } from '@portalforge/workflow-engine';
-import { raiseIncident, resolveByFingerprint, type RaiseInput } from './incidents';
+import { raiseIncident, resolveByFingerprint, resolveByPrefix, type RaiseInput } from './incidents';
 import { endpointStats } from './health';
 
 export interface RuleThresholds { unreachableSamples: number; stallMs: number; finalityLagBlocks: number; indexerLagBlocks: number; indexerStaleMs: number; consecutiveFailures: number }
@@ -99,7 +99,11 @@ export function signalToIncident(db: Db, s: Signal, t: RuleThresholds = DEFAULT_
         diagnosis: { facts: [{ label: 'last execution', value: s.executionId, ref: `/executions/${s.executionId}` }, { label: 'last error', value: s.detail }], inference: { source: 'rule:workflow_failures', text: 'Failures are consecutive, so this is likely systemic (connector, policy, funds) rather than one bad input.' }, suggestion: ['Open the latest execution trace and read the failing step attempt.', 'Fix the cause, then replay dead-lettered executions from failure.'] } });
     }
   }
-  if (s.kind === 'succeeded') resolveByFingerprint(db, `workflow_failures:${s.workflowId}`, 'system', `execution ${s.executionId} succeeded`);
+  if (s.kind === 'succeeded') {
+    resolveByFingerprint(db, `workflow_failures:${s.workflowId}`, 'system', `execution ${s.executionId} succeeded`);
+    // An uncertain side effect that was later reconciled is no longer an open problem.
+    resolveByPrefix(db, `unknown_outcome:${s.executionId}:`, 'system', 'outcome reconciled; execution succeeded');
+  }
   if (s.kind === 'contract_revert') raise({ fingerprint: `contract_revert:${s.workflowId}:${s.stepId}`, kind: 'contract_revert', severity: 'warning', projectId: s.projectId, title: `Contract call reverted in ${s.stepId}`, refs: [{ type: 'execution', id: s.executionId }], cooldownMs: 600_000,
     diagnosis: { facts: [{ label: 'execution', value: s.executionId, ref: `/executions/${s.executionId}` }, { label: 'detail', value: s.detail }], inference: { source: 'rule:contract_revert', text: 'The simulation or receipt reverted; the executor did not retry because a revert is deterministic for the same state.' }, suggestion: ['Read the decoded revert reason in the step attempt.', 'Check on-chain permissions (executor address) on the Contract page.'] } });
   if (s.kind === 'unknown_outcome') raise({ fingerprint: `unknown_outcome:${s.executionId}:${s.stepId}`, kind: 'unknown_outcome', severity: 'warning', projectId: s.projectId, title: `Outcome unknown for ${s.stepId}`, refs: [{ type: 'execution', id: s.executionId }], cooldownMs: 600_000,

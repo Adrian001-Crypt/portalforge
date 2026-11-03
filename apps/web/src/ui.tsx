@@ -122,3 +122,16 @@ export function Spark({ series, color = 'var(--accent)', height = 120, fmt = (v:
     </svg>
   );
 }
+
+/** Which chain a project lives on. Local Anvil is never presented as Portaldot. */
+export function NetworkBadge({ id }: { id: string }) {
+  if (id === 'local-anvil') return <span className="tag warn plain" title="Plain EVM dev chain on this machine (Anvil). Not pallet-revive, not testnet evidence.">Local Anvil · not testnet</span>;
+  if (id === 'portaldot-v3-testnet') return <span className="tag ok plain" title="Live Portaldot V3 testnet (chainId 420420777)">Portaldot V3 Testnet</span>;
+  return <span className="tag plain">{id}</span>;
+}
+
+/** Honest empty state for a testnet project before its contracts exist. */
+export function NotDeployed({ networkId }: { networkId: string }) {
+  if (networkId !== 'portaldot-v3-testnet') return null;
+  return <div className="notice warn" style={{ marginBottom: 14 }}><b>Not deployed on Portaldot V3 testnet yet.</b> No contract addresses or transactions are shown because none exist. Deployment is prepared and waits for testnet tPOT (docs/funding-handoff.md). Read-only V3 checks — identity, simulation, exact deposits, live indexing — are in Network Health.</div>;
+}
