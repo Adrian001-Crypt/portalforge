@@ -8,7 +8,7 @@
 **Team members:** [your name / handle] (+ disclosure: developed with Claude Code assistance)
 **Repository:** [public GitHub URL — not yet published]
 **Demo:** [video link — not recorded yet] · [live read-only demo URL — not deployed yet] · local: README "Quick start"
-**Pitch deck:** [link]
+**Pitch deck:** https://claude.ai/artifact/9Lnq7bjggsjqoeSpA5hQjz (private until shared from its Share menu; fill team name + repo URL placeholders)
 
 ## Description
 Building on Portaldot V3 means Solidity running inside pallet-revive on a Substrate chain:
