@@ -16,3 +16,4 @@ playwright-report/
 *.pem
 *.key
 deployments/local-anvil*
+playwright-report/

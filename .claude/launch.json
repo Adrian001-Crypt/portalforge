@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "portalforge-local",
+      "runtimeExecutable": "/Users/adrian/.local/toolchains/node/bin/node",
+      "runtimeArgs": ["--import", "tsx", "scripts/dev.ts"],
+      "port": 5180
+    }
+  ]
+}

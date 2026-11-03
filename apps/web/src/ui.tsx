@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { Fragment, useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { api, ApiError } from './api';
 
@@ -72,7 +72,7 @@ export const Card = ({ title, right, children, flush }: { title?: ReactNode; rig
   </section>
 );
 export const Stat = ({ label, value, hint }: { label: string; value: ReactNode; hint?: ReactNode }) => <div className="card stat"><div className="label">{label}</div><div className="value">{value}</div>{hint && <div className="hint">{hint}</div>}</div>;
-export const KV = ({ items }: { items: [ReactNode, ReactNode][] }) => <dl className="kv">{items.map(([k, v], i) => <><dt key={`k${i}`}>{k}</dt><dd key={`v${i}`}>{v}</dd></>)}</dl>;
+export const KV = ({ items }: { items: [ReactNode, ReactNode][] }) => <dl className="kv">{items.map(([k, v], i) => <Fragment key={i}><dt>{k}</dt><dd>{v}</dd></Fragment>)}</dl>;
 export const Json = ({ v }: { v: unknown }) => <pre className="json">{JSON.stringify(v, null, 2)}</pre>;
 
 export function Tabs({ tabs, value, onChange }: { tabs: { id: string; label: ReactNode }[]; value: string; onChange: (id: string) => void }) {

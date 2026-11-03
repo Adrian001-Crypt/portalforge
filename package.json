@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "PortalForge \u2014 build, observe, and automate on Portaldot.",
+  "description": "PortalForge — build, observe, and automate on Portaldot.",
   "license": "Apache-2.0",
   "engines": {
     "node": ">=24"
@@ -38,6 +38,7 @@
     "e2e:browser": "playwright test"
   },
   "devDependencies": {
+    "@playwright/test": "^1.56.1",
     "@types/node": "^24.19.2",
     "tsx": "^4.23.15",
     "typescript": "^5.9.3",

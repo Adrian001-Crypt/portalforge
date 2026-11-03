@@ -153,4 +153,4 @@ pre.json { margin: 0; padding: 12px; background: var(--bg-sunk); border-radius: 
   .g3, .g4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .split, .g2 { grid-template-columns: 1fr; }
   .content { padding: 16px; } .topbar { padding: 10px 16px; }
 }
-@media (max-width: 560px) { .g3, .g4 { grid-template-columns: 1fr; } .kv { grid-template-columns: 1fr; } .kv dt { margin-top: 6px; } }
+@media (max-width: 560px) { .topbar-status, .topbar-theme { display: none; } .g4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .g3, .g4 { grid-template-columns: 1fr; } .kv { grid-template-columns: 1fr; } .kv dt { margin-top: 6px; } }

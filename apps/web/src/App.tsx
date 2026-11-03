@@ -19,12 +19,13 @@ function Sidebar({ open, close }: { open: boolean; close: () => void }) {
   const loc = useLocation();
   const m = /^\/p\/([^/]+)/.exec(loc.pathname);
   const pid = m?.[1] ?? localStorageGet('pf.project');
-  const projects = useApi<{ items: any[] }>('/projects', [loc.pathname.startsWith('/projects')]);
+  const { me } = useSession();
+  const projects = useApi<{ items: any[] }>('/projects', [loc.pathname.startsWith('/projects'), me?.user?.id]);
   const project = projects.data?.items.find((p) => p.id === pid || p.slug === pid);
   const nav = useNavigate();
   useEffect(() => { if (m?.[1]) localStorageSet('pf.project', m[1]); }, [m?.[1]]);
   useEffect(close, [loc.pathname]);
-  const link = (to: string, label: string, icon: string, count?: number) => <NavLink to={to} end={to === '/'}><span aria-hidden>{icon}</span>{label}{count ? <span className="count">{count}</span> : null}</NavLink>;
+  const link = (to: string, label: string, icon: string, count?: number) => <NavLink to={to} end={to === '/' || /^\/p\/[^/]+$/.test(to)}><span aria-hidden>{icon}</span>{label}{count ? <span className="count">{count}</span> : null}</NavLink>;
   return (
     <aside className={`sidebar ${open ? 'open' : ''}`} aria-label="Navigation">
       <div className="brand"><img src="/favicon.svg" width={26} height={26} alt="" /><div>PortalForge<small>Build · observe · automate on Portaldot</small></div></div>
@@ -70,11 +71,11 @@ function TopBar({ menu }: { menu: () => void }) {
   return (
     <header className="topbar">
       <button className="btn ghost menu-btn" onClick={menu} aria-label="Open navigation">☰</button>
-      <span className="small muted">
+      <span className="small muted topbar-status">
         {health.data ? <>API <span className="ok-t">●</span> · mode <b>{health.data.mode}</b> · {health.data.networks.join(', ')}{health.data.publicReadOnly && <> · <span className="tag info plain">public read-only</span></>}</> : health.error ? <span className="bad-t">API unreachable</span> : '…'}
       </span>
       <span className="spacer" />
-      <select aria-label="Theme" value={theme} onChange={(e) => setTheme(e.target.value)} className="small"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select>
+      <select aria-label="Theme" className="small topbar-theme" value={theme} onChange={(e) => setTheme(e.target.value)}><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select>
       {me?.user ? (
         <><span className="small">Signed in as <b>{me.user.handle}</b></span><button className="btn sm" onClick={logout}>Sign out</button></>
       ) : me?.devLogin ? (
@@ -90,7 +91,8 @@ function TopBar({ menu }: { menu: () => void }) {
 
 function ProjectRoutes() {
   const { pid } = useParams();
-  const q = useApi<any>(`/projects/${pid}`, [pid]);
+  const { me } = useSession();
+  const q = useApi<any>(`/projects/${pid}`, [pid, me?.user?.id]);
   if (q.error) return <div className="content"><ErrorBox error={q.error} retry={q.reload} /></div>;
   if (!q.data) return <div className="content" />;
   const p = q.data;
