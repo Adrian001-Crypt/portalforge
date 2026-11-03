@@ -1,0 +1,10 @@
+{
+  "name": "@portalforge/demo-service",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "description": "Deterministic, idempotent example receiver for PortalForge HTTP steps (with fault injection for demos).",
+  "exports": { ".": "./src/server.ts" },
+  "dependencies": { "@portalforge/domain": "*" }
+}

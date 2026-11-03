@@ -65,7 +65,8 @@ export const LOCAL_ANVIL: NetworkProfile = {
     rpcUrl: 'http://127.0.0.1:8547',
     chainId: 31337,
     confirmations: 0,
-    finalizedTag: true,
+    // Anvil reports safe/finalized as head-32/head-64; local dev uses depth-based confirmation instead.
+    finalizedTag: false,
     nativeCurrency: { symbol: 'ETH', decimals: 18 },
   },
 };
