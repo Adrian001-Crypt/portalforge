@@ -85,7 +85,8 @@ pallet-revive 的规则（`packages/portaldot-native/src/address.ts`）：
 | **现版 EvidenceRegistry**（承诺槽） | 1 991 B | **176.09 tPOT** |
 | **现版 WorkflowExecutionRegistry** | 1 935 B | **171.72 tPOT** |
 
-押金近似为 `depositPerByte × 代码字节 × (1 + 30% lockup) + depositPerItem × 条目`。同一规则也作用于每次写存储：每个新存储条目约 0.15 tPOT + 0.06 tPOT/字节。
+押金近似为 `depositPerByte × 代码字节 × (1 + 30% lockup) + depositPerItem × 条目`。
+**单个新存储槽实测 3.8415 tPOT**（`scripts/measure-call-deposits.ts`，0/1/2 个 SSTORE 的构造器 dry-run 差值，两次一致；`docs/probe/slot-deposit-latest.json`）。PortalForge 的 `requestJob`、`completeJob`、`register` 各新建一个槽。同一规则也作用于每次写存储：每个新存储条目约 0.15 tPOT + 0.06 tPOT/字节。
 
 对设计的影响（均已实现）：
 1. 合约改为**存储精简**：每个 job 只占一个打包槽（requester|input|status），完成时再写一个 executionId 槽；证据只存一个 `keccak256(contentHash, kind, subject, writer)` 承诺槽，撤销时取反覆盖（不新增条目），完整字段放在事件里。

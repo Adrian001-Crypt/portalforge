@@ -10,7 +10,7 @@ Legend: ☑ done · ☐ open · (you) = only you can do it.
 - ☐ (you) Receive testnet tPOT on your native SS58 address via the official channel.
 
 ## Code and repository
-- ☑ Independent git repo, 20+ real commits on 2026-11-03, no rewritten history, no empty commits.
+- ☑ Independent git repo, 20 real commits on 2026-11-03 (as of this checklist), no rewritten history, no empty commits.
 - ☑ Pre-publish scan of all history: no keys, `.env`, `.secrets`, databases or tokens; `.claude/` local config untracked; no absolute local paths in docs.
 - ☑ LICENSE (Apache-2.0), THIRD_PARTY.md, AI-assistance disclosure in README.
 - ☑ README verified from a fresh clone (install → build → verify → dev).

@@ -96,17 +96,18 @@ npm run -s pf -- evidence verify <evidenceId> --api http://127.0.0.1:4300
 
 Copy the deploy tx hashes, contract addresses and one full job's tx hashes (`requestJob`, `completeJob`, `register`) into `docs/submission-draft.md`. Only real values go there.
 
-## C. Public read-only demo (needs your approval: outward-facing)
-
-On any host with Node ≥ 24:
+## C. Public read-only demo (outward-facing: you decide where and when)
 
 ```bash
 npm ci && npm run contracts:build && npm run web:build
-PF_MODE=testnet PF_PUBLIC_READONLY=1 PF_DEV_LOGIN=0 PF_SEED_DEMO=1 PF_API_HOST=0.0.0.0 PF_PUBLIC_ORIGIN=https://<your-host> \
-  PF_EXECUTOR_KEY_FILE_PORTALDOT_V3_TESTNET=.secrets/portaldot-v3-testnet-executor.json \
-  sh -c 'npm run api & npm run indexer & npm run worker & npm run demo-service & wait'
+npx tsx scripts/public-demo.ts                       # local data (labelled Local Anvil) + read-only V3 observation, :4400
+PF_PUBLIC_NETWORK=testnet npx tsx scripts/public-demo.ts   # after the testnet deployment
+npx tsx scripts/check-public.ts http://127.0.0.1:4400       # 17 anonymous-visitor checks
+npx tsx scripts/public-demo.ts --tunnel              # + temporary https://…trycloudflare.com URL to the API port only
 ```
 
-The API serves the built console with SPA fallback and the CSP from `apps/api/src/app.ts`. Put HTTPS in front with a reverse proxy, or with a Cloudflare quick tunnel for a temporary URL (`cloudflared tunnel --url http://127.0.0.1:4300`). With `PF_DEV_LOGIN=0` nobody can sign in: visitors read the public project, and operators use the CLI/API keys on the host. Back up `data/portalforge.db` (SQLite, WAL) to keep history.
+The public stack disables dev sign-in and serves the built console from the API with SPA fallback and CSP. It also keeps fault injection on 127.0.0.1 behind a random token. Visitors can read only `public_readonly` projects. They cannot see connector targets, channels, the audit log or host names, and every write returns 401/403.
 
-Not done in this round: a container image, managed hosting, TLS automation.
+A quick tunnel is free and needs no account, but its URL lasts only while the command runs. Use it for a live session, not for a link that must stay up for days. A stable public URL needs a host that keeps the processes running: any VM with Node ≥ 24 running the same command behind HTTPS. No such host was available in this round.
+
+Not done: a container image, managed hosting, TLS automation.
