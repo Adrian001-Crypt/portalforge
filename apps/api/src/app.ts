@@ -23,7 +23,7 @@ export function createApp(deps: ApiDeps, opts: { webDist?: string } = {}) {
     referrerPolicy: 'no-referrer',
   }));
   app.onError((e, c) => {
-    if (!(e instanceof PfError) && (e as any)?.name !== 'ZodError') deps.log('unhandled error', { path: c.req.path, error: (e as Error).message }, 'error');
+    if (!(e instanceof PfError) && (e as any)?.name !== 'ZodError' && !(e instanceof SyntaxError)) deps.log('unhandled error', { path: c.req.path, error: (e as Error).message }, 'error');
     if ((e as any)?.name === 'ZodError') return c.json({ error: { code: 'VALIDATION_FAILED', message: 'invalid request', details: { issues: (e as any).issues.map((i: any) => ({ path: i.path.join('.'), message: i.message })) } } }, 400);
     return errorResponse(e, c);
   });
