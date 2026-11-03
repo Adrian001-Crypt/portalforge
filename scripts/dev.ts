@@ -15,7 +15,7 @@ const net = mode === 'testnet' ? 'portaldot-v3-testnet' : 'local-anvil';
 const API_PORT = process.env.PF_API_PORT ?? '4300', WEB_PORT = process.env.PF_WEB_PORT ?? '5180', DEMO_PORT = '4310';
 const svcs: Svc[] = [];
 const common: Record<string, string> = {
-  PF_MODE: mode, PF_NETWORKS: net, PF_DB: `${dataDir}/portalforge.db`, PF_API_PORT: API_PORT, PF_WEB_PORT: WEB_PORT,
+  PF_MODE: mode, PF_NETWORKS: process.env.PF_NETWORKS ?? (mode === 'testnet' ? net : 'local-anvil,portaldot-v3-testnet'), PF_DB: `${dataDir}/portalforge.db`, PF_API_PORT: API_PORT, PF_WEB_PORT: WEB_PORT,
   PF_PUBLIC_ORIGIN: `http://localhost:${WEB_PORT}`, PF_DEV_LOGIN: '1', PF_PUBLIC_READONLY: '1', PF_SEED_DEMO: '1',
   PF_ALLOW_PRIVATE_CONNECTORS: '1', PF_DEMO_SERVICE_URL: `http://127.0.0.1:${DEMO_PORT}`,
   ...(mode === 'testnet' ? { PF_EXECUTOR_KEY_FILE_PORTALDOT_V3_TESTNET: '.secrets/portaldot-v3-testnet-executor.json' } : {}),

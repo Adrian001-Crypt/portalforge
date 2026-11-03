@@ -5,7 +5,7 @@ import { serveStatic } from '@hono/node-server/serve-static';
 import { existsSync, readFileSync } from 'node:fs';
 import { PfError } from '@portalforge/domain';
 import { serviceHealth } from '@portalforge/ops';
-import { type ApiDeps, type Env, authenticate, csrfGuard, rateLimit, errorResponse } from './context';
+import { type ApiDeps, type Env, authenticate, csrfGuard, rateLimit, errorResponse, visibleServices } from './context';
 import { auth } from './routes/auth';
 import { projects } from './routes/projects';
 import { contracts } from './routes/contracts';
@@ -34,7 +34,7 @@ export function createApp(deps: ApiDeps, opts: { webDist?: string } = {}) {
   api.use('*', csrfGuard);
   api.get('/health', (c) => {
     const ok = !!deps.db.get('SELECT 1 ok');
-    return c.json({ ok, service: 'portalforge-api', mode: process.env.PF_MODE ?? 'local', publicReadOnly: deps.publicReadOnly, networks: deps.networks.map((n) => n.id), services: serviceHealth(deps.db), time: new Date().toISOString() });
+    return c.json({ ok, service: 'portalforge-api', mode: process.env.PF_MODE ?? 'local', publicReadOnly: deps.publicReadOnly, networks: deps.networks.map((n) => n.id), devLogin: deps.devLogin, services: visibleServices(c, serviceHealth(deps.db)), time: new Date().toISOString() });
   });
   api.get('/openapi.json', (c) => c.json(OPENAPI));
   api.route('/auth', auth);

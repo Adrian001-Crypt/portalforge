@@ -64,7 +64,7 @@ export const rateLimit = (perMinute: number, writePerMinute: number): Middleware
   const p = c.get('principal');
   const who = p.type === 'user' ? `u:${p.userId}` : p.type === 'apikey' ? `k:${p.keyId}` : `ip:${c.req.header('x-forwarded-for')?.split(',')[0]?.trim() ?? (c.env as any)?.incoming?.socket?.remoteAddress ?? 'local'}`;
   const write = !['GET', 'HEAD', 'OPTIONS'].includes(c.req.method);
-  const limit = write ? writePerMinute : perMinute;
+  const limit = write ? (p.type === 'anonymous' ? Math.min(writePerMinute, 12) : writePerMinute) : perMinute;
   const key = `${who}:${write ? 'w' : 'r'}`;
   const t = Date.now();
   const b = buckets.get(key) ?? { tokens: limit, at: t };
@@ -76,6 +76,12 @@ export const rateLimit = (perMinute: number, writePerMinute: number): Middleware
   if (buckets.size > 50_000) buckets.clear();
   await next();
 };
+
+/** Service heartbeats without host names for anonymous callers (public demo). */
+export function visibleServices(c: Context<Env>, rows: { service: string; instance: string; [k: string]: any }[]) {
+  if (c.get('principal').type !== 'anonymous') return rows;
+  return rows.map((r, i) => ({ ...r, instance: `${r.service}#${i + 1}`, info: r.info?.executors ? { executors: r.info.executors } : r.info?.native ? { native: r.info.native } : {} }));
+}
 
 export function requireUser(c: Context<Env>) {
   const p = c.get('principal');

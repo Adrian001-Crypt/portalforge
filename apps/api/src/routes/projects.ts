@@ -159,7 +159,8 @@ projects.delete('/:pid/api-keys/:kid', (c) => {
 
 // ---- connectors (webhook targets)
 projects.get('/:pid/connectors', (c) => {
-  const { project } = requireProject(c, c.req.param('pid'), 'project.read');
+  const { project, role } = requireProject(c, c.req.param('pid'), 'project.read');
+  if (role === 'public') throw new PfError('FORBIDDEN', 'connector targets are visible to project members only');
   return c.json({ items: c.get('deps').db.all('SELECT id, name, url, query_url, allow_private_host, created_at FROM connectors WHERE project_id = ?', project.id) });
 });
 projects.post('/:pid/connectors', async (c) => {
@@ -196,7 +197,8 @@ projects.post('/:pid/policies', async (c) => {
 
 // ---- notification channels
 projects.get('/:pid/channels', (c) => {
-  const { project } = requireProject(c, c.req.param('pid'), 'project.read');
+  const { project, role } = requireProject(c, c.req.param('pid'), 'project.read');
+  if (role === 'public') throw new PfError('FORBIDDEN', 'notification channels are visible to project members only');
   const { db } = c.get('deps');
   return c.json({ items: db.all('SELECT * FROM notification_channels WHERE project_id = ?', project.id), recent: db.all(`SELECT n.* FROM notifications n JOIN notification_channels ch ON ch.id = n.channel_id WHERE ch.project_id = ? ORDER BY n.id DESC LIMIT 50`, project.id) });
 });

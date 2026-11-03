@@ -337,6 +337,7 @@ contracts.patch('/wallet-intents/:id', async (c) => {
  * mined tx from the same account with the intent's nonce and calldata. Replacement → 'replaced'.
  */
 contracts.post('/wallet-intents/:id/refresh', async (c) => {
+  requireUser(c); // reconciliation scans blocks over RPC; never on behalf of anonymous visitors
   const { db } = c.get('deps');
   const w = db.get('SELECT * FROM wallet_intents WHERE id = ?', c.req.param('id'));
   if (!w) throw new PfError('NOT_FOUND', 'intent not found');

@@ -33,7 +33,7 @@ export function Deployments({ p }: { p: any }) {
       <div style={{ height: 14 }} />
       <div className="grid g2">
         <Card title="Browser signing requests" flush>
-          <Async q={intents}>{(d) => d.items.length ? <table className="t"><tbody>{d.items.map((w) => <tr key={w.id}><td className="small"><b>{w.kind}</b> {w.contract_alias ? `${w.contract_alias}.${w.function_name}` : ''}<div className="faint">{w.note}</div></td><td><Tag s={w.state} /></td><td><Hash v={w.tx_hash} n={8} /></td><td>{['awaiting_signature', 'submitted', 'unknown'].includes(w.state) && <button className="btn sm" onClick={async () => { await api(`/wallet-intents/${w.id}/refresh`, { method: 'POST' }); intents.reload(); }}>Reconcile</button>}</td></tr>)}</tbody></table> : <div className="empty"><b>No signing requests</b></div>}</Async>
+          <Async q={intents}>{(d) => d.items.length ? <table className="t"><tbody>{d.items.map((w) => <tr key={w.id}><td className="small"><b>{w.kind}</b> {w.contract_alias ? `${w.contract_alias}.${w.function_name}` : ''}<div className="faint">{w.note}</div></td><td><Tag s={w.state} /></td><td><Hash v={w.tx_hash} n={8} /></td><td>{me?.user && ['awaiting_signature', 'submitted', 'unknown'].includes(w.state) && <button className="btn sm" onClick={async () => { await api(`/wallet-intents/${w.id}/refresh`, { method: 'POST' }); intents.reload(); }}>Reconcile</button>}</td></tr>)}</tbody></table> : <div className="empty"><b>No signing requests</b></div>}</Async>
         </Card>
         {writable && <Card title="Import manifest">
           <textarea rows={7} placeholder='{"schema":"portalforge.deployment/v1", …}' value={manifest} onChange={(e) => setManifest(e.target.value)} aria-label="Manifest JSON" />

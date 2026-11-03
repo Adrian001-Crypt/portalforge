@@ -9,6 +9,7 @@ export function Settings({ p, reload }: { p: any; reload: () => void }) {
   const { me } = useSession();
   const owner = !!me?.user && p.role === 'owner';
   const writer = !!me?.user && canWrite(p.role, 'resource');
+  if (p.role === 'public') return <div className="content"><PageHead crumbs={<Link to={`/p/${p.slug}`}>{p.name}</Link>} title="Settings" /><div className="notice">Settings (members, API keys, connector targets, executor allowlist, notifications) are visible to project members only. This is a public read-only project.</div></div>;
   return (
     <div className="content">
       <PageHead crumbs={<Link to={`/p/${p.slug}`}>{p.name}</Link>} title="Settings" sub="Members and roles, API keys, connectors, executor allowlist, notifications, export/import." />

@@ -6,7 +6,7 @@ import { newId, now, json, parse } from '@portalforge/store';
 import { endpointStats, serviceHealth, transitionIncident } from '@portalforge/ops';
 import { parseConnectorUrl } from '@portalforge/workflow-engine';
 import { probeNetwork, verifyEvidence } from '@portalforge/sdk';
-import { type Env, requireProject, requireUser, audit } from '../context';
+import { type Env, requireProject, requireUser, audit, visibleServices } from '../context';
 
 export const ops = new Hono<Env>();
 
@@ -63,7 +63,7 @@ ops.get('/networks/:id/health', (c) => {
     return { ...e, stats: endpointStats(db, e.id, windowMs, t), series, recentErrors: db.all('SELECT at, error FROM rpc_samples WHERE endpoint_id = ? AND ok = 0 ORDER BY at DESC LIMIT 10', e.id) };
   });
   const cursors = db.all('SELECT stream_id, interface, address, next_block, head_seen, finalized_seen, last_error, last_error_at, last_success_at FROM cursors WHERE network_id = ?', p.id);
-  return c.json({ networkId: p.id, windowMs, endpoints, services: serviceHealth(db), indexer: cursors, observedAt: new Date(t).toISOString(),
+  return c.json({ networkId: p.id, windowMs, endpoints, services: visibleServices(c, serviceHealth(db)), indexer: cursors, observedAt: new Date(t).toISOString(),
     sources: { samples: 'PortalForge monitor probes from this host (eth_getBlockByNumber, chain_getHeader, state_getRuntimeVersion)', notCollected: 'CPU/memory/peer metrics are not available from public RPC and are not shown' } });
 });
 
@@ -82,7 +82,7 @@ ops.post('/networks/:id/endpoints', async (c) => {
   return c.json({ id }, 201);
 });
 
-ops.get('/services', (c) => c.json({ items: serviceHealth(c.get('deps').db) }));
+ops.get('/services', (c) => c.json({ items: visibleServices(c, serviceHealth(c.get('deps').db)) }));
 
 // ------------------------------------------------------------------ incidents
 

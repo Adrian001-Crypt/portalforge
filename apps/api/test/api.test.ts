@@ -118,6 +118,22 @@ describe('API security and isolation', () => {
     db.run(`UPDATE projects SET visibility = 'private' WHERE id = ?`, projectId);
   });
 
+  it('public read-only mode hides internal targets and host names, and refuses anonymous reconciliation', async () => {
+    db.run(`UPDATE projects SET visibility = 'public_readonly' WHERE id = ?`, projectId);
+    await call(alice, 'POST', `/projects/${projectId}/connectors`, { name: 'internal', url: 'http://127.0.0.1:4310/v1/square' }); // owner may add a private target (deployment allows it)
+    expect((await call(null, 'GET', `/projects/${projectId}/connectors`)).status).toBe(403);
+    expect((await call(null, 'GET', `/projects/${projectId}/channels`)).status).toBe(403);
+    expect((await call(alice, 'GET', `/projects/${projectId}/connectors`)).status).toBe(200);
+    expect((await call(null, 'POST', '/wallet-intents/wit_any/refresh')).status).toBe(401);
+    db.run(`INSERT INTO heartbeats (service, instance, at, info) VALUES ('worker', 'secret-host.local:123', ?, '{"executors":["local-anvil"],"concurrency":4}') ON CONFLICT DO NOTHING`, Date.now());
+    const h = await (await call(null, 'GET', '/health')).text();
+    expect(h).not.toContain('secret-host');
+    expect(h).toContain('local-anvil');
+    const signedIn = await (await call(alice, 'GET', '/health')).text();
+    expect(signedIn).toContain('secret-host');
+    db.run(`UPDATE projects SET visibility = 'private' WHERE id = ?`, projectId);
+  });
+
   it('simulates a workflow without side effects', async () => {
     const def = JSON.parse(readFileSync('examples/workflows/job-square.json', 'utf8'));
     const r = await (await call(null, 'POST', '/workflows/simulate', { definition: def, trigger: { args: { jobId: '1', input: '12' } }, stubs: { compute: { result: '144', resultHash: '0x' + 'a'.repeat(64) } } })).json();

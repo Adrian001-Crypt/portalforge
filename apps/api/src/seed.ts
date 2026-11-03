@@ -12,6 +12,14 @@ const ALIASES: Record<string, string> = { JobRegistry: 'jobs', EvidenceRegistry:
  * registered — nothing is invented.
  */
 export function seedDemo(db: Db, engine: WorkflowEngine, cfg: PfConfig, log: Logger) {
+  // Stored capability probes from docs/probe (real runs, keep their original timestamps).
+  for (const n of cfg.networks) {
+    const f = `docs/probe/${n.id}-latest.json`;
+    if (existsSync(f) && !db.get('SELECT 1 FROM probe_reports WHERE network_id = ?', n.id)) {
+      const r = JSON.parse(readFileSync(f, 'utf8'));
+      db.run('INSERT INTO probe_reports (network_id, report, created_at) VALUES (?, ?, ?)', n.id, json(r), r.probedAt ?? now());
+    }
+  }
   const net = cfg.networks[0];
   const slug = net.kind === 'portaldot-testnet' ? 'portaldot-testnet-demo' : 'local-demo';
   if (db.get('SELECT 1 FROM projects WHERE slug = ?', slug)) return;
