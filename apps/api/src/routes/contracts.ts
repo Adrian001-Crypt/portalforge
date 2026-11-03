@@ -196,6 +196,25 @@ contracts.get('/projects/:pid/indexer', (c) => {
   return c.json({ networkId: project.network_id, streams, correlations: correlatedPairs(db, project.network_id, 20), observedAt: now() });
 });
 
+
+/** Register (or refresh verification of) every contract in a verified manifest under template aliases. */
+function registerManifestContracts(db: any, project: any, m: any, mh: string) {
+  const aliases: Record<string, string> = { JobRegistry: 'jobs', EvidenceRegistry: 'evidence', WorkflowExecutionRegistry: 'workflow-registry' };
+  const abis: Record<string, unknown> = { JobRegistry: JobRegistryAbi, EvidenceRegistry: EvidenceRegistryAbi, WorkflowExecutionRegistry: WorkflowExecutionRegistryAbi };
+  for (const ct of m.contracts) {
+    const verification = json({ runtimeCodeHash: ct.runtimeCodeHash, artifactRuntimeHash: ct.artifactRuntimeHash, manifestHash: mh, checkedAt: now(), source: 'manifest' });
+    const sameAddr = db.get('SELECT id FROM contracts WHERE project_id = ? AND address = ?', project.id, ct.address.toLowerCase());
+    if (sameAddr) { db.run('UPDATE contracts SET verification = ?, deploy_tx = ?, deploy_block = ?, source_commit = ?, updated_at = ? WHERE id = ?', verification, ct.deployTx, ct.deployBlock, m.source.commit, now(), sameAddr.id); continue; }
+    let alias = aliases[ct.name] ?? ct.name.toLowerCase();
+    for (let i = 2; db.get('SELECT 1 FROM contracts WHERE project_id = ? AND alias = ?', project.id, alias); i++) alias = `${aliases[ct.name] ?? ct.name.toLowerCase()}-${i}`;
+    const cid = newId('ctr');
+    db.run(`INSERT INTO contracts (id, project_id, alias, network_id, runtime, address, deploy_block, deploy_tx, source_commit, compiler, labels, verification, created_at, updated_at) VALUES (?, ?, ?, ?, 'evm', ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      cid, project.id, alias, project.network_id, ct.address.toLowerCase(), ct.deployBlock, ct.deployTx, m.source.commit, json(m.compiler), json(['template', ct.name]), verification, now(), now());
+    const abi = abis[ct.name] ?? [];
+    db.run('INSERT INTO contract_abis (contract_id, version, abi, abi_hash, note, created_at) VALUES (?, 1, ?, ?, ?, ?)', cid, json(abi), hashCanonical(abi), 'from template', now());
+  }
+}
+
 // ------------------------------------------------------------------ templates & deployments
 
 const TEMPLATES = [
@@ -239,21 +258,7 @@ contracts.post('/projects/:pid/deployments', async (c) => {
   db.tx(() => {
     db.run(`INSERT INTO deployments (id, project_id, network_id, manifest, manifest_hash, verification, verified_at, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (project_id, manifest_hash) DO UPDATE SET verification = excluded.verification, verified_at = excluded.verified_at, status = excluded.status`,
       id, project.id, m.network.id, json(m), mh, json(report), now(), report.ok ? 'verified' : 'failed', now());
-    if (report.ok && body.register !== false) {
-      const aliases: Record<string, string> = { JobRegistry: 'jobs', EvidenceRegistry: 'evidence', WorkflowExecutionRegistry: 'workflow-registry' };
-      const abis: Record<string, unknown> = { JobRegistry: JobRegistryAbi, EvidenceRegistry: EvidenceRegistryAbi, WorkflowExecutionRegistry: WorkflowExecutionRegistryAbi };
-      for (const ct of m.contracts) {
-        const alias = aliases[ct.name] ?? ct.name.toLowerCase();
-        const exists = db.get('SELECT id FROM contracts WHERE project_id = ? AND (alias = ? OR address = ?)', project.id, alias, ct.address.toLowerCase());
-        const verification = json({ runtimeCodeHash: ct.runtimeCodeHash, artifactRuntimeHash: ct.artifactRuntimeHash, manifestHash: mh, checkedAt: now(), source: 'manifest' });
-        if (exists) { db.run('UPDATE contracts SET verification = ?, deploy_tx = ?, deploy_block = ?, source_commit = ?, updated_at = ? WHERE id = ?', verification, ct.deployTx, ct.deployBlock, m.source.commit, now(), exists.id); continue; }
-        const cid = newId('ctr');
-        db.run(`INSERT INTO contracts (id, project_id, alias, network_id, runtime, address, deploy_block, deploy_tx, source_commit, compiler, labels, verification, created_at, updated_at) VALUES (?, ?, ?, ?, 'evm', ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-          cid, project.id, alias, project.network_id, ct.address.toLowerCase(), ct.deployBlock, ct.deployTx, m.source.commit, json(m.compiler), json(['template', ct.name]), verification, now(), now());
-        const abi = abis[ct.name] ?? [];
-        db.run('INSERT INTO contract_abis (contract_id, version, abi, abi_hash, note, created_at) VALUES (?, 1, ?, ?, ?, ?)', cid, json(abi), hashCanonical(abi), 'from template', now());
-      }
-    }
+    if (report.ok && body.register !== false) registerManifestContracts(db, project, m, mh);
     audit(db, project.id, actor, 'deployment.import', id, { ok: report.ok, manifestHash: mh });
   });
   return c.json({ id: db.get('SELECT id FROM deployments WHERE project_id = ? AND manifest_hash = ?', project.id, mh)!.id, verification: report }, 201);
@@ -362,4 +367,63 @@ contracts.post('/wallet-intents/:id/refresh', async (c) => {
     } else if (Date.now() > w.expires_at && w.state === 'awaiting_signature') set('expired');
   }
   return c.json(db.get('SELECT * FROM wallet_intents WHERE id = ?', w.id));
+});
+
+// ------------------------------------------------------------------ deployment workbench
+
+/** Plan one template deploy for a wallet: live simulation, runtime match, fee and exact storage deposit. */
+contracts.post('/projects/:pid/deploy/plan', async (c) => {
+  const { project } = requireProject(c, c.req.param('pid'), 'project.read');
+  const b = z.object({ template: z.enum(['JobRegistry', 'EvidenceRegistry', 'WorkflowExecutionRegistry']), from: addressSchema, executor: addressSchema }).parse(await c.req.json());
+  const profile = profileFor(c, project.network_id);
+  const { loadFoundryArtifact, planDeployment } = await import('@portalforge/sdk');
+  const { NativeReader } = await import('@portalforge/portaldot-native');
+  const art = loadFoundryArtifact('contracts/evm/out', b.template);
+  const native = profile.native ? await NativeReader.connect(profile.native.wsUrl, 15_000).catch(() => null) : null;
+  try {
+    const plan = await planDeployment(profile, { deployer: b.from as Hex, executor: b.executor as Hex, artifacts: [art], native });
+    const pc = plan.contracts[0];
+    return c.json({ network: { id: profile.id, chainId: plan.chainId }, from: b.from, balance: plan.deployerBalance?.toString() ?? null, gasPrice: plan.gasPrice.toString(),
+      template: b.template, constructorArgs: pc.args, initCode: pc.initCode, initCodeHash: keccak256(pc.initCode), runtimeBytes: art.runtimeBytes, artifactRuntimeHash: art.artifactRuntimeHash, abiHash: art.abiHash, compiler: art.compiler,
+      simulation: pc.simulation, gas: pc.gas?.toString() ?? null, maxFee: pc.fee?.toString() ?? null,
+      deposit: pc.deposit ? { ok: pc.deposit.ok, amount: pc.deposit.storageDeposit?.toString() ?? null, decimals: profile.native?.token.decimals, symbol: profile.native?.token.symbol, error: pc.deposit.error } : null,
+      blockers: plan.blockers, warnings: plan.warnings, plannedAt: plan.createdAt });
+  } finally { await native?.disconnect().catch(() => {}); }
+});
+
+/** After a wallet-signed deploy confirms: build a manifest from the receipt, verify it live, register the contract. */
+contracts.post('/wallet-intents/:id/manifest', async (c) => {
+  const { db } = c.get('deps');
+  const w = db.get('SELECT * FROM wallet_intents WHERE id = ?', c.req.param('id'));
+  if (!w || w.kind !== 'deploy') throw new PfError('NOT_FOUND', 'deploy intent not found');
+  const { project, actor } = requireProject(c, w.project_id, 'resource.write');
+  if (w.state !== 'confirmed') throw new PfError('CONFLICT', `intent is ${w.state}; refresh it first`);
+  const b = z.object({ template: z.enum(['JobRegistry', 'EvidenceRegistry', 'WorkflowExecutionRegistry']), constructorArgs: z.array(z.string()) }).parse(await c.req.json());
+  const profile = profileFor(c, project.network_id);
+  const evm = new EvmReader(profile.evm.rpcUrl);
+  const r = await evm.receipt(w.tx_hash);
+  if (!r?.contractAddress) throw new PfError('VERIFICATION_FAILED', 'receipt has no contractAddress');
+  const { loadFoundryArtifact, manifestContract } = await import('@portalforge/sdk');
+  const art = loadFoundryArtifact('contracts/evm/out', b.template);
+  const { encodeDeployData } = await import('viem');
+  if (keccak256(encodeDeployData({ abi: art.abi, bytecode: art.bytecode, args: b.constructorArgs } as any)) !== w.data_hash) throw new PfError('VERIFICATION_FAILED', 'signed calldata does not match this template + constructor args');
+  const code = await evm.code(r.contractAddress);
+  const { execSync } = await import('node:child_process');
+  const commit = (() => { try { return execSync('git rev-parse HEAD').toString().trim(); } catch { return 'unknown'; } })();
+  const manifest = {
+    schema: 'portalforge.deployment/v1' as const,
+    network: { id: profile.id, chainId: profile.evm.chainId, ...(profile.native ? { genesisHash: profile.native.genesisHash, specName: profile.native.specName } : {}) },
+    source: { repo: 'portalforge', commit, dirty: false }, compiler: art.compiler,
+    contracts: [manifestContract(art, b.constructorArgs as Hex[], { address: r.contractAddress, txHash: r.transactionHash, blockNumber: r.blockNumber, blockHash: r.blockHash, deployer: w.from_address, runtimeCodeHash: keccak256(code) })],
+    createdAt: now(), notes: ['Deployed from the PortalForge Deployment Workbench with a browser wallet.'],
+  };
+  const report = await verifyManifest(manifest, profile, { expectedExecutor: b.constructorArgs[1] as Hex });
+  const mh = hashCanonical(manifest);
+  const did = newId('dep');
+  db.tx(() => {
+    db.run(`INSERT INTO deployments (id, project_id, network_id, manifest, manifest_hash, verification, verified_at, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING`, did, project.id, profile.id, json(manifest), mh, json(report), now(), report.ok ? 'verified' : 'failed', now());
+    if (report.ok) registerManifestContracts(db, project, manifest, mh);
+  });
+  audit(db, project.id, actor, 'deployment.browser', did, { tx: w.tx_hash, ok: report.ok });
+  return c.json({ deploymentId: did, manifest, verification: report }, 201);
 });

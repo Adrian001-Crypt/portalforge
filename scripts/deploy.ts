@@ -17,13 +17,16 @@ import { loadAccount } from './lib/keys';
 const [mode, id = 'local-anvil'] = process.argv.slice(2);
 const flag = (n: string) => { const i = process.argv.indexOf(n); return i > 0 ? process.argv[i + 1] : undefined; };
 const profileName = (flag('--profile') ?? 'minimal') as keyof typeof DEPLOY_PROFILES;
-const profile = BUILTIN_NETWORKS[id];
+const base = BUILTIN_NETWORKS[id];
+const rpcOverride = process.env[`PF_EVM_RPC_${(id ?? '').toUpperCase().replace(/-/g, '_')}`];
+const profile = base && rpcOverride ? { ...base, evm: { ...base.evm, rpcUrl: rpcOverride } } : base;
+const depDir = process.env.PF_DEPLOYMENTS_DIR ?? 'deployments';
 if (!profile || !['plan', 'apply', 'verify'].includes(mode)) { console.error('usage: deploy.ts plan|apply|verify <networkId> [--profile minimal|full] [--confirm]'); process.exit(2); }
 const sym = profile.evm.nativeCurrency.symbol;
 const fmt = (wei: bigint | null) => (wei === null ? 'n/a' : `${formatUnits(wei, 18, 4)} ${sym}`);
-const manifestPath = `deployments/${id}.json`;
-const journalPath = `deployments/${id}.journal.json`;
-mkdirSync('deployments', { recursive: true });
+const manifestPath = `${depDir}/${id}.json`;
+const journalPath = `${depDir}/${id}.journal.json`;
+mkdirSync(depDir, { recursive: true });
 
 const deployer = loadAccount(id, 'deployer');
 const executor = loadAccount(id, 'executor');
@@ -40,7 +43,7 @@ if (mode === 'verify') {
   const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
   const report = await verifyManifest(manifest, profile, { expectedExecutor: executor.address, genesisHash: await nativeGenesis() });
   for (const c of report.checks) console.log(`${c.status.padEnd(4)} ${c.id.padEnd(36)} ${c.detail}`);
-  writeFileSync(`deployments/${id}.verification.json`, JSON.stringify(report, null, 2) + '\n');
+  writeFileSync(`${depDir}/${id}.verification.json`, JSON.stringify(report, null, 2) + '\n');
   process.exit(report.ok ? 0 : 1);
 }
 
@@ -59,7 +62,7 @@ console.log(`total max fee ${fmt(plan.totalFee)}`);
 if (plan.contracts.some((c) => c.deposit?.ok)) console.log(`total storage deposit ${formatUnits(plan.contracts.reduce((s, c) => s + (c.deposit?.storageDeposit ?? 0n), 0n), profile.native!.token.decimals, 4)} ${nativeSym} (dry-run origin ${depositOrigin}${depositOrigin === deployer.address ? '' : ', public funded account used only for simulation'})`);
 plan.warnings.forEach((w) => console.log(`warning: ${w}`));
 plan.blockers.forEach((b) => console.log(`BLOCKER: ${b}`));
-writeFileSync(`deployments/${id}.plan.json`, JSON.stringify(plan, (_k, v) => (typeof v === 'bigint' ? v.toString() : v), 2) + '\n');
+writeFileSync(`${depDir}/${id}.plan.json`, JSON.stringify(plan, (_k, v) => (typeof v === 'bigint' ? v.toString() : v), 2) + '\n');
 if (mode === 'plan') process.exit(plan.blockers.length ? 1 : 0);
 
 // ---------------- apply ----------------
@@ -142,5 +145,5 @@ if (fund) {
 }
 const report = await verifyManifest(JSON.parse(readFileSync(manifestPath, 'utf8')), profile, { expectedExecutor: executor.address, genesisHash: await nativeGenesis() });
 for (const c of report.checks) console.log(`${c.status.padEnd(4)} ${c.id.padEnd(36)} ${c.detail}`);
-writeFileSync(`deployments/${id}.verification.json`, JSON.stringify(report, null, 2) + '\n');
+writeFileSync(`${depDir}/${id}.verification.json`, JSON.stringify(report, null, 2) + '\n');
 process.exit(report.ok ? 0 : 1);

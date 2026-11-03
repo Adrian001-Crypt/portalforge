@@ -22,7 +22,7 @@ export function seedDemo(db: Db, engine: WorkflowEngine, cfg: PfConfig, log: Log
     db.run(`INSERT INTO projects (id, slug, name, description, environment, visibility, network_id, created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, 'public_readonly', ?, 'usr_demo_owner', ?, ?)`,
       pid, slug, net.kind === 'portaldot-testnet' ? 'PortalForge Demo (Portaldot V3 testnet)' : 'PortalForge Demo (local Anvil)', 'DemoService job → workflow → on-chain completion → evidence. Read-only for visitors.', net.kind === 'portaldot-testnet' ? 'testnet' : 'development', net.id, t, t);
     db.run(`INSERT INTO members (project_id, user_id, role, added_at) VALUES (?, 'usr_demo_owner', 'owner', ?)`, pid, t);
-    const mpath = `deployments/${net.id}.json`;
+    const mpath = `${process.env.PF_DEPLOYMENTS_DIR ?? 'deployments'}/${net.id}.json`;
     if (existsSync(mpath)) {
       const m = JSON.parse(readFileSync(mpath, 'utf8'));
       for (const ct of m.contracts) {

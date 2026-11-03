@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "PortalForge — build, observe, and automate on Portaldot.",
+  "description": "PortalForge \u2014 build, observe, and automate on Portaldot.",
   "license": "Apache-2.0",
   "engines": {
     "node": ">=24"
@@ -14,7 +14,29 @@
     "services/*",
     "examples/*"
   ],
-  "scripts": {},
+  "scripts": {
+    "pf": "node packages/cli/bin/pf.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "contracts:build": "cd contracts/evm && forge build && cd ../.. && tsx scripts/export-abis.ts",
+    "contracts:test": "cd contracts/evm && forge test",
+    "test": "vitest run",
+    "verify": "npm run typecheck && npm run contracts:test && vitest run && npm run web:build",
+    "verify:local": "npm run verify && tsx scripts/e2e-local.ts",
+    "smoke:testnet": "tsx scripts/smoke-testnet.ts",
+    "probe": "tsx scripts/probe-network.ts",
+    "keygen": "tsx scripts/keygen.ts",
+    "deploy:plan": "tsx scripts/deploy.ts plan",
+    "deploy:apply": "tsx scripts/deploy.ts apply",
+    "deploy:verify": "tsx scripts/deploy.ts verify",
+    "dev": "tsx scripts/dev.ts",
+    "api": "tsx apps/api/src/main.ts",
+    "indexer": "tsx services/indexer/src/main.ts",
+    "worker": "tsx services/worker/src/main.ts",
+    "demo-service": "tsx examples/demo-service/src/server.ts",
+    "web:dev": "npm run dev -w @portalforge/web",
+    "web:build": "npm run build -w @portalforge/web",
+    "e2e:browser": "playwright test"
+  },
   "devDependencies": {
     "@types/node": "^24.19.2",
     "tsx": "^4.23.15",

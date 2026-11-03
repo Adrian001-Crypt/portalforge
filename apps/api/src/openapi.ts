@@ -41,6 +41,8 @@ export const OPENAPI = {
     '/api/v1/deployments/{id}/verify': { post: op('Re-verify against chain', 'write', ['deploy']) },
     '/api/v1/projects/{pid}/wallet-intents': { get: op('Browser signing intents', 'read', ['deploy']), post: op('Persist intent before wallet opens', 'write', ['deploy']) },
     '/api/v1/wallet-intents/{id}': { patch: op('Record wallet outcome (hash / rejected / unknown)', 'write', ['deploy']) },
+    '/api/v1/projects/{pid}/deploy/plan': { post: op('Plan a template deploy (simulation, fee, exact deposit)', 'read', ['deploy']) },
+    '/api/v1/wallet-intents/{id}/manifest': { post: op('Build + verify a manifest from a confirmed browser deploy', 'write', ['deploy']) },
     '/api/v1/wallet-intents/{id}/refresh': { post: op('Reconcile intent with chain (receipt, lost hash, replacement)', 'read', ['deploy']) },
     '/api/v1/workflows/validate': { post: op('Validate a workflow definition', 'public', ['workflow']) },
     '/api/v1/workflows/simulate': { post: op('Simulate without side effects', 'public', ['workflow']) },
