@@ -39,7 +39,10 @@ export function seedDemo(db: Db, engine: WorkflowEngine, cfg: PfConfig, log: Log
           cid, pid, ALIASES[ct.name] ?? ct.name, net.id, ct.address.toLowerCase(), ct.deployBlock, ct.deployTx, m.source.commit, json(m.compiler), json(['template', ct.name]), json({ runtimeCodeHash: ct.runtimeCodeHash, manifestHash: hashCanonical(m), source: 'manifest', checkedAt: t }), t, t);
         db.run('INSERT INTO contract_abis (contract_id, version, abi, abi_hash, note, created_at) VALUES (?, 1, ?, ?, ?, ?)', cid, json(ABIS[ct.name] ?? []), hashCanonical(ABIS[ct.name] ?? []), 'template', t);
       }
-      db.run(`INSERT INTO deployments (id, project_id, network_id, manifest, manifest_hash, status, created_at) VALUES (?, ?, ?, ?, ?, 'imported', ?)`, newId('dep'), pid, net.id, json(m), hashCanonical(m), t);
+      // Keep the report written when the deploy was verified on chain, so the console shows it instead of "not verified".
+      const vpath = mpath.replace(/\.json$/, '.verification.json');
+      const report = existsSync(vpath) ? JSON.parse(readFileSync(vpath, 'utf8')) : null;
+      db.run(`INSERT INTO deployments (id, project_id, network_id, manifest, manifest_hash, verification, verified_at, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`, newId('dep'), pid, net.id, json(m), hashCanonical(m), report ? json(report) : null, report ? now() : null, report?.ok ? 'verified' : 'imported', t);
       // V3 folds the storage deposit into the estimate: one new slot is about 3.84 tPOT before the worker's gas and price margins.
       const fee = net.kind === 'portaldot-testnet' ? (8n * 10n ** 18n).toString() : (10n ** 17n).toString();
       for (const [alias, fn] of [['jobs', 'completeJob'], ['evidence', 'register']]) db.run(`INSERT INTO contract_policies (id, project_id, contract_alias, function_name, max_calls_per_hour, max_fee_wei, created_at) VALUES (?, ?, ?, ?, 30, ?, ?)`, newId('pol'), pid, alias, fn, fee, t);

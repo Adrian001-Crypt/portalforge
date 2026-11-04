@@ -3,7 +3,7 @@
  *  1. crash right after the intent is journaled (before broadcast)  → rerun sends it once
  *  2. crash right after broadcast (hash journaled, receipt unseen)   → rerun finds the receipt, no resend
  *  3. rerun on a complete manifest                                    → nothing sent
- *  4. zero-balance deployer on the live testnet plan                   → refuses to broadcast
+ *  4. the live testnet plan over its budget limit                      → refuses to broadcast
  *  5. a balance that covers the deploy but not the extras (--fund-executor) → refuses before the first send
  *  6. crash and resume with a tight balance: only what is left to send counts against it
  * Asserts the deployer nonce equals the number of contracts. Writes docs/test-results/deploy-resume-latest.json.
@@ -64,8 +64,9 @@ try {
   r = tight(['apply', 'local-anvil', '--profile', 'minimal', '--confirm']);
   rec('budget.rerun_after_complete', r.status === 0 && (await nonce()) === 2 && !/BLOCKER/.test(r.stdout), `exit ${r.status}, no blocker on a finished deploy`);
   await anvil3.stop();
-  r = spawnSync(process.execPath, ['--import', 'tsx', 'scripts/deploy.ts', 'apply', 'portaldot-v3-testnet', '--profile', 'minimal', '--confirm'], { env: { ...process.env, PF_DEPLOYMENTS_DIR: dir }, encoding: 'utf8' });
-  rec('testnet.insufficient_balance_refuses', r.status === 1 && /BLOCKER: deployer balance/.test(r.stdout) && /plan has blockers; not broadcasting/.test(r.stderr), `exit ${r.status}; "${(r.stdout.match(/BLOCKER: [^\n]+/) ?? [''])[0].slice(0, 80)}…"`);
+  // The limit of 0 guarantees this can never broadcast, even if this account is funded.
+  r = spawnSync(process.execPath, ['--import', 'tsx', 'scripts/deploy.ts', 'apply', 'portaldot-v3-testnet', '--profile', 'minimal', '--confirm', '--max-budget', '0'], { env: { ...process.env, PF_DEPLOYMENTS_DIR: dir }, encoding: 'utf8' });
+  rec('testnet.over_budget_refuses', r.status === 1 && /BLOCKER: /.test(r.stdout) && /plan has blockers; not broadcasting/.test(r.stderr), `exit ${r.status}; "${(r.stdout.match(/BLOCKER: [^\n]+/) ?? [''])[0].slice(0, 80)}…"`);
 } finally { await anvil.stop(); }
 mkdirSync('docs/test-results', { recursive: true });
 writeFileSync('docs/test-results/deploy-resume-latest.json', JSON.stringify({ at: new Date().toISOString(), note: 'Anvil for crash/resume; live testnet only for the read-only balance refusal', results }, null, 2) + '\n');

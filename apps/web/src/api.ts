@@ -7,7 +7,7 @@ export const setCsrf = (t: string | null) => { csrf = t; };
 
 /** The static demo build answers from responses captured off the public read-only stack (scripts/media/capture-snapshot.ts). */
 export const SNAPSHOT = import.meta.env.VITE_SNAPSHOT === '1';
-let captured: Promise<{ capturedAt: string; responses: Record<string, unknown> }> | null = null;
+let captured: Promise<{ capturedAt: string; source?: string; responses: Record<string, unknown> }> | null = null;
 export const loadSnapshot = () => (captured ??= fetch(`${import.meta.env.BASE_URL}snapshot.json`).then((r) => r.json()));
 async function fromSnapshot<T>(path: string, method: string): Promise<T> {
   if (method !== 'GET') throw new ApiError(0, 'STATIC_SNAPSHOT', 'This is a static snapshot, so nothing can be sent. Run PortalForge locally to try this action.');

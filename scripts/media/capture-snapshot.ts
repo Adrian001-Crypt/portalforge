@@ -1,29 +1,33 @@
 /**
- * Builds the static read-only demo in docs/demo for GitHub Pages: starts the public read-only stack, visits every
- * console page as an anonymous visitor, stores the API responses, and builds the console to answer from them.
- *   npx tsx scripts/media/capture-snapshot.ts
- * Data comes from real local jobs on Anvil and is labelled that way. Nothing here touches a public network except the
- * read-only V3 samples the public stack already shows.
+ * Builds the static read-only demo in docs/demo for GitHub Pages: visits every console page as an anonymous visitor,
+ * stores the API responses, and builds the console to answer from them.
+ *   npx tsx scripts/media/capture-snapshot.ts              # local data: starts the public read-only stack
+ *   npx tsx scripts/media/capture-snapshot.ts --testnet    # V3 data: reads the running PF_MODE=testnet stack
+ * --testnet must read the stack that ran the jobs: a fresh database with the executor key would run them again.
+ * Crawling only reads. Each snapshot says where its data came from.
  */
 import { chromium } from '@playwright/test';
 import { spawn, spawnSync } from 'node:child_process';
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { waitFor, httpOk } from '../lib/proc';
 
-const BASE = 'http://127.0.0.1:4400', OUT = 'docs/demo';
+const TESTNET = process.argv.includes('--testnet');
+const BASE = TESTNET ? 'http://localhost:5180' : 'http://127.0.0.1:4400', API = TESTNET ? 'http://127.0.0.1:4300' : BASE, SLUG = TESTNET ? 'portaldot-testnet-demo' : 'local-demo', OUT = 'docs/demo';
 // Extra terms to refuse (names, domains) come from the environment, so they never appear in this public file.
 const FORBIDDEN = new RegExp(['/Users/', '/home/', '\\.dhcp\\.', 'local-demo-admin-token', '\\.secrets', ...(process.env.PF_PRIVATE_TERMS?.split(',') ?? [])].join('|'), 'i');
 
-const stack = spawn(process.execPath, ['--import', 'tsx', 'scripts/public-demo.ts'], { stdio: ['ignore', 'pipe', 'inherit'], env: process.env });
-const stopped = new Promise((r) => stack.once('exit', r));
-const seeded = new Promise<void>((res) => stack.stdout!.on('data', (b) => { process.stdout.write(b); if (/public read-only console/.test(String(b))) res(); }));
+const stack = TESTNET ? null : spawn(process.execPath, ['--import', 'tsx', 'scripts/public-demo.ts'], { stdio: ['ignore', 'pipe', 'inherit'], env: process.env });
+const stopped = stack ? new Promise((r) => stack.once('exit', r)) : Promise.resolve();
+const seeded = stack ? new Promise<void>((res) => stack.stdout!.on('data', (b) => { process.stdout.write(b); if (/public read-only console/.test(String(b))) res(); })) : Promise.resolve();
 try {
   await Promise.race([seeded, new Promise((_, no) => setTimeout(() => no(new Error('public stack did not start')), 240_000))]);
-  await waitFor('api', () => httpOk(`${BASE}/api/v1/health`), 30_000);
-  const check = spawnSync(process.execPath, ['--import', 'tsx', 'scripts/check-public.ts', BASE], { stdio: 'inherit' });
-  if (check.status !== 0) throw new Error('public visitor checks failed; not building a snapshot');
-  // Let the monitor collect real samples so Network Health has something to show.
-  await new Promise((r) => setTimeout(r, 70_000));
+  await waitFor('api', () => httpOk(`${API}/api/v1/health`), 30_000);
+  if (!TESTNET) {
+    const check = spawnSync(process.execPath, ['--import', 'tsx', 'scripts/check-public.ts', BASE], { stdio: 'inherit' });
+    if (check.status !== 0) throw new Error('public visitor checks failed; not building a snapshot');
+    // Let the monitor collect real samples so Network Health has something to show.
+    await new Promise((r) => setTimeout(r, 70_000));
+  }
 
   const responses: Record<string, unknown> = {};
   const browser = await chromium.launch({ channel: 'chrome', headless: true });
@@ -31,16 +35,16 @@ try {
   const writes: string[] = [];
   page.on('response', async (r) => {
     const u = new URL(r.url());
-    if (u.origin !== BASE || !u.pathname.startsWith('/api/v1')) return;
+    if (!u.pathname.startsWith('/api/v1')) return;
     if (r.request().method() !== 'GET') { writes.push(u.pathname); return; }
     if (r.ok()) responses[u.pathname.slice('/api/v1'.length) + u.search] = await r.json().catch(() => null);
   });
-  const api = async (p: string) => (await (await fetch(`${BASE}/api/v1${p}`)).json()).items as any[];
-  const P = '/p/local-demo';
+  const api = async (p: string) => (await (await fetch(`${API}/api/v1${p}`)).json()).items as any[];
+  const P = `/p/${SLUG}`;
   const queue = ['/', '/projects', '/network', '/integrations', '/developers', P];
   for (const s of ['deployments', 'contracts', 'events', 'workflows', 'executions', 'incidents', 'evidence', 'settings']) queue.push(`${P}/${s}`);
   for (const [list, route] of [['executions', 'executions'], ['workflows', 'workflows'], ['deployments', 'deployments'], ['incidents', 'incidents'], ['evidence', 'evidence'], ['contracts', 'contracts']]) {
-    for (const x of (await api(`/projects/local-demo/${list}`).catch(() => [])).slice(0, 12)) queue.push(`${P}/${route}/${x.id ?? x.alias}`);
+    for (const x of (await api(`/projects/${SLUG}/${list}`).catch(() => [])).slice(0, 12)) queue.push(`${P}/${route}/${x.id ?? x.alias}`);
   }
   const seen = new Set<string>();
   while (queue.length) {
@@ -59,7 +63,9 @@ try {
   await browser.close();
   if (writes.length) console.log(`note: the crawl triggered ${writes.length} anonymous POST(s), none stored`);
 
-  const bundle = JSON.stringify({ capturedAt: new Date().toISOString(), source: 'public read-only stack on local Anvil; V3 samples read live', responses });
+  // The visitor sees what the public read-only mode would show: no dev sign-in.
+  for (const k of ['/health', '/auth/me']) if (responses[k]) (responses[k] as any).devLogin = false;
+  const bundle = JSON.stringify({ capturedAt: new Date().toISOString(), source: TESTNET ? 'the stack that ran the real jobs on Portaldot V3 testnet' : 'a local stack (Anvil), not testnet data', responses });
   const leak = FORBIDDEN.exec(bundle);
   if (leak) throw new Error(`snapshot contains a forbidden string: ${leak[0]}`);
   rmSync(OUT, { recursive: true, force: true });
@@ -72,7 +78,7 @@ try {
   writeFileSync('docs/404.html', html.replace('<head>', `<head>\n    <script>if (!location.pathname.startsWith('/portalforge/demo/')) location.replace('/portalforge/');</script>`));
   console.log(`snapshot: ${Object.keys(responses).length} responses, ${seen.size} pages, ${(bundle.length / 1024).toFixed(0)} KB`);
 } finally {
-  stack.kill('SIGTERM');
+  stack?.kill('SIGTERM');
   await Promise.race([stopped, new Promise((r) => setTimeout(r, 15_000))]);
 }
 process.exit(0);

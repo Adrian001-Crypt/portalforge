@@ -40,7 +40,7 @@ for (const [label, viewport] of [['desktop', { width: 1280, height: 800 }], ['ph
 
   await page.goto(base); await page.waitForLoadState('networkidle').catch(() => {});
   rec(`${label}.landing`, (await page.title()) === 'PortalForge' && await page.getByRole('heading', { name: 'PortalForge', level: 1 }).isVisible(), await page.title());
-  rec(`${label}.landing_says_not_deployed`, /not deployed/i.test(await page.locator('body').innerText()), 'status is stated on the page');
+  rec(`${label}.landing_shows_contracts`, /0xd5dcf5a7d69354b07f776f8a961348f0a394d746/i.test(await page.locator('body').innerText()), 'real V3 contract address on the page');
   rec(`${label}.landing_no_overflow`, (await wide()) <= 1, `horizontal overflow ${await wide()} px`);
   if (label === 'desktop') {
     const v = await page.evaluate(async () => { const el = document.querySelector('video')!; el.muted = true; await el.play().catch(() => {}); await new Promise((r) => setTimeout(r, 1500)); return { t: el.currentTime, d: el.duration, err: el.error?.message ?? null }; });
@@ -51,14 +51,14 @@ for (const [label, viewport] of [['desktop', { width: 1280, height: 800 }], ['ph
 
   await page.goto(new URL('demo/', base).href); await page.waitForLoadState('networkidle').catch(() => {});
   await page.getByRole('note').first().waitFor({ timeout: 15_000 });
-  rec(`${label}.demo_labelled_snapshot`, /Static snapshot captured .*not testnet/.test(await page.getByRole('note').first().innerText()), (await page.getByRole('note').first().innerText()).slice(0, 80));
-  for (const [path, expect] of [['p/local-demo/executions', /succeeded/], ['p/local-demo/deployments', /verified|imported/], ['p/local-demo/evidence', /execution|registered|Evidence/], ['p/local-demo/events', /JobRequested/], ['network', /Portaldot V3/]] as const) {
+  rec(`${label}.demo_labelled_snapshot`, /Static snapshot captured .*Portaldot V3 testnet/.test(await page.getByRole('note').first().innerText()), (await page.getByRole('note').first().innerText()).slice(0, 80));
+  for (const [path, expect] of [['p/portaldot-testnet-demo/executions', /succeeded/], ['p/portaldot-testnet-demo/deployments', /verified/], ['p/portaldot-testnet-demo/evidence', /registered/], ['p/portaldot-testnet-demo/events', /JobRequested/], ['network', /Portaldot V3/]] as const) {
     await page.goto(new URL(`demo/${path}`, base).href); await page.waitForLoadState('networkidle').catch(() => {}); await page.waitForTimeout(600);
     const text = await page.locator('body').innerText();
     rec(`${label}.deep_link.${path.split('/').pop()}`, expect.test(text) && !/was not captured/.test(text.slice(0, 2500)), expect.source);
   }
   rec(`${label}.demo_no_overflow`, (await wide()) <= 1, `horizontal overflow ${await wide()} px`);
-  const exec = await page.goto(new URL('demo/p/local-demo/executions', base).href).then(() => page.waitForTimeout(800)).then(() => page.locator('table.t tbody tr').first());
+  const exec = await page.goto(new URL('demo/p/portaldot-testnet-demo/executions', base).href).then(() => page.waitForTimeout(800)).then(() => page.locator('table.t tbody tr').first());
   await exec.click(); await page.waitForTimeout(800);
   rec(`${label}.execution_trace_opens`, /Square via demo service/.test(await page.locator('body').innerText()), page.url().split('/').pop()!.slice(0, 20));
   const text = await page.locator('body').innerText();

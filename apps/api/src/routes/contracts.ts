@@ -269,7 +269,8 @@ contracts.post('/deployments/:id/verify', async (c) => {
   const d = db.get('SELECT * FROM deployments WHERE id = ?', c.req.param('id'));
   if (!d) throw new PfError('NOT_FOUND', 'deployment not found');
   const { actor } = requireProject(c, d.project_id, 'resource.write');
-  const report = await verifyManifest(parse(d.manifest), profileFor(c, d.network_id));
+  const manifest = parse<any>(d.manifest);
+  const report = await verifyManifest(manifest, profileFor(c, d.network_id), { expectedExecutor: manifest.contracts[0]?.constructorArgs?.[1] });
   db.run('UPDATE deployments SET verification = ?, verified_at = ?, status = ? WHERE id = ?', json(report), now(), report.ok ? 'verified' : 'failed', d.id);
   audit(db, d.project_id, actor, 'deployment.verify', d.id, { ok: report.ok });
   return c.json(report);

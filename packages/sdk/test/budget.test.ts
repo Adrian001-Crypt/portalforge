@@ -8,10 +8,10 @@ describe('demoBudget', () => {
   it('450 tPOT covers the minimal deploy, a 35 tPOT executor and 3 jobs with margin', () => {
     const b = demoBudget({ deployFee, fundExecutor: e('35'), executorBalance: 0n, jobs: 3, deployerBalance: e('450') });
     expect(b.blockers).toEqual([]);
-    expect(b.requestJobs).toBe(e('11.8245'));
-    expect(b.required).toBe(e('414.1445'));
-    expect(b.margin).toBe(e('35.8555'));
-    expect(b.executorNeeds).toBe(e('28.649'));
+    expect(b.requestJobs).toBe(e('11.6145'));
+    expect(b.required).toBe(e('413.9545'));
+    expect(b.margin).toBe(e('36.0455'));
+    expect(b.executorNeeds).toBe(e('28.229'));
   });
   it('refuses when the deployer cannot cover the extras, before anything is sent', () => {
     const b = demoBudget({ deployFee, fundExecutor: e('35'), executorBalance: 0n, jobs: 3, deployerBalance: e('400') });

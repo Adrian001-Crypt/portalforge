@@ -3,10 +3,10 @@ import { parseEther } from 'viem';
 /**
  * Whether a balance covers a deploy plus a few demo jobs on Portaldot V3. All amounts are 18-decimal EVM wei.
  * Each demo call creates one new storage slot (requestJob, completeJob, register). The slot deposit is measured
- * (scripts/measure-call-deposits.ts); gas per call is an estimate to replace with the first real receipts.
+ * (scripts/measure-call-deposits.ts). Gas is rounded up from the first real V3 receipts: 0.015 to 0.025 tPOT per call.
  */
 export interface DemoCosts { slotDeposit: bigint; callGas: bigint; transferGas: bigint; executorReserve: bigint }
-export const PORTALDOT_DEMO_COSTS: DemoCosts = { slotDeposit: parseEther('3.8415'), callGas: parseEther('0.1'), transferGas: parseEther('0.1'), executorReserve: parseEther('5') };
+export const PORTALDOT_DEMO_COSTS: DemoCosts = { slotDeposit: parseEther('3.8415'), callGas: parseEther('0.03'), transferGas: parseEther('0.12'), executorReserve: parseEther('5') };
 
 export interface DemoBudgetInput { deployFee: bigint; fundExecutor: bigint; executorBalance: bigint; jobs: number; deployerBalance: bigint; costs?: DemoCosts }
 export interface DemoBudget extends Required<Omit<DemoBudgetInput, 'costs'>> {

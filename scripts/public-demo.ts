@@ -34,7 +34,7 @@ async function main() {
     PF_DEV_LOGIN: '0', PF_PUBLIC_READONLY: '1', PF_SEED_DEMO: '1', PF_WEB_DIST: 'apps/web/dist',
     PF_PUBLIC_ORIGIN: process.env.PF_PUBLIC_ORIGIN ?? `http://127.0.0.1:${API}`, PF_ALLOW_PRIVATE_CONNECTORS: '1', PF_DEMO_SERVICE_URL: `http://127.0.0.1:${DEMO}`,
     PF_DEPLOYMENTS_DIR: testnet ? 'deployments' : `${dir}/deployments`,
-    ...(testnet ? { PF_EXECUTOR_KEY_FILE_PORTALDOT_V3_TESTNET: '.secrets/portaldot-v3-testnet-executor.json' } : { PF_EVM_RPC_LOCAL_ANVIL: anvilUrl }),
+    ...(testnet ? {} : { PF_EVM_RPC_LOCAL_ANVIL: anvilUrl }),
   };
   if (testnet && !existsSync('deployments/portaldot-v3-testnet.json')) log('no testnet manifest yet: the public project will show "Not deployed on Portaldot V3 testnet yet"');
   if (!testnet) {
@@ -47,7 +47,8 @@ async function main() {
   const api = tsx('apps/api/src/main.ts');
   svcs.push(startService('api', api.cmd, api.args, env, `${dir}/logs`));
   await waitFor('api', () => httpOk(`http://127.0.0.1:${API}/api/v1/health`), 30_000);
-  for (const s of ['indexer', 'worker']) { const t = tsx(`services/${s}/src/main.ts`); svcs.push(startService(s, t.cmd, t.args, env, `${dir}/logs`)); }
+  // On testnet this stack only reads: its own fresh database must never run workflows or sign with the executor key.
+  for (const s of testnet ? ['indexer'] : ['indexer', 'worker']) { const t = tsx(`services/${s}/src/main.ts`); svcs.push(startService(s, t.cmd, t.args, env, `${dir}/logs`)); }
 
   if (!testnet) {
     // Seed real local activity so visitors see a complete flow (all labelled Local Anvil).
