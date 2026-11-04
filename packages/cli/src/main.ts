@@ -56,7 +56,7 @@ Usage: pf <command> [options]
   doctor                               Check toolchain, config, RPC reachability, secrets hygiene
   network inspect                      Live capability probe of the network (read-only)
   project init [--project s] [--api u] Write portalforge.config.json
-  deploy plan [--profile minimal|full] [--from 0x…] [--fund-executor <amount>] [--jobs <n>]
+  deploy plan [--profile jobs|minimal|full] [--from 0x…] [--fund-executor <amount>] [--jobs <n>]
                                        Simulate creates on the network, exact fees, balance check
   deployment verify <manifest.json> [--executor 0x…]
                                        Re-read every manifest claim from the chain
@@ -123,7 +123,7 @@ async function main(): Promise<number> {
   if (cmd === 'deploy' && sub === 'plan') {
     const p = network();
     const profile = (flag('profile') ?? 'minimal') as keyof typeof DEPLOY_PROFILES;
-    if (!DEPLOY_PROFILES[profile]) throw new Exit(2, 'profile must be minimal or full');
+    if (!DEPLOY_PROFILES[profile]) throw new Exit(2, 'profile must be jobs, minimal or full');
     const from = (flag('from') ?? (existsSync(`.secrets/${p.id}-deployer.json`) ? JSON.parse(readFileSync(`.secrets/${p.id}-deployer.json`, 'utf8')).address : undefined)) as Hex | undefined;
     if (!from) throw new Exit(2, 'pass --from <deployer address> (or run npm run keygen)');
     const executor = (flag('executor') ?? (existsSync(`.secrets/${p.id}-executor.json`) ? JSON.parse(readFileSync(`.secrets/${p.id}-executor.json`, 'utf8')).address : from)) as Hex;

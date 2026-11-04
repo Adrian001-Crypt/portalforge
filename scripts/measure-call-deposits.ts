@@ -26,10 +26,11 @@ for (const [name, slots] of [['zero', []], ['one', [1]], ['two', [1, 2]]] as con
   if (!r.ok) { console.error(name, r.error); process.exit(1); }
   out[name] = r.storageDeposit!.toString();
 }
+const existentialDeposit = n.api.consts.balances.existentialDeposit.toString();
 await n.disconnect();
 const perSlot = BigInt(out.one) - BigInt(out.zero);
 const check = BigInt(out.two) - BigInt(out.one);
 const fmt = (v: bigint) => `${Number(v) / 1e14} tPOT`;
 console.log(`base (no storage): ${fmt(BigInt(out.zero))}\none new slot: +${fmt(perSlot)}\nsecond new slot: +${fmt(check)}`);
 mkdirSync('docs/probe', { recursive: true });
-writeFileSync('docs/probe/slot-deposit-latest.json', JSON.stringify({ measuredAt: new Date().toISOString(), network: P.id, method: 'reviveApi.instantiate dry-run, origin used only for simulation', origin, depositsPlanck: out, perNewSlotPlanck: perSlot.toString(), perNewSlotTpot: Number(perSlot) / 1e14 }, null, 2) + '\n');
+writeFileSync('docs/probe/slot-deposit-latest.json', JSON.stringify({ measuredAt: new Date().toISOString(), network: P.id, method: 'reviveApi.instantiate dry-run, origin used only for simulation', origin, depositsPlanck: out, perNewSlotPlanck: perSlot.toString(), existentialDepositPlanck: existentialDeposit, perNewSlotTpot: Number(perSlot) / 1e14 }, null, 2) + '\n');

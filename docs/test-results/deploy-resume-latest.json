@@ -1,0 +1,61 @@
+{
+  "at": "2026-11-04T21:06:52.890Z",
+  "note": "Anvil for crash/resume; live testnet only for the read-only balance refusal",
+  "results": [
+    {
+      "id": "crash.after_intent",
+      "ok": true,
+      "detail": "exit 70, nonce 0, journal intent"
+    },
+    {
+      "id": "crash.after_send",
+      "ok": true,
+      "detail": "exit 70, JobRegistry confirmed, EvidenceRegistry sent, nonce 1"
+    },
+    {
+      "id": "resume.completes",
+      "ok": true,
+      "detail": "exit 0, 2 contracts in manifest, deployer nonce 2 (2 = no duplicate create)"
+    },
+    {
+      "id": "resume.verified",
+      "ok": true,
+      "detail": "manifest verification after resume: all checks pass"
+    },
+    {
+      "id": "rerun.idempotent",
+      "ok": true,
+      "detail": "exit 0, nonce still 2"
+    },
+    {
+      "id": "stale_manifest.redeploys",
+      "ok": true,
+      "detail": "exit 0, nonce on fresh chain 2"
+    },
+    {
+      "id": "budget.extras_refused_before_send",
+      "ok": true,
+      "detail": "exit 1, nonce 0: a --fund-executor the balance cannot cover stops before the first contract"
+    },
+    {
+      "id": "budget.crash_with_part_spent",
+      "ok": true,
+      "detail": "exit 70, 1 of 2 sent; balance is now below the plan's total max fee: true"
+    },
+    {
+      "id": "budget.resume_on_remaining_balance",
+      "ok": true,
+      "detail": "exit 0, nonce 2: resumes because only the unsent contract counts"
+    },
+    {
+      "id": "budget.rerun_after_complete",
+      "ok": true,
+      "detail": "exit 0, no blocker on a finished deploy"
+    },
+    {
+      "id": "testnet.insufficient_balance_refuses",
+      "ok": true,
+      "detail": "exit 1; \"BLOCKER: deployer balance 0 < required 367230368441057938019 (wei, 18 dp)…\""
+    }
+  ]
+}

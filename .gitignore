@@ -10,7 +10,7 @@ data/
 contracts/evm/out/
 contracts/evm/cache/
 contracts/evm/broadcast/
-test-results/
+/test-results/
 playwright-report/
 .secrets/
 *.pem

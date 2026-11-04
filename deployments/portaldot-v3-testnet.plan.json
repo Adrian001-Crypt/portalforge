@@ -3,7 +3,7 @@
   "chainId": 420420777,
   "deployer": "0xAC575944f0696eF19e7f835fd28491c25e40Ca14",
   "deployerBalance": "0",
-  "gasPrice": "23505",
+  "gasPrice": "22603",
   "contracts": [
     {
       "name": "JobRegistry",
@@ -394,13 +394,12 @@
         "ok": true,
         "runtimeMatches": true
       },
-      "gas": "7462775829008338",
-      "fee": "175412545860840984690",
+      "gas": "7760815366365314",
+      "fee": "175417709725955192342",
       "deposit": {
-        "ok": false,
-        "storageDeposit": null,
-        "origin": "0xAC575944f0696eF19e7f835fd28491c25e40Ca14",
-        "error": "revive.StorageDepositNotEnoughFunds"
+        "ok": true,
+        "storageDeposit": "16103700000000000",
+        "origin": "0x69367866b2a90f14aecfc503bc1c70cb9e8115db"
       }
     },
     {
@@ -837,24 +836,21 @@
         "ok": true,
         "runtimeMatches": true
       },
-      "gas": "8160264291949873",
-      "fee": "191807012182281764865",
+      "gas": "8486159302418465",
+      "fee": "191812658712564564395",
       "deposit": {
-        "ok": false,
-        "storageDeposit": null,
-        "origin": "0xAC575944f0696eF19e7f835fd28491c25e40Ca14",
-        "error": "revive.StorageDepositNotEnoughFunds"
+        "ok": true,
+        "storageDeposit": "17609100000000000",
+        "origin": "0x69367866b2a90f14aecfc503bc1c70cb9e8115db"
       }
     }
   ],
-  "totalFee": "367219558043122749555",
+  "totalFee": "367230368438519756737",
   "blockers": [
-    "deployer balance 0 < estimated max fee 367219558043122749555 (wei, 18 dp)"
+    "deployer balance 0 < estimated max fee 367230368438519756737 (wei, 18 dp)"
   ],
   "warnings": [
-    "JobRegistry: deposit dry-run from 0xAC575944f0696eF19e7f835fd28491c25e40Ca14 failed (revive.StorageDepositNotEnoughFunds)",
-    "EvidenceRegistry: deposit dry-run from 0xAC575944f0696eF19e7f835fd28491c25e40Ca14 failed (revive.StorageDepositNotEnoughFunds)",
     "pallet-revive folds the storage deposit (≈ depositPerByte × code size × 1.3 lockup) into gas; most of the fee is a held deposit, not burned gas (to be confirmed from receipts)."
   ],
-  "createdAt": "2026-11-03T18:45:57.696Z"
+  "createdAt": "2026-11-04T21:11:11.531Z"
 }

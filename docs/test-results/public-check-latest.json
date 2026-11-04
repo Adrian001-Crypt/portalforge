@@ -1,0 +1,91 @@
+{
+  "base": "http://127.0.0.1:4400",
+  "at": "2026-11-03T20:13:01.135Z",
+  "results": [
+    {
+      "id": "health.ok",
+      "ok": true,
+      "detail": "mode local, networks local-anvil,portaldot-v3-testnet"
+    },
+    {
+      "id": "health.dev_login_off",
+      "ok": true,
+      "detail": "devLogin=false"
+    },
+    {
+      "id": "health.no_host_names",
+      "ok": true,
+      "detail": "indexer#1, monitor#2, worker#3"
+    },
+    {
+      "id": "auth.dev_login_refused",
+      "ok": true,
+      "detail": "POST /auth/dev-login → 501"
+    },
+    {
+      "id": "projects.public_only",
+      "ok": true,
+      "detail": "1 visible, roles public"
+    },
+    {
+      "id": "project.local-demo.connectors_hidden",
+      "ok": true,
+      "detail": "connector targets 403"
+    },
+    {
+      "id": "project.local-demo.channels_hidden",
+      "ok": true,
+      "detail": "channels 403"
+    },
+    {
+      "id": "project.local-demo.audit_hidden",
+      "ok": true,
+      "detail": "audit log not public"
+    },
+    {
+      "id": "project.local-demo.keys_hidden",
+      "ok": true,
+      "detail": "API keys not public"
+    },
+    {
+      "id": "project.local-demo.writes_refused",
+      "ok": true,
+      "detail": "statuses 401,401,401,401,401,401"
+    },
+    {
+      "id": "project.local-demo.execution_control_refused",
+      "ok": true,
+      "detail": "replay/cancel → 401,401"
+    },
+    {
+      "id": "project.local-demo.no_signed_tx_in_trace",
+      "ok": true,
+      "detail": "execution trace has no raw signed transactions"
+    },
+    {
+      "id": "network.probe_refused",
+      "ok": true,
+      "detail": "anonymous probe → 401"
+    },
+    {
+      "id": "wallet.refresh_refused",
+      "ok": true,
+      "detail": "anonymous reconcile → 401"
+    },
+    {
+      "id": "spa.route",
+      "ok": true,
+      "detail": "deep link serves the SPA"
+    },
+    {
+      "id": "headers.csp",
+      "ok": true,
+      "detail": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.goog"
+    },
+    {
+      "id": "bundle.no_secrets",
+      "ok": true,
+      "detail": "1 bundle(s), 306 KB scanned"
+    }
+  ]
+}

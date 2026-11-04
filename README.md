@@ -118,10 +118,10 @@ Open http://localhost:5180 → **Start here** walks through the six key pages. S
 
 ```bash
 npx pf network inspect                                   # live, read-only capability probe
-npx pf deploy plan --profile minimal                     # simulation + exact deposits + balance check
+npx pf deploy plan --profile minimal --fund-executor 35 --jobs 3   # simulation + exact deposits + budget check
 npm run keygen -- portaldot-v3-testnet                   # dedicated deployer/executor keys (addresses printed, keys never)
-# fund the printed native SS58 address (≈ 500 tPOT recommended, see docs/funding-handoff.md), then:
-npm run deploy:apply -- portaldot-v3-testnet --profile minimal --confirm --fund-executor 60
+# fund the printed deployer SS58 address (450 tPOT covers this plan with 35.85 to spare, see docs/funding-handoff.md), then:
+npm run deploy:apply -- portaldot-v3-testnet --profile minimal --confirm --fund-executor 35 --jobs 3
 npm run deploy:verify -- portaldot-v3-testnet
 PF_MODE=testnet npm run dev
 npx tsx scripts/request-job.ts portaldot-v3-testnet 12 --confirm

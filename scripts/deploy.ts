@@ -1,7 +1,7 @@
 /**
  * PortalForge deployment: plan (read-only) and apply (signs + broadcasts, requires --confirm).
- *   npx tsx scripts/deploy.ts plan  <networkId> [--profile minimal|full]
- *   npx tsx scripts/deploy.ts apply <networkId> [--profile minimal|full] --confirm [--fund-executor <amount>]
+ *   npx tsx scripts/deploy.ts plan  <networkId> [--profile minimal|full] [--fund-executor <amount>] [--jobs <n>]
+ *   npx tsx scripts/deploy.ts apply <networkId> [--profile minimal|full] --confirm [--fund-executor <amount>] [--jobs <n>]
  * The journal (deployments/<networkId>.journal.json) records each intent BEFORE broadcast and the tx hash
  * right after, so a crash or RPC loss resumes by looking up the hash / nonce instead of redeploying.
  */
@@ -11,7 +11,7 @@ import { createWalletClient, defineChain, http, keccak256, parseEther, type Hex 
 import { BUILTIN_NETWORKS, formatUnits, type DeploymentManifest } from '@portalforge/domain';
 import { EvmReader } from '@portalforge/portaldot-evm';
 import { NativeReader } from '@portalforge/portaldot-native';
-import { DEPLOY_PROFILES, loadFoundryArtifact, manifestContract, planDeployment, predictCreateAddress, verifyManifest, type DeployJournalEntry } from '@portalforge/sdk';
+import { DEPLOY_PROFILES, demoBudget, formatBudget, loadFoundryArtifact, manifestContract, planDeployment, predictCreateAddress, verifyManifest, type DeployJournalEntry } from '@portalforge/sdk';
 import { loadAccount } from './lib/keys';
 
 const [mode, id = 'local-anvil'] = process.argv.slice(2);
@@ -61,16 +61,41 @@ for (const c of plan.contracts) console.log(`  ${c.name.padEnd(26)} runtime ${St
 console.log(`total max fee ${fmt(plan.totalFee)}`);
 if (plan.contracts.some((c) => c.deposit?.ok)) console.log(`total storage deposit ${formatUnits(plan.contracts.reduce((s, c) => s + (c.deposit?.storageDeposit ?? 0n), 0n), profile.native!.token.decimals, 4)} ${nativeSym} (dry-run origin ${depositOrigin}${depositOrigin === deployer.address ? '' : ', public funded account used only for simulation'})`);
 plan.warnings.forEach((w) => console.log(`warning: ${w}`));
-plan.blockers.forEach((b) => console.log(`BLOCKER: ${b}`));
+// The balance is judged below, against what is still left to send: a resumed deploy has less to pay for.
+const isBalance = (b: string) => b.startsWith('deployer balance');
+plan.blockers.filter((b) => !isBalance(b)).forEach((b) => console.log(`BLOCKER: ${b}`));
 writeFileSync(`${depDir}/${id}.plan.json`, JSON.stringify(plan, (_k, v) => (typeof v === 'bigint' ? v.toString() : v), 2) + '\n');
-if (mode === 'plan') process.exit(plan.blockers.length ? 1 : 0);
+const jobs = Number(flag('--jobs') ?? 0);
+const fundArg = flag('--fund-executor');
+const evm = new EvmReader(profile.evm.rpcUrl, 30_000);
+
+const previous: DeploymentManifest['contracts'] = existsSync(manifestPath) && JSON.parse(readFileSync(manifestPath, 'utf8')).network?.chainId === profile.evm.chainId ? JSON.parse(readFileSync(manifestPath, 'utf8')).contracts : [];
+// Trust a previous manifest entry only if this chain really holds that code at that address
+// (a restarted dev chain has the same chainId but none of the old contracts).
+const confirmed: DeploymentManifest['contracts'] = [];
+for (const c of previous) {
+  const code = await evm.code(c.address as Hex);
+  if (code !== '0x' && keccak256(code) === c.runtimeCodeHash) confirmed.push(c);
+  else console.log(`${c.name}: manifest entry ${c.address} has no matching code on this chain; ignoring it`);
+}
+const inManifest = (name: string, hash: string) => confirmed.some((c) => c.name === name && c.artifactRuntimeHash === hash);
+const journalNow: DeployJournalEntry[] = existsSync(journalPath) && (!previous.length || confirmed.length) ? JSON.parse(readFileSync(journalPath, 'utf8')) : [];
+const stillToSend = plan.contracts.filter((c) => !inManifest(c.name, c.artifact.artifactRuntimeHash) && !journalNow.some((j) => j.name === c.name && ['sent', 'confirmed'].includes(j.state)));
+const executorBalance = await evm.balance(executor.address);
+const budget = demoBudget({
+  deployFee: stillToSend.reduce((s, c) => s + (c.fee ?? 0n), 0n), fundExecutor: fundArg ? parseEther(fundArg) : 0n, executorBalance, jobs,
+  deployerBalance: plan.deployerBalance ?? 0n, costs: profile.kind === 'portaldot-testnet' ? undefined : { slotDeposit: 0n, callGas: 0n, transferGas: 0n, executorReserve: 0n },
+});
+formatBudget(budget, fmt).forEach((l) => console.log(l));
+budget.blockers.forEach((b) => console.log(`BLOCKER: ${b}`));
+const blocked = plan.blockers.some((b) => !isBalance(b)) || budget.blockers.length > 0;
+if (mode === 'plan') process.exit(blocked ? 1 : 0);
 
 // ---------------- apply ----------------
 if (!process.argv.includes('--confirm')) { console.error('\nrefusing to broadcast without --confirm'); process.exit(3); }
-if (plan.blockers.length) { console.error('\nplan has blockers; not broadcasting'); process.exit(1); }
+if (blocked) { console.error('\nplan has blockers; not broadcasting'); process.exit(1); }
 const chain = defineChain({ id: profile.evm.chainId, name: profile.name, nativeCurrency: { name: sym, symbol: sym, decimals: 18 }, rpcUrls: { default: { http: [profile.evm.rpcUrl] } } });
 const wallet = createWalletClient({ account: deployer, chain, transport: http(profile.evm.rpcUrl, { timeout: 60_000 }) });
-const evm = new EvmReader(profile.evm.rpcUrl, 30_000);
 const journal: DeployJournalEntry[] = existsSync(journalPath) ? JSON.parse(readFileSync(journalPath, 'utf8')) : [];
 const saveJournal = () => writeFileSync(journalPath, JSON.stringify(journal, null, 2) + '\n');
 const commit = (() => { try { return execSync('git rev-parse HEAD').toString().trim(); } catch { return 'unknown'; } })();
@@ -91,18 +116,9 @@ async function waitReceipt(hash: Hex, timeoutMs = 180_000) {
   return null;
 }
 
-const previous: DeploymentManifest['contracts'] = existsSync(manifestPath) && JSON.parse(readFileSync(manifestPath, 'utf8')).network?.chainId === profile.evm.chainId ? JSON.parse(readFileSync(manifestPath, 'utf8')).contracts : [];
-// Trust a previous manifest entry only if this chain really holds that code at that address
-// (a restarted dev chain has the same chainId but none of the old contracts).
-const confirmed: DeploymentManifest['contracts'] = [];
-for (const c of previous) {
-  const code = await evm.code(c.address as Hex);
-  if (code !== '0x' && keccak256(code) === c.runtimeCodeHash) confirmed.push(c);
-  else console.log(`${c.name}: manifest entry ${c.address} has no matching code on this chain; ignoring it`);
-}
 if (previous.length && !confirmed.length && existsSync(journalPath)) { journal.length = 0; saveJournal(); console.log('stale journal cleared (no manifest contract exists on this chain)'); }
 for (const pc of plan.contracts) {
-  if (confirmed.find((c) => c.name === pc.name && c.artifactRuntimeHash === pc.artifact.artifactRuntimeHash)) { console.log(`${pc.name}: already in manifest, skipping`); continue; }
+  if (inManifest(pc.name, pc.artifact.artifactRuntimeHash)) { console.log(`${pc.name}: already in manifest, skipping`); continue; }
   let entry = journal.find((j) => j.name === pc.name && j.state !== 'failed');
   if (!entry) {
     const nonce = await evm.nonce(deployer.address, 'pending');
@@ -157,9 +173,8 @@ function writeManifest() {
   writeFileSync(manifestPath, JSON.stringify(m, null, 2) + '\n');
 }
 
-const fund = flag('--fund-executor');
-if (fund) {
-  const value = parseEther(fund);
+if (fundArg) {
+  const value = parseEther(fundArg);
   const bal = await evm.balance(executor.address);
   if (bal >= value) console.log(`executor already holds ${fmt(bal)}; not funding`);
   else {

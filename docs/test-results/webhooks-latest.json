@@ -1,0 +1,79 @@
+{
+  "suite": "webhook delivery",
+  "ranAt": "2026-11-04T21:06:20.629Z",
+  "runsAgainst": "real worker processes, real local HTTP receiver, throwaway SQLite; no chain",
+  "passed": 14,
+  "failed": 0,
+  "results": [
+    {
+      "id": "success.first_attempt",
+      "ok": true,
+      "detail": "1 request with two workers running; status delivered"
+    },
+    {
+      "id": "success.key_and_payload",
+      "ok": true,
+      "detail": "key inc_u3drmDIk4Pxk:1:chn_yWuQuPvfG3Eb"
+    },
+    {
+      "id": "retry.until_success",
+      "ok": true,
+      "detail": "3 requests; attempts header 1,2,3"
+    },
+    {
+      "id": "retry.same_key_same_body",
+      "ok": true,
+      "detail": "every retry reuses key and bytes"
+    },
+    {
+      "id": "failure.4xx_final",
+      "ok": true,
+      "detail": "1 request; status dead; error HTTP 410"
+    },
+    {
+      "id": "failure.gives_up",
+      "ok": true,
+      "detail": "5 requests then status dead"
+    },
+    {
+      "id": "failure.operator_retry",
+      "ok": true,
+      "detail": "same key; receiver dropped it as a repeat: true"
+    },
+    {
+      "id": "duplicate.aggregated",
+      "ok": true,
+      "detail": "20 raises → count 20, 1 delivery"
+    },
+    {
+      "id": "duplicate.reopen_is_new",
+      "ok": true,
+      "detail": "keys 1 → 2"
+    },
+    {
+      "id": "filter.severity_and_escalation",
+      "ok": true,
+      "detail": "warning: 0 deliveries; escalated to critical: 1"
+    },
+    {
+      "id": "lost_response.processed_once",
+      "ok": true,
+      "detail": "2 requests, 1 processed"
+    },
+    {
+      "id": "unsafe_target.refused",
+      "ok": true,
+      "detail": "0 requests; error 127.0.0.1 resolves to a private address"
+    },
+    {
+      "id": "worker_killed.redelivered",
+      "ok": true,
+      "detail": "claimed by worker-a, killed mid-request, finished by worker-c; 2 requests, 1 processed"
+    },
+    {
+      "id": "no_worker.queued",
+      "ok": true,
+      "detail": "pending → delivered"
+    }
+  ]
+}

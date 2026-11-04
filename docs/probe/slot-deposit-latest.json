@@ -1,13 +1,14 @@
 {
-  "measuredAt": "2026-11-03T19:31:06.966Z",
+  "measuredAt": "2026-11-04T21:10:50.708Z",
   "network": "portaldot-v3-testnet",
   "method": "reviveApi.instantiate dry-run, origin used only for simulation",
-  "origin": "0x1d63e7a1cc358cb40aa6073b7c44fd3c916b2540",
+  "origin": "0x69367866b2a90f14aecfc503bc1c70cb9e8115db",
   "depositsPlanck": {
     "zero": "1318800000000000",
     "one": "1702950000000000",
     "two": "2087100000000000"
   },
   "perNewSlotPlanck": "384150000000000",
+  "existentialDepositPlanck": "10000000000000",
   "perNewSlotTpot": 3.8415
 }

@@ -4,6 +4,8 @@
  *  2. crash right after broadcast (hash journaled, receipt unseen)   → rerun finds the receipt, no resend
  *  3. rerun on a complete manifest                                    → nothing sent
  *  4. zero-balance deployer on the live testnet plan                   → refuses to broadcast
+ *  5. a balance that covers the deploy but not the extras (--fund-executor) → refuses before the first send
+ *  6. crash and resume with a tight balance: only what is left to send counts against it
  * Asserts the deployer nonce equals the number of contracts. Writes docs/test-results/deploy-resume-latest.json.
  */
 import { spawnSync } from 'node:child_process';
@@ -41,7 +43,27 @@ try {
   await waitFor('anvil restart', () => rpcUp(url), 20_000);
   r = run(['apply', 'local-anvil', '--profile', 'minimal', '--confirm']);
   rec('stale_manifest.redeploys', r.status === 0 && /no matching code on this chain/.test(r.stdout) && (await nonce()) === 2, `exit ${r.status}, nonce on fresh chain ${await nonce()}`);
+  // Tight balance on the same fresh chain shape: the local deployer gets just over the plan's total max fee.
   await anvil2.stop();
+  const dir2 = mkdtempSync(join(tmpdir(), 'pf-deploy-tight-'));
+  const anvil3 = startService('anvil-resume-3', `${process.env.HOME}/.local/toolchains/foundry/anvil`, ['--port', String(PORT), '--block-time', '1', '--silent'], {}, join(dir, 'logs'));
+  await waitFor('anvil restart', () => rpcUp(url), 20_000);
+  const tight = (args: string[], extra: Record<string, string> = {}) => run(args, { PF_DEPLOYMENTS_DIR: dir2, ...extra });
+  const DEPLOYER = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266';
+  const setBalance = (wei: bigint) => fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'anvil_setBalance', params: [DEPLOYER, `0x${wei.toString(16)}`] }) });
+  tight(['plan', 'local-anvil', '--profile', 'minimal']);
+  const total = BigInt(JSON.parse(readFileSync(join(dir2, 'local-anvil.plan.json'), 'utf8')).totalFee);
+  await setBalance(total * 12n / 10n);
+  r = tight(['apply', 'local-anvil', '--profile', 'minimal', '--confirm', '--fund-executor', '100000']);
+  rec('budget.extras_refused_before_send', r.status === 1 && /BLOCKER: deployer balance/.test(r.stdout) && (await nonce()) === 0, `exit ${r.status}, nonce ${await nonce()}: a --fund-executor the balance cannot cover stops before the first contract`);
+  r = tight(['apply', 'local-anvil', '--profile', 'minimal', '--confirm'], { PF_DEPLOY_CRASH: 'intent:EvidenceRegistry' });
+  const left = BigInt((await (await fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'eth_getBalance', params: [DEPLOYER, 'latest'] }) })).json()).result);
+  rec('budget.crash_with_part_spent', r.status === 70 && (await nonce()) === 1 && left < total, `exit ${r.status}, 1 of 2 sent; balance is now below the plan's total max fee: ${left < total}`);
+  r = tight(['apply', 'local-anvil', '--profile', 'minimal', '--confirm']);
+  rec('budget.resume_on_remaining_balance', r.status === 0 && (await nonce()) === 2, `exit ${r.status}, nonce ${await nonce()}: resumes because only the unsent contract counts`);
+  r = tight(['apply', 'local-anvil', '--profile', 'minimal', '--confirm']);
+  rec('budget.rerun_after_complete', r.status === 0 && (await nonce()) === 2 && !/BLOCKER/.test(r.stdout), `exit ${r.status}, no blocker on a finished deploy`);
+  await anvil3.stop();
   r = spawnSync(process.execPath, ['--import', 'tsx', 'scripts/deploy.ts', 'apply', 'portaldot-v3-testnet', '--profile', 'minimal', '--confirm'], { env: { ...process.env, PF_DEPLOYMENTS_DIR: dir }, encoding: 'utf8' });
   rec('testnet.insufficient_balance_refuses', r.status === 1 && /BLOCKER: deployer balance/.test(r.stdout) && /plan has blockers; not broadcasting/.test(r.stderr), `exit ${r.status}; "${(r.stdout.match(/BLOCKER: [^\n]+/) ?? [''])[0].slice(0, 80)}…"`);
 } finally { await anvil.stop(); }

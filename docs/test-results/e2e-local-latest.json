@@ -1,0 +1,62 @@
+{
+  "schema": "portalforge.e2e/v1",
+  "kind": "local-anvil",
+  "note": "Local Anvil (plain EVM). Not Portaldot testnet evidence.",
+  "startedAt": "2026-11-03T20-04-40-379Z",
+  "finishedAt": "2026-11-03T20:05:38.350Z",
+  "node": "v26.13.0",
+  "results": [
+    {
+      "id": "A",
+      "title": "happy path: event → workflow → demo service → completeJob → evidence",
+      "ok": true,
+      "detail": "job 1 completed by 0x609ef8fd…, evidence 0x61b0a1cf… registered",
+      "ms": 6563
+    },
+    {
+      "id": "B",
+      "title": "remote success, response lost → query before retry → processed once",
+      "ok": true,
+      "detail": "attempts 2, receiver requests 3 (1 processed, rest query/replay), result 81",
+      "ms": 6543
+    },
+    {
+      "id": "C",
+      "title": "worker SIGKILL while the HTTP request is in flight → lease expiry → new worker reconciles",
+      "ok": true,
+      "detail": "attempts by worker → worker2; receiver processed once; job completed once",
+      "ms": 15085
+    },
+    {
+      "id": "D",
+      "title": "RPC outage: cursor holds, incident raised, catches up after recovery",
+      "ok": true,
+      "detail": "indexer error recorded, incident inc_OLshTyEQFNK7 opened then auto-resolved, job 4 completed after recovery",
+      "ms": 18072
+    },
+    {
+      "id": "E",
+      "title": "replay cannot complete a job twice",
+      "ok": true,
+      "detail": "replay 0xe7ed35a7… failed as expected: step complete: conflict: jobs.completeJob was applied by a different execution (",
+      "ms": 521
+    },
+    {
+      "id": "F",
+      "title": "CLI verifies deployment, execution and evidence independently",
+      "ok": true,
+      "detail": "deployment 32 checks, evidence 8 checks — all pass",
+      "ms": 1848
+    },
+    {
+      "id": "G",
+      "title": "global invariants on-chain and in the receiver",
+      "ok": true,
+      "detail": "4 jobs → 4 JobCompleted logs (1 each), 5 receiver computations, 5 executions (incl. 1 replay)",
+      "ms": 3
+    }
+  ],
+  "passed": 7,
+  "failed": 0,
+  "logs": "data/e2e-2026-11-03T20-04-40-379Z/logs"
+}

@@ -44,8 +44,8 @@ All footage in the current video is from **Local Anvil** (plain EVM) except the 
 
 Replace scene 3 (0:40–1:01) with these shots, or add them while trimming scene 8:
 
-1. Terminal: `npx pf deploy plan --profile minimal` → balance, “runtime matches artifact”, exact deposits, no BLOCKER (8 s).
-2. Terminal: `npm run deploy:apply -- portaldot-v3-testnet --profile minimal --confirm --fund-executor 60` → real tx hashes and blocks (10 s, speed up the wait).
+1. Terminal: `npx pf deploy plan --profile minimal --fund-executor 35 --jobs 3` → balance, “runtime matches artifact”, exact deposits, no BLOCKER (8 s).
+2. Terminal: `npm run deploy:apply -- portaldot-v3-testnet --profile minimal --confirm --fund-executor 35 --jobs 3` → real tx hashes and blocks (10 s, speed up the wait).
 3. Console in `PF_MODE=testnet`: project badge **Portaldot V3 Testnet**, Deployments → verification checks (8 s).
 4. `npx tsx scripts/request-job.ts portaldot-v3-testnet 12 --confirm` → execution succeeds on V3; trace shows real `completeJob` and `register` tx hashes (15 s).
 5. Terminal: `npx pf evidence verify <id> --api …` → VERIFIED on V3 (6 s).

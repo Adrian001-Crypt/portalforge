@@ -26,7 +26,7 @@ Current plan numbers (2026-11-03, `pf deploy plan`):
 | `minimal` (recommended) | JobRegistry + EvidenceRegistry | 337.13 tPOT | ≈ 367.2 tPOT |
 | `full` | + WorkflowExecutionRegistry | 508.85 tPOT | ≈ 554.3 tPOT |
 
-Each demo call creates exactly one new storage slot, measured at **3.8415 tPOT** on V3 (`scripts/measure-call-deposits.ts`). A job therefore costs ≈ 3.84 (requestJob, deployer) + 7.68 (completeJob + register, executor) plus gas. **Use the budget in [funding-handoff.md](funding-handoff.md)**: ≈ 500 tPOT to the deployer, with `--fund-executor 60`.
+Each demo call creates exactly one new storage slot, measured at **3.8415 tPOT** on V3. A job therefore costs about 3.94 (requestJob, deployer) + 7.88 (completeJob + register, executor), gas included. `full` does not fit in the requested 450 tPOT. **The plan is in [funding-handoff.md](funding-handoff.md)**: 450 tPOT to the deployer, `--fund-executor 35`, 3 jobs.
 
 ### Step 1 — get testnet tokens (you)
 Through the official channel only (Discord support ticket, or DM the admins listed on the DoraHacks page). Give them your **native SS58 address (starts with 5)** and a screenshot of your registration. Never share a seed phrase.
@@ -48,13 +48,13 @@ The SS58 addresses are the pallet-revive **fallback accounts** of those H160 key
 
 ### Step 3 — transfer tPOT (you, in your wallet)
 In polkadot.js Apps (custom endpoint `wss://test-node-v3.portaldot.dev`), Talisman or SubWallet, send from your faucet account:
-- **≈ 500 tPOT → deployer** `5Fxg3MEs…czF1t` (recommended), ≈ 430 for two jobs, or ≈ 215 for the `jobs` profile
-- the deploy step forwards the executor budget (`--fund-executor 60`), or you send it to `5DUz1yfS…Qx` directly
+- **450 tPOT → deployer** `5Fxg3MEs…czF1t`. Other amounts: see the table in [funding-handoff.md](funding-handoff.md)
+- nothing to the executor: the deploy step forwards its budget (`--fund-executor 35`)
 
 Then confirm the EVM view sees the balance:
 
 ```bash
-npm run -s pf -- deploy plan --profile minimal
+npm run -s pf -- deploy plan --profile minimal --fund-executor 35 --jobs 3
 ```
 
 The balance line must be non-zero and the plan must have no BLOCKER.
@@ -62,7 +62,7 @@ The balance line must be non-zero and the plan must have no BLOCKER.
 ### Step 4 — deploy (signs and broadcasts; needs your go-ahead)
 
 ```bash
-npm run deploy:apply -- portaldot-v3-testnet --profile minimal --confirm --fund-executor 60
+npm run deploy:apply -- portaldot-v3-testnet --profile minimal --confirm --fund-executor 35 --jobs 3
 ```
 
 The journal (`deployments/portaldot-v3-testnet.journal.json`) records each intent before broadcast and the tx hash right after. Re-running resumes from it and never redeploys blindly. When it finishes, the manifest `deployments/portaldot-v3-testnet.json` is written and verified live: chainId, genesis, code hash equal to the artifact, receipt, block canonicality, `owner()`, `executor()`/`isWriter()`, and no logs before the start block.
