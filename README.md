@@ -91,7 +91,7 @@ Tested on macOS (arm64). Linux should work for everything except the video tooli
 ## Quick start from a fresh clone
 
 ```bash
-git clone <repo-url> portalforge && cd portalforge
+git clone https://github.com/Adrian001-Crypt/portalforge.git && cd portalforge
 npm ci
 npm run contracts:build          # forge build + export ABIs
 npm run verify                   # typecheck · 21 contract tests · 59 Vitest tests (incl. real Anvil) · web build

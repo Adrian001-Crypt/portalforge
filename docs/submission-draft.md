@@ -8,13 +8,13 @@ Status legend used in this file: **Prepared** (text ready here) · **Public** (l
 | One-sentence overview | Open-source middleware for Portaldot V3 that deploys and verifies contracts, indexes EVM and native events together, and runs recoverable, evidence-producing workflows without duplicating business effects. | Prepared |
 | Track | Modular Cloud & Middleware (see rationale) | Prepared — multi-track question pending with organizers |
 | Team members | **[your name / handle]**, **[role]**, **[short bio]** | **Needs you** |
-| Public GitHub repository | **[https://github.com/<you>/portalforge]** | **Needs you** (publish steps in docs/final-delivery.md) |
-| Complete README | `README.md` | Prepared (public once the repo is) |
+| Public GitHub repository | https://github.com/Adrian001-Crypt/portalforge | **Public** |
+| Complete README | https://github.com/Adrian001-Crypt/portalforge#readme | **Public** |
 | Deployment instructions | `docs/deployment.md`, `docs/funding-handoff.md` | Prepared |
 | Project documentation | `docs/` (architecture, capabilities, security, state machine, tests) | Prepared |
 | Runnable demo | Local: README “Quick start” (verified from a fresh clone). Public read-only: **[URL]** | Local prepared; public URL **needs you** |
 | Demo video (≤ 3 min, public link) | File `docs/media/portalforge-demo.mp4` (2:08). Link **[unlisted YouTube/Loom/Drive URL]** | File prepared; **upload needs you**; testnet shots pending |
-| Pitch deck (PDF or public link) | `docs/pitch/portalforge-pitch.pdf` (public via the repo once published) | Prepared; team/repo placeholders on slides 1 and 10 |
+| Pitch deck (PDF or public link) | https://github.com/Adrian001-Crypt/portalforge/blob/main/docs/pitch/portalforge-pitch.pdf | **Public**; team placeholder on slide 1 |
 | Testnet deployment info | Contract addresses **[pending]** · deploy tx **[pending]** · example job txs **[pending]** · explorer: none (RPC evidence via `pf deployment verify`) | **Pending funding** |
 
 ## Description (paste into the long description)

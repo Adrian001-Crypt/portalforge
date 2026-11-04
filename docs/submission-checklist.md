@@ -10,12 +10,12 @@ Legend: ☑ done · ☐ open · (you) = only you can do it.
 - ☐ (you) Receive testnet tPOT on your native SS58 address via the official channel.
 
 ## Code and repository
-- ☑ Independent git repo, 20 real commits on 2026-11-03 (as of this checklist), no rewritten history, no empty commits.
-- ☑ Pre-publish scan of all history: no keys, `.env`, `.secrets`, databases or tokens; `.claude/` local config untracked; no absolute local paths in docs.
+- ☑ Independent git repo with real commits starting 2026-11-03, no empty commits. The 20 commits from 2026-11-03 were rewritten to use the current account's GitHub noreply identity when the repo moved to this account, with original dates and messages kept; two doc lines naming a personal email were also changed. Hashes changed; nothing was backdated.
+- ☑ Pre-publish scan of all history: no keys, `.env`, `.secrets`, databases or tokens; `.claude/` local config untracked; no absolute local paths in docs at HEAD (older versions of `docs/handoff.md` and `.claude/launch.json` in history contain a local home path).
 - ☑ LICENSE (Apache-2.0), THIRD_PARTY.md, AI-assistance disclosure in README.
 - ☑ README verified from a fresh clone (install → build → verify → dev).
-- ☐ (you) Decide whether commits may show your personal email publicly (current author email of every commit).
-- ☐ (you) Create the public GitHub repo and push (steps in `docs/final-delivery.md`). → status becomes **Public**.
+- ☑ Commit author and committer: GitHub noreply identity on every commit.
+- ☑ Public GitHub repo: https://github.com/Adrian001-Crypt/portalforge → **Public** (anonymous clone verified).
 
 ## Testnet evidence (after funding)
 - ☐ Deploy (`minimal`), verify, fund executor — commands and success criteria in `docs/funding-handoff.md`.
@@ -27,7 +27,7 @@ Legend: ☑ done · ☐ open · (you) = only you can do it.
 - ☑ Local demo video recorded: `docs/media/portalforge-demo.mp4` (2:08, labelled local, synthetic narration).
 - ☐ Optional: re-record with testnet shots (list in `docs/demo-script.md`) and/or your own voice.
 - ☐ (you) Upload the video (unlisted YouTube / Loom / Drive with “anyone with the link”) → **Uploaded**; check it plays logged-out.
-- ☑ Pitch deck PDF: `docs/pitch/portalforge-pitch.pdf` (public through the repo once pushed). ☐ fill team + repo on slides 1 and 10 (or tell me the values).
+- ☑ Pitch deck PDF: `docs/pitch/portalforge-pitch.pdf` (public through the repo). ☑ repo link on slides 1 and 10. ☐ (you) team name on slide 1.
 - ☑ Screenshots: `docs/media/screenshots/` (16).
 
 ## Public demo (optional but useful for judges)

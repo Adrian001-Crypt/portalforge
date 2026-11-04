@@ -4,11 +4,11 @@
 
 | Item | State |
 |---|---|
-| Repository | Local, independent git repo at the project root; **not yet public** (no GitHub login on the build machine) |
+| Repository | **Public:** https://github.com/Adrian001-Crypt/portalforge |
 | Product | Runs locally (`npm run dev`); public read-only mode ready (`scripts/public-demo.ts`) |
 | Portaldot testnet | Read-only integration verified live; **contracts not deployed** (deployer unfunded) |
 | Video | `docs/media/portalforge-demo.mp4`, 2:08, local footage — **prepared, not uploaded** |
-| Pitch deck | `docs/pitch/portalforge-pitch.pdf` (10 pages) — **prepared**; private Claude artifact copy exists but is not a public link |
+| Pitch deck | `docs/pitch/portalforge-pitch.pdf` (10 pages) — **public through the repo**: https://github.com/Adrian001-Crypt/portalforge/blob/main/docs/pitch/portalforge-pitch.pdf; team name still to fill |
 | Submission | Draft and field mapping in `docs/submission-draft.md` — **not submitted** |
 
 ## How to start
@@ -38,14 +38,7 @@ typecheck ✔ · 21 contract tests ✔ · 59 Vitest ✔ · web build ✔ · fres
 
 ## What you need to do
 
-1. **Publish the repository** (pick one):
-   - Web + git (no new tools): create an empty **public** repo named `portalforge` at github.com/new (no README/license). Then in the project directory:
-     ```bash
-     git remote add origin https://github.com/<your-user>/portalforge.git
-     git push -u origin main
-     ```
-     The push asks you to sign in. If it asks for a password, use a fine-grained token scoped to that one repo with "Contents: read and write".
-   - Before pushing, decide whether the commit email your personal email may be public. If not, tell me and I'll explain the trade-off (changing it rewrites commit hashes, though not the dates).
+1. ~~Publish the repository~~ — done.
 2. **Organizer questions** — send the template in `docs/hackathon-requirements.md` (eligibility without check-in; multi-track).
 3. **Testnet tPOT** — request it through the official channel. Then send about **500 tPOT** to `5Fxg3MEsonAtt2giPzUjQMAMmBu3UDVGb5NjnQkZK4oczF1t` and tell me it's done.
 4. **Video** — upload `docs/media/portalforge-demo.mp4` as unlisted. Re-record with testnet shots after deployment if you want (`docs/demo-script.md`).
