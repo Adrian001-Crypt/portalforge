@@ -14,12 +14,12 @@ let demo: Awaited<ReturnType<typeof deployDemo>>;
 beforeAll(async () => { anvil = await startAnvil(); svc = await startDemoService({}); demo = await deployDemo(anvil.profile); }, 60_000);
 afterAll(async () => { anvil.stop(); await svc.close(); });
 
-async function setup(hook?: (kind: string, key: string) => Promise<void> | void) {
+async function setup(hook?: (kind: string, key: string) => Promise<void> | void, extra: { receiptGraceMs?: number } = {}) {
   const s = seed({ profile: anvil.profile });
   registerDemoContracts(s.db, s.projectId, anvil.profile.id, demo.JobRegistry, demo.EvidenceRegistry);
   addConnector(s.db, s.projectId, 'demo', `${svc.url}/v1/square`, `${svc.url}/v1/square`);
   const chain = new EvmChainExecutor(anvil.profile, executorAcct);
-  const engine = new WorkflowEngine({ db: s.db, workerId: 'w1', chains: new Map([[anvil.profile.id, chain]]), pollMs: 200, beforeSideEffect: hook });
+  const engine = new WorkflowEngine({ db: s.db, workerId: 'w1', chains: new Map([[anvil.profile.id, chain]]), pollMs: 200, beforeSideEffect: hook, ...extra });
   const head = await new EvmReader(anvil.url).blockNumber();
   const wf = createWorkflow(engine, s.projectId, squareWorkflow({ write: true, evidence: true }), { startBlock: head + 1 });
   const indexer = new EvmIndexer(s.db, anvil.profile, new EvmReader(anvil.url));
@@ -89,6 +89,36 @@ describe('on-chain execution (local Anvil)', () => {
     await runToEnd(engine, indexer, () => db.get(`SELECT state FROM executions`)?.state === 'succeeded');
     expect(lost).toBe(true);
     expect(await chain.latestNonce()).toBe(nonceBefore + 2);
+  });
+
+  // Seen on Portaldot V3: the account nonce advanced while the tx and its receipt were not yet indexed.
+  const lagIndex = (chain: EvmChainExecutor, misses: number) => {
+    const receipt = chain.receipt.bind(chain), known = chain.txKnown.bind(chain);
+    let n = 0;
+    chain.receipt = async (h) => (n++ < misses ? null : receipt(h));
+    chain.txKnown = async (h) => (n < misses ? false : known(h));
+  };
+
+  it('receipt index lags behind the nonce: waits, then records the real receipt and finality', async () => {
+    const { db, projectId, engine, indexer, chain } = await setup();
+    await demo.requestJob(9n);
+    lagIndex(chain, 6);
+    await runToEnd(engine, indexer, () => db.all(`SELECT 1 FROM executions WHERE project_id = ? AND state = 'succeeded'`, projectId).length === 1);
+    const step = db.get(`SELECT output FROM steps WHERE step_id = 'complete'`);
+    const out = JSON.parse(step.output);
+    expect(out.replacedTx).toBeUndefined();
+    expect(out.txHash).toMatch(/^0x/);
+    expect(out.blockNumber).toBeGreaterThan(0);
+    expect(db.get(`SELECT state FROM intents WHERE step_id = 'complete'`).state).toBe('confirmed');
+  });
+
+  it('nonce used and the tx never appears: after the grace period, decides from contract state and closes the intent', async () => {
+    const { db, projectId, engine, indexer, chain } = await setup(undefined, { receiptGraceMs: 0 });
+    await demo.requestJob(10n);
+    lagIndex(chain, 1_000_000);
+    await runToEnd(engine, indexer, () => db.all(`SELECT 1 FROM executions WHERE project_id = ? AND state = 'succeeded'`, projectId).length === 1);
+    expect(JSON.parse(db.get(`SELECT output FROM steps WHERE step_id = 'complete'`).output).alreadyApplied).toBe(true);
+    expect(db.get(`SELECT state, error FROM intents WHERE step_id = 'complete'`)).toMatchObject({ state: 'failed', error: expect.stringMatching(/effect confirmed from contract state/) });
   });
 
   it('a replay cannot complete the same job twice (contract-level dedup + reconciliation)', async () => {

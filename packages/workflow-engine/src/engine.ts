@@ -28,7 +28,7 @@ export interface EngineDeps {
   fetchImpl?: typeof fetch;
   resolver?: (h: string) => Promise<{ address: string }[]>;
   httpTimeoutMs?: number;
-  pollMs?: number;
+  pollMs?: number; receiptGraceMs?: number;
   random?: () => number;
   log?: (msg: string, data?: Record<string, unknown>) => void;
   onSignal?: (s: Signal) => void;
@@ -591,9 +591,15 @@ export class WorkflowEngine {
     if (await chain.txKnown(hash)) return { kind: 'pending', until: poll, output: { txHash: hash, waitingFor: 'inclusion' } };
     const latest = await chain.latestNonce();
     if (latest > intent.nonce) {
+      // Portaldot's eth-rpc serves the new nonce before it has indexed the transaction, so a used nonce alone does not
+      // mean the transaction was replaced. Give the index time; concluding early would also skip the finality wait.
+      if (this.clock() - Date.parse(intent.updated_at) < (this.deps.receiptGraceMs ?? 120_000)) return { kind: 'pending', until: poll, output: { txHash: hash, waitingFor: 'receipt index' } };
       // Our nonce was consumed by another transaction (replacement/cancel elsewhere). Decide from business state.
       const st = reconcile ? await reconcile() : 'not_applied';
-      if (st === 'applied') return { kind: 'ok', output: { alreadyApplied: true, replacedTx: hash } };
+      if (st === 'applied') {
+        this.db.run(`UPDATE intents SET state = 'failed', error = 'not found on chain; nonce used by another transaction, effect confirmed from contract state', updated_at = ? WHERE id = ?`, isoNow(), intent.id);
+        return { kind: 'ok', output: { alreadyApplied: true, replacedTx: hash } };
+      }
       if (st === 'applied_by_other') return { kind: 'fail', error: 'conflict: effect applied by a different execution', retryable: false };
       if (!reconcile) return { kind: 'unknown', error: `nonce ${intent.nonce} consumed by another tx and no reconciler for this function`, operator: true };
       this.db.run(`UPDATE intents SET state = 'failed', error = 'dropped: nonce consumed by another tx', idempotency_key = idempotency_key || ':dropped:' || id, updated_at = ? WHERE id = ?`, isoNow(), intent.id);
