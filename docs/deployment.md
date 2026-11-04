@@ -98,6 +98,8 @@ Copy the deploy tx hashes, contract addresses and one full job's tx hashes (`req
 
 ## C. Public read-only demo (outward-facing: you decide where and when)
 
+The permanent public demo is a static snapshot on GitHub Pages (published from `docs/` on `main`), rebuilt with `npx tsx scripts/media/capture-snapshot.ts` and checked with `npx tsx scripts/check-static-demo.ts <url>`. Everything below runs the live read-only stack instead, which needs a machine that stays on.
+
 ```bash
 npm ci && npm run contracts:build && npm run web:build
 npx tsx scripts/public-demo.ts                       # local data (labelled Local Anvil) + read-only V3 observation, :4400

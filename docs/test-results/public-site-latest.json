@@ -1,0 +1,159 @@
+{
+  "suite": "public site",
+  "ranAt": "2026-11-04T21:36:41.500Z",
+  "target": "docs/ served locally the way Pages does",
+  "passed": 30,
+  "failed": 0,
+  "results": [
+    {
+      "id": "desktop.landing",
+      "ok": true,
+      "detail": "PortalForge"
+    },
+    {
+      "id": "desktop.landing_says_not_deployed",
+      "ok": true,
+      "detail": "status is stated on the page"
+    },
+    {
+      "id": "desktop.landing_no_overflow",
+      "ok": true,
+      "detail": "horizontal overflow 0 px"
+    },
+    {
+      "id": "video.plays_without_login",
+      "ok": true,
+      "detail": "played to 1.5 s of 138 s"
+    },
+    {
+      "id": "deck.pdf_public",
+      "ok": true,
+      "detail": "HTTP 200, 265765 bytes"
+    },
+    {
+      "id": "desktop.demo_labelled_snapshot",
+      "ok": true,
+      "detail": "Static snapshot captured 2026-11-04 of a local stack (Anvil), for reading only. "
+    },
+    {
+      "id": "desktop.deep_link.executions",
+      "ok": true,
+      "detail": "succeeded"
+    },
+    {
+      "id": "desktop.deep_link.deployments",
+      "ok": true,
+      "detail": "verified|imported"
+    },
+    {
+      "id": "desktop.deep_link.evidence",
+      "ok": true,
+      "detail": "execution|registered|Evidence"
+    },
+    {
+      "id": "desktop.deep_link.events",
+      "ok": true,
+      "detail": "JobRequested"
+    },
+    {
+      "id": "desktop.deep_link.network",
+      "ok": true,
+      "detail": "Portaldot V3"
+    },
+    {
+      "id": "desktop.demo_no_overflow",
+      "ok": true,
+      "detail": "horizontal overflow 0 px"
+    },
+    {
+      "id": "desktop.execution_trace_opens",
+      "ok": true,
+      "detail": "0x829e8222d3bc631817"
+    },
+    {
+      "id": "desktop.no_private_data",
+      "ok": true,
+      "detail": "page text clean"
+    },
+    {
+      "id": "desktop.no_page_errors",
+      "ok": true,
+      "detail": "none"
+    },
+    {
+      "id": "desktop.nothing_sent",
+      "ok": true,
+      "detail": "0 non-GET requests"
+    },
+    {
+      "id": "phone.landing",
+      "ok": true,
+      "detail": "PortalForge"
+    },
+    {
+      "id": "phone.landing_says_not_deployed",
+      "ok": true,
+      "detail": "status is stated on the page"
+    },
+    {
+      "id": "phone.landing_no_overflow",
+      "ok": true,
+      "detail": "horizontal overflow 0 px"
+    },
+    {
+      "id": "phone.demo_labelled_snapshot",
+      "ok": true,
+      "detail": "Static snapshot captured 2026-11-04 of a local stack (Anvil), for reading only. "
+    },
+    {
+      "id": "phone.deep_link.executions",
+      "ok": true,
+      "detail": "succeeded"
+    },
+    {
+      "id": "phone.deep_link.deployments",
+      "ok": true,
+      "detail": "verified|imported"
+    },
+    {
+      "id": "phone.deep_link.evidence",
+      "ok": true,
+      "detail": "execution|registered|Evidence"
+    },
+    {
+      "id": "phone.deep_link.events",
+      "ok": true,
+      "detail": "JobRequested"
+    },
+    {
+      "id": "phone.deep_link.network",
+      "ok": true,
+      "detail": "Portaldot V3"
+    },
+    {
+      "id": "phone.demo_no_overflow",
+      "ok": true,
+      "detail": "horizontal overflow 0 px"
+    },
+    {
+      "id": "phone.execution_trace_opens",
+      "ok": true,
+      "detail": "0x829e8222d3bc631817"
+    },
+    {
+      "id": "phone.no_private_data",
+      "ok": true,
+      "detail": "page text clean"
+    },
+    {
+      "id": "phone.no_page_errors",
+      "ok": true,
+      "detail": "none"
+    },
+    {
+      "id": "phone.nothing_sent",
+      "ok": true,
+      "detail": "0 non-GET requests"
+    }
+  ]
+}

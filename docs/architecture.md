@@ -81,3 +81,20 @@ All processes share one SQLite database in WAL mode (`packages/store`). Every mu
 | Portaldot testnet (`PF_MODE=testnet`) | V3 testnet | `.secrets/…-executor.json` (generated, funded by you) | modules without config are disabled, never silently simulated |
 | Read-only public demo (`PF_PUBLIC_READONLY=1`) | as configured | — | anonymous read of `public_readonly` projects; no writes, no admin/fault endpoints |
 | Demo data | — | — | there is no fabricated dataset; demo projects show real local or testnet data |
+
+## Webhook notifications
+
+An incident queues its deliveries in the same transaction that opens it, so a crash cannot lose one. The worker sends what is due; any number of workers can share the database.
+
+| Situation | What happens |
+|---|---|
+| The incident repeats while open | It is counted, and nothing new is sent |
+| It is re-opened after being resolved | One new delivery with a new key |
+| Its severity rises past a channel's minimum | That channel gets its first delivery; others are not repeated |
+| 2xx | Delivered |
+| 408, 425, 429, 5xx, timeout, network error | Retried with backoff (about 15 s, 1 min, 4 min, 16 min), 5 attempts in total |
+| Any other response, or an unsafe target | Final; marked `dead` without retrying |
+| The worker dies mid-request | The lease expires and another worker sends it again |
+| Retries run out | Marked `dead`; **Settings → Channels** offers Retry |
+
+**Receiver contract.** Delivery is at-least-once. Every attempt carries the same `Idempotency-Key` header and byte-identical body, so a receiver drops repeats by that key. `X-PortalForge-Attempt` counts attempts. Requests are not signed yet, so a receiver should treat the body as a notification and verify anything important through the API.

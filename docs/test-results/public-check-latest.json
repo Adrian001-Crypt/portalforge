@@ -1,6 +1,6 @@
 {
   "base": "http://127.0.0.1:4400",
-  "at": "2026-11-03T20:13:01.135Z",
+  "at": "2026-11-04T21:33:38.433Z",
   "results": [
     {
       "id": "health.ok",
@@ -85,7 +85,7 @@
     {
       "id": "bundle.no_secrets",
       "ok": true,
-      "detail": "1 bundle(s), 306 KB scanned"
+      "detail": "1 bundle(s), 307 KB scanned"
     }
   ]
 }

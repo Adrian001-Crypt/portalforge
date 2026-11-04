@@ -1,7 +1,7 @@
 {
   "schema": "portalforge.smoke/v1",
   "network": "portaldot-v3-testnet",
-  "at": "2026-11-03T20:09:39.450Z",
+  "at": "2026-11-04T21:42:29.905Z",
   "results": [
     {
       "id": "probe.identity",
@@ -11,7 +11,7 @@
     {
       "id": "probe.correlation",
       "ok": true,
-      "detail": "EVM block #310590 hash equals reviveApi.ethBlockHash(310590); native block hash at #310590 is a different (Substrate) hash"
+      "detail": "EVM block #325784 hash equals reviveApi.ethBlockHash(325784); native block hash at #325784 is a different (Substrate) hash"
     },
     {
       "id": "probe.mapping",
@@ -31,37 +31,29 @@
     {
       "id": "deploy.balance",
       "ok": null,
-      "detail": "deployer balance 0 < estimated max fee 367233618728547578880 (wei, 18 dp)"
+      "detail": "deployer balance 0 < estimated max fee 367218985633639207671 (wei, 18 dp)"
     },
     {
       "id": "index.evm",
       "ok": true,
-      "detail": "2 logs from 0x5bdd9713ddc4f11e14bd3094882401cd122656f4 indexed (no ABI registered → stored undecoded, isolated)"
+      "detail": "1 logs from 0x5bdd9713ddc4f11e14bd3094882401cd122656f4 indexed (no ABI registered → stored undecoded, isolated)"
     },
     {
       "id": "index.native",
       "ok": true,
-      "detail": "2 native events (revive.ContractEmitted) decoded with runtime spec runtime:spec3002"
+      "detail": "1 native events (revive.ContractEmitted) decoded with runtime spec runtime:spec3002"
     },
     {
       "id": "index.correlation",
       "ok": true,
-      "detail": "2 EVM logs linked to Revive.ContractEmitted; 2 verified by ethBlockHash",
+      "detail": "1 EVM logs linked to Revive.ContractEmitted; 1 verified by ethBlockHash",
       "data": [
         {
-          "evm_id": "portaldot-v3-testnet:evm:0x861092687c7d3528cc445a26d43a5bb93d6c8e48d25eb69cc0bdd7b80e86c0b5:1:4",
-          "native_id": "portaldot-v3-testnet:native:0xbf531f17a49df94fb4c0166f4441e4a87dd589fdd3ca5cccae977a2071559517:1:4",
-          "block_number": 310531,
-          "evm_block_hash": "0x861092687c7d3528cc445a26d43a5bb93d6c8e48d25eb69cc0bdd7b80e86c0b5",
-          "revive_eth_hash": "0x861092687c7d3528cc445a26d43a5bb93d6c8e48d25eb69cc0bdd7b80e86c0b5",
-          "verified": 1
-        },
-        {
-          "evm_id": "portaldot-v3-testnet:evm:0x6c793ac46ec62fa83f2c4cdfa7a91fc696db1b5d7fa0f42086f363ea60936cc0:1:3",
-          "native_id": "portaldot-v3-testnet:native:0x77837105ee095849f3997a3a4eff43d7df3fc9ff2c372fc760b6a0a3ede5d657:1:3",
-          "block_number": 310530,
-          "evm_block_hash": "0x6c793ac46ec62fa83f2c4cdfa7a91fc696db1b5d7fa0f42086f363ea60936cc0",
-          "revive_eth_hash": "0x6c793ac46ec62fa83f2c4cdfa7a91fc696db1b5d7fa0f42086f363ea60936cc0",
+          "evm_id": "portaldot-v3-testnet:evm:0x8bdbb86b04ac81437338554d3e3f800d085375a72b733119bd34a1f62e8a08a5:1:3",
+          "native_id": "portaldot-v3-testnet:native:0x59e179c1e257b1d06c54b62e6122432330c4c93b5b0e4d18b086c88281eb2f53:1:3",
+          "block_number": 325735,
+          "evm_block_hash": "0x8bdbb86b04ac81437338554d3e3f800d085375a72b733119bd34a1f62e8a08a5",
+          "revive_eth_hash": "0x8bdbb86b04ac81437338554d3e3f800d085375a72b733119bd34a1f62e8a08a5",
           "verified": 1
         }
       ]
@@ -73,7 +65,7 @@
     }
   ],
   "probe": {
-    "probedAt": "2026-11-03T20:09:17.102Z",
+    "probedAt": "2026-11-04T21:42:07.555Z",
     "checks": [
       {
         "id": "evm.chain_id",
@@ -91,25 +83,25 @@
         "id": "evm.block_tag.latest",
         "area": "evm",
         "status": "supported",
-        "summary": "latest = #310591"
+        "summary": "latest = #325785"
       },
       {
         "id": "evm.block_tag.safe",
         "area": "evm",
         "status": "supported",
-        "summary": "safe = #310589"
+        "summary": "safe = #325783"
       },
       {
         "id": "evm.block_tag.finalized",
         "area": "evm",
         "status": "supported",
-        "summary": "finalized = #310589"
+        "summary": "finalized = #325783"
       },
       {
         "id": "evm.method.eth_gasPrice",
         "area": "evm",
         "status": "supported",
-        "summary": "\"0x59d8\""
+        "summary": "\"0x5681\""
       },
       {
         "id": "evm.method.eth_maxPriorityFeePerGas",
@@ -145,13 +137,13 @@
         "id": "evm.method.eth_feeHistory",
         "area": "evm",
         "status": "supported",
-        "summary": "baseFee 0x59d8"
+        "summary": "baseFee 0x5681"
       },
       {
         "id": "evm.get_logs_range",
         "area": "evm",
         "status": "supported",
-        "summary": "50000-block range returned 1178 logs in 404ms"
+        "summary": "50000-block range returned 1525 logs in 792ms"
       },
       {
         "id": "evm.opcode.create_basic",
@@ -187,7 +179,7 @@
         "id": "evm.estimate_gas_create",
         "area": "evm",
         "status": "supported",
-        "summary": "estimate 401945097087568 gas units for a 22-byte create"
+        "summary": "estimate 417463846300369 gas units for a 22-byte create"
       },
       {
         "id": "native.genesis",
@@ -211,7 +203,7 @@
         "id": "native.heads",
         "area": "native",
         "status": "info",
-        "summary": "best #310593, finalized #310591, lag 2"
+        "summary": "best #325789, finalized #325787, lag 2"
       },
       {
         "id": "native.metadata",
@@ -301,13 +293,13 @@
         "id": "correlation.block_numbers",
         "area": "correlation",
         "status": "supported",
-        "summary": "EVM block #310590 hash equals reviveApi.ethBlockHash(310590); native block hash at #310590 is a different (Substrate) hash"
+        "summary": "EVM block #325784 hash equals reviveApi.ethBlockHash(325784); native block hash at #325784 is a different (Substrate) hash"
       },
       {
         "id": "correlation.heads",
         "area": "correlation",
         "status": "info",
-        "summary": "EVM latest #310591, native best #310593"
+        "summary": "EVM latest #325785, native best #325789"
       }
     ]
   }

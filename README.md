@@ -6,10 +6,10 @@
 PortalForge is open-source middleware for teams shipping applications on Portaldot V3. One product loop:
 **deploy** contracts with a simulation and an exact storage-deposit preview, **index** EVM logs *and* native runtime events, **automate** with versioned workflows, **recover** from lost responses / crashed workers / RPC outages without duplicating business effects, and **verify** deployments and execution evidence against the chain.
 
-> **Status (2026-11-03).** Everything runs and is tested locally; live Portaldot V3 is probed, simulated and indexed read-only.
+> **Status (2026-11-04).** Everything runs and is tested locally; live Portaldot V3 is probed, simulated and indexed read-only.
 > **PortalForge contracts are not yet deployed to the testnet** — the deploy is prepared and waits for testnet tPOT ([docs/funding-handoff.md](docs/funding-handoff.md)). Local results use Anvil (plain EVM) and are **not** testnet evidence.
 
-Demo video (local, 2:08, synthetic narration): [docs/media/portalforge-demo.mp4](docs/media/portalforge-demo.mp4) · Screenshots: [docs/media/screenshots](docs/media/screenshots) · Pitch deck: [docs/pitch/portalforge-pitch.pdf](docs/pitch/portalforge-pitch.pdf)
+**Try it without installing anything:** [project page with video and deck](https://adrian001-crypt.github.io/portalforge/) · [read-only demo](https://adrian001-crypt.github.io/portalforge/demo/). The video and demo use a local Anvil chain and say so. Screenshots: [docs/media/screenshots](docs/media/screenshots). Pitch deck: [PDF](docs/pitch/portalforge-pitch.pdf).
 
 ## The problem
 
@@ -47,7 +47,7 @@ Not used / not claimed: ink! on pallet-contracts, EVM↔WASM calls, cross-chain 
 | Workflows | DAG definitions (condition, map, task, http, validate, approval, wait, contract_call, evidence), immutable versions, deterministic execution ids, leases, retries + backoff + jitter, dead-letter, approvals, schedules, replay | 12 engine tests + 5 on-chain tests (Anvil) |
 | Recovery | intent persisted before every side effect; query-before-retry; sign → persist → broadcast; same-hash re-broadcast; business reconciliation | multi-process E2E (7/7) incl. worker SIGKILL |
 | Execution policy | allowlisted nonpayable functions only, per-call fee cap, calls/hour, network identity check, dedicated low-privilege key | on-chain tests |
-| Ops | RPC sampling, finality/stall/indexer-lag/workflow/revert/code-drift/runtime-upgrade rules, incident aggregation + cooldown + auto-resolve, webhook notifications | 7 ops tests, E2E outage |
+| Ops | RPC sampling, finality/stall/indexer-lag/workflow/revert/code-drift/runtime-upgrade rules, incident aggregation + cooldown + auto-resolve, webhook delivery with retries and duplicate protection ([how it works](docs/architecture.md#webhook-notifications)) | ops tests, E2E outage, `scripts/test-webhooks.ts` |
 | API | sessions + CSRF + Origin checks, project RBAC (Owner/Developer/Operator/Viewer), scoped API keys, public read-only mode, rate & body limits, SSRF-safe connectors, OpenAPI 3.1 | 14 API tests, 17 public-visitor checks |
 | Console | 13 areas incl. Deployment Workbench, Contract Workspace, Event Explorer, Workflow Builder (visual ⇄ JSON), Executions, Incidents, Evidence | 3 real-Chrome tests |
 | SDK / CLI | `@portalforge/sdk` (probe, planner, verifiers, API client), `pf` CLI (10 commands, `--json`, exit codes) | examples below were run |
@@ -94,7 +94,7 @@ Tested on macOS (arm64). Linux should work for everything except the video tooli
 git clone https://github.com/Adrian001-Crypt/portalforge.git && cd portalforge
 npm ci
 npm run contracts:build          # forge build + export ABIs
-npm run verify                   # typecheck · 21 contract tests · 59 Vitest tests (incl. real Anvil) · web build
+npm run verify                   # typecheck · 22 contract tests · 66 Vitest tests (incl. real Anvil) · web build
 npm run dev                      # Anvil :8547 → deploy contracts → demo service :4310 → API :4300 → indexer → worker → console :5180
 ```
 
@@ -195,7 +195,7 @@ Latest results, environment and coverage gaps: [docs/test-results.md](docs/test-
 
 ## Public read-only demo
 
-`npx tsx scripts/public-demo.ts` starts an isolated stack with dev sign-in off, real seeded local jobs and read-only V3 observation; `--tunnel` adds a temporary Cloudflare quick tunnel to the API port only. Hosting options and guarantees: [docs/deployment.md](docs/deployment.md).
+The [public read-only demo](https://adrian001-crypt.github.io/portalforge/demo/) is a static snapshot of this stack, rebuilt with `npx tsx scripts/media/capture-snapshot.ts`. To run it live, `npx tsx scripts/public-demo.ts` starts an isolated stack with dev sign-in off, real seeded local jobs and read-only V3 observation; `--tunnel` adds a temporary Cloudflare quick tunnel to the API port only. Hosting options and guarantees: [docs/deployment.md](docs/deployment.md).
 
 ## Known limitations
 

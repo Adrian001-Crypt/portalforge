@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-04T21:06:52.890Z",
+  "at": "2026-11-04T21:31:43.666Z",
   "note": "Anvil for crash/resume; live testnet only for the read-only balance refusal",
   "results": [
     {
@@ -55,7 +55,7 @@
     {
       "id": "testnet.insufficient_balance_refuses",
       "ok": true,
-      "detail": "exit 1; \"BLOCKER: deployer balance 0 < required 367230368441057938019 (wei, 18 dp)…\""
+      "detail": "exit 1; \"BLOCKER: deployer balance 0 < required 367233617821480233711 (wei, 18 dp)…\""
     }
   ]
 }
