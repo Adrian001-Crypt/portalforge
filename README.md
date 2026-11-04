@@ -185,7 +185,8 @@ All settings are environment variables with safe local defaults; see [.env.examp
 npm run verify                       # typecheck + contracts + Vitest + web build
 npx tsx scripts/e2e-local.ts         # 7 multi-process fault scenarios (own ports 18547/14300/14310)
 npx tsx scripts/test-deploy-resume.ts  # deploy journal crash/resume + low-balance refusal
-npx playwright test                  # 3 real-Chrome tests (needs `npm run dev` running)
+npx playwright test                  # 8 real-Chrome tests (starts the local stack, or reuses a running one)
+npx tsx scripts/test-webhooks.ts     # 14 webhook delivery scenarios with real workers
 npx tsx scripts/public-demo.ts       # public read-only stack on :4400, then:
 npx tsx scripts/check-public.ts http://127.0.0.1:4400   # 17 anonymous-visitor checks
 npm run smoke:testnet                # read-only live V3 checks

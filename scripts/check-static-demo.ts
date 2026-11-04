@@ -9,6 +9,8 @@ import { createServer } from 'node:http';
 import { createReadStream, existsSync, mkdirSync, statSync, writeFileSync } from 'node:fs';
 import { extname, join, normalize } from 'node:path';
 
+// Extra terms to refuse (names, domains) come from the environment, so they never appear in this public file.
+const PRIVATE = new RegExp(['/Users/', '/home/', '\\.dhcp\\.', ...(process.env.PF_PRIVATE_TERMS?.split(',') ?? [])].join('|'), 'i');
 const results: { id: string; ok: boolean; detail: string }[] = [];
 const rec = (id: string, ok: boolean, detail: string) => { results.push({ id, ok, detail }); console.log(`${ok ? '✔' : '✖'} ${id.padEnd(34)} ${detail}`); };
 const MIME: Record<string, string> = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.mp4': 'video/mp4', '.pdf': 'application/pdf' };
@@ -60,7 +62,7 @@ for (const [label, viewport] of [['desktop', { width: 1280, height: 800 }], ['ph
   await exec.click(); await page.waitForTimeout(800);
   rec(`${label}.execution_trace_opens`, /Square via demo service/.test(await page.locator('body').innerText()), page.url().split('/').pop()!.slice(0, 20));
   const text = await page.locator('body').innerText();
-  rec(`${label}.no_private_data`, !/\/Users\/|\.dhcp\./i.test(text), 'page text clean');
+  rec(`${label}.no_private_data`, !PRIVATE.test(text), 'page text clean');
   rec(`${label}.no_page_errors`, errors.length === 0, errors[0]?.slice(0, 100) ?? 'none');
   rec(`${label}.nothing_sent`, posts.length === 0, `${posts.length} non-GET requests`);
   await ctx.close();

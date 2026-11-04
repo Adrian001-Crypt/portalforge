@@ -11,7 +11,8 @@ import { copyFileSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { waitFor, httpOk } from '../lib/proc';
 
 const BASE = 'http://127.0.0.1:4400', OUT = 'docs/demo';
-const FORBIDDEN = /\/Users\/|\.dhcp\.|local-demo-admin-token|\.secrets/i;
+// Extra terms to refuse (names, domains) come from the environment, so they never appear in this public file.
+const FORBIDDEN = new RegExp(['/Users/', '/home/', '\\.dhcp\\.', 'local-demo-admin-token', '\\.secrets', ...(process.env.PF_PRIVATE_TERMS?.split(',') ?? [])].join('|'), 'i');
 
 const stack = spawn(process.execPath, ['--import', 'tsx', 'scripts/public-demo.ts'], { stdio: ['ignore', 'pipe', 'inherit'], env: process.env });
 const stopped = new Promise((r) => stack.once('exit', r));
