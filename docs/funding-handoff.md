@@ -1,6 +1,26 @@
-# Funding handoff: what happens when testnet tPOT arrives
+# Funding handoff: budget, what was spent, how to repeat it
 
-Plan for the **450 tPOT** requested from the organizers. Re-measured read-only on 2026-11-04 on the live Portaldot V3 testnet (spec 3002, chainId 420420777, tPOT with 14 decimals, SS58 prefix 42). Nothing has been broadcast. Sources: `npx tsx scripts/deploy.ts plan portaldot-v3-testnet …` and `docs/probe/slot-deposit-latest.json`.
+**Done on 2026-11-04.** The organizers provided 500 tPOT. 470 went to the deployer and the deployment and two jobs ran on V3. Hashes and blocks are in [testnet-evidence/README.md](testnet-evidence/README.md). The tables below keep the plan next to what really happened, for anyone repeating this.
+
+## Spent
+
+| Item | Budget, worst case (tPOT) | Actual (tPOT) |
+|---|---|---|
+| Deploy JobRegistry + EvidenceRegistry | 367.25 | 337.61 (deposits 337.13 + gas 0.48) |
+| Forward to executor | 35.10 | 35 + 0.11 fee |
+| `requestJob` | 11.82 for 3 | 7.71 for 2 |
+| **Deployer spent** | **414.17** (approved limit 415) | **380.44** |
+| Executor: `completeJob` + `register` | 23.65 for 3 jobs | 15.46 for 2 jobs |
+
+| Account | Received | Left |
+|---|---|---|
+| Receiving wallet `5GQapv3f…Uno4v` | 500 | 29.9849 |
+| Deployer `5Fxg3MEs…czF1t` | 470 | 89.5629 |
+| Executor `5DUz1yfS…3Xhx` | 35 from the deployer | 19.6351 |
+
+A third job would still fit: it costs about 11.6 tPOT.
+
+**Why the budget moved while the gas price fell.** On V3, `eth_estimateGas` returns about total fee ÷ gas price, so gas × price does not depend on the price. The plan's 2% price margin was truncated to a whole number, so the real margin varied slightly with each price, moving the estimate by a few thousandths of a tPOT. Units and decimals were correct. The margin now rounds up (commit `81b3d77`), which made the estimate 0.02 tPOT higher. Nothing was overpaid: transactions were charged at the current gas price, 22105, not the 22548 offered.
 
 ## 1. Accounts (already generated; keep them)
 
@@ -11,9 +31,9 @@ Plan for the **450 tPOT** requested from the organizers. Re-measured read-only o
 
 The keys live in `.secrets/` (mode 0600, gitignored, never printed). Do not regenerate them: that would change these addresses.
 
-## 2. Budget for 450 tPOT
+## 2. The plan as budgeted
 
-All 450 tPOT go to the **deployer**, `5Fxg3MEsonAtt2giPzUjQMAMmBu3UDVGb5NjnQkZK4oczF1t`. The deploy step forwards the executor's share, so nothing needs to be sent to the executor by hand.
+This was written for 450 tPOT and run with 470. Funds go to the **deployer**, `5Fxg3MEsonAtt2giPzUjQMAMmBu3UDVGb5NjnQkZK4oczF1t`. The deploy step forwards the executor's share, so nothing needs to be sent to the executor by hand.
 
 | Item | Worst case (tPOT) | Basis |
 |---|---|---|
@@ -32,7 +52,7 @@ The deposit folded into the estimate means one write can show about 4–5 tPOT b
 
 Facts behind the numbers:
 - One new storage slot costs **3.8415 tPOT**, measured twice by dry-run. Each demo call creates exactly one: `contracts/evm/test/StorageSlots.t.sol` counts zero-to-nonzero writes.
-- The 0.1 tPOT gas per call is an **estimate** from other contracts' receipts. Replace it with our first real receipt.
+- Real gas per call was 0.015 to 0.025 tPOT, less than the 0.1 estimated. `PORTALDOT_DEMO_COSTS` now uses 0.03, and 0.12 for a transfer that creates an account.
 - The existential deposit is 0.1 tPOT, measured. Both accounts stay above it.
 - Storage deposits are held, not burned. PortalForge contracts never clear storage, so treat them as spent.
 - The `full` profile needs about 554 tPOT in max fees and does not fit. Execution outcomes stay anchored through EvidenceRegistry.
@@ -57,9 +77,9 @@ Facts behind the numbers:
 
 ## 3. Safety behaviour already verified
 
-`npx tsx scripts/test-deploy-resume.ts` passed 11/11 on Anvil, with the live testnet used only for the read-only balance refusal. Results are in `docs/test-results/deploy-resume-latest.json`. Anvil is plain EVM, so none of this is testnet deployment evidence.
+`npx tsx scripts/test-deploy-resume.ts` passed 11/11 on Anvil, with the live testnet used only for a read-only refusal: it sets a budget limit of 0, so it cannot broadcast. Results are in `docs/test-results/deploy-resume-latest.json`. Anvil is plain EVM, so none of this is testnet deployment evidence.
 
-- **Not enough balance: stop.** With the live deployer at 0 tPOT, `deploy:apply … --confirm` exits 1 with `BLOCKER: deployer balance …` and broadcasts nothing.
+- **Not enough balance, or over the `--max-budget` limit: stop.** `deploy:apply … --confirm` exits 1 with a `BLOCKER` and broadcasts nothing. On the real deploy this stopped the first run at 414.1532 against a limit of 414.15, until the limit was raised with approval.
 - **Balance covers the deploy but not the extras.** Refused before the first contract is sent.
 - **Crash with part of the balance spent.** The re-run counts only what is left to send, so a tight balance does not block the resume.
 - **Crash after the intent was saved, before broadcast.** The re-run sends the transaction exactly once.
@@ -78,13 +98,13 @@ Tell me the transfer is done. I'll check the balance **once**; there is no polli
 | 2 | `npm run deploy:apply -- portaldot-v3-testnet --profile minimal --confirm --fund-executor 35 --jobs 3` | Exit 0. Two `sent 0x…` lines then two confirmed lines with block numbers. The predicted address matches (`✓`). `funded executor …` shows success |
 | 3 | `npm run deploy:verify -- portaldot-v3-testnet` | Every check `pass`: chainId, genesis, code hash = artifact, receipt status/address/block, canonical block, `owner()`, `executor()`, `isWriter(executor)`, `VERSION()`, start block |
 | 4 | `npm run -s pf -- deployment verify deployments/portaldot-v3-testnet.json --executor 0x3ec086354a0DaDFb3ecb9A23B6B63229C4b91f25` | `VERIFIED`, independent of the API |
-| 5 | `PF_MODE=testnet npm run dev` | Console shows the project “PortalForge Demo (Portaldot V3 testnet)” with 2 contracts and the badge **Portaldot V3 Testnet**. Integration Health shows the worker with executor `portaldot-v3-testnet` |
+| 5 | `PF_MODE=testnet PF_DATA_DIR=data/testnet npm run dev` | Console shows the project “PortalForge Demo (Portaldot V3 testnet)” with 2 contracts and the badge **Portaldot V3 Testnet**. Integration Health shows the worker with executor `portaldot-v3-testnet` |
 | 6 | `npx tsx scripts/request-job.ts portaldot-v3-testnet 12 --confirm` | `status: success`, a `jobId`, a tx hash |
 | 7 | Watch Executions (about 1–2 min: GRANDPA `safe` lag plus the poll interval) | Execution `succeeded`. Steps guard → compute → check → complete (tx hash) → proof (registered, tx hash) |
 | 8 | `npm run -s pf -- execution inspect <id> --api http://127.0.0.1:4300` and `npm run -s pf -- evidence verify <evidenceId> --api http://127.0.0.1:4300` | Execution `succeeded`; evidence `VERIFIED` (commitment matches, writer = executor, canonical block) |
-| 9 | `curl -X POST http://127.0.0.1:4310/admin/faults -H 'x-admin-token: local-demo-admin-token' -d '{"dropNextResponse":1}'`, then `npx tsx scripts/request-job.ts portaldot-v3-testnet 9 --confirm` | Execution `succeeded`; the compute step shows attempt 1 `unknown` and attempt 2 reconciled by query; `completeJob` has one tx hash |
+| 9 (optional, not run on V3) | `curl -X POST http://127.0.0.1:4310/admin/faults -H 'x-admin-token: local-demo-admin-token' -d '{"dropNextResponse":1}'`, then `npx tsx scripts/request-job.ts portaldot-v3-testnet 9 --confirm` | Execution `succeeded`; the compute step shows attempt 1 `unknown` and attempt 2 reconciled by query; `completeJob` has one tx hash |
 | 10 | `npm run smoke:testnet` | `deployment.verify` now **passes** (no longer "not applicable") |
-| 11 | Fill every row of [post-funding-evidence.md](post-funding-evidence.md) | Real values only. Job 3 (`request-job.ts portaldot-v3-testnet 21 --confirm`) only if a take failed |
+| 11 | `npx tsx scripts/collect-testnet-evidence.ts` with the stack running | All cross-checks pass; writes `docs/testnet-evidence/` |
 
 If step 1 shows a BLOCKER, stop and send more tPOT. Nothing is broadcast until the plan is clean.
 If step 2 exits 4 (receipt not seen yet), wait a minute and re-run the same command. It resumes from the journal.

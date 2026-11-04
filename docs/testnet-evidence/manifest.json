@@ -1,0 +1,61 @@
+{
+  "schema": "portalforge.deployment/v1",
+  "network": {
+    "id": "portaldot-v3-testnet",
+    "chainId": 420420777,
+    "genesisHash": "0xd4f9acbcf7f52388d8b095abe3c198d19fc510e0343e643e87cfbccb155283bd",
+    "specName": "portaldot-v3"
+  },
+  "source": {
+    "repo": "portalforge",
+    "commit": "81b3d775e59b5eb5ba5a515601d9a9a4077b2239",
+    "dirty": false
+  },
+  "compiler": {
+    "solc": "0.8.28+commit.7893614a",
+    "optimizer": true,
+    "runs": 1,
+    "evmVersion": "cancun",
+    "viaIR": false
+  },
+  "contracts": [
+    {
+      "name": "JobRegistry",
+      "runtime": "evm",
+      "address": "0xd5dcf5a7d69354b07f776f8a961348f0a394d746",
+      "deployTx": "0x421b5ce147e513dc86ad8a4890f9909a7f78e28e86ef8ac1bd985acd54e3d30f",
+      "deployBlock": 326462,
+      "deployBlockHash": "0x3712b2e6288f873580d402cfe4f0744775342186259830ac96bd45709b6e5912",
+      "deployer": "0xAC575944f0696eF19e7f835fd28491c25e40Ca14",
+      "runtimeCodeHash": "0x64b13a1c9a3cac7d200c60e5b54ee3cef557b55f4762b7ea21e6bf05cad3c379",
+      "artifactRuntimeHash": "0x64b13a1c9a3cac7d200c60e5b54ee3cef557b55f4762b7ea21e6bf05cad3c379",
+      "abiHash": "0xe89f255ac4ce62bbda31c5fca22f38babd31b2444ba0bbacb15b1b9a04438fbc",
+      "constructorArgs": [
+        "0xAC575944f0696eF19e7f835fd28491c25e40Ca14",
+        "0x3ec086354a0DaDFb3ecb9A23B6B63229C4b91f25"
+      ],
+      "version": "1.0.0",
+      "owner": "0xAC575944f0696eF19e7f835fd28491c25e40Ca14"
+    },
+    {
+      "name": "EvidenceRegistry",
+      "runtime": "evm",
+      "address": "0xf005d9e544a399196473ec167eda85c089d80cff",
+      "deployTx": "0x72fcb1f2c043f366320e056e9ea800a02db189122f7212ed859429ea7344ec42",
+      "deployBlock": 326463,
+      "deployBlockHash": "0xf1788ce1b4ad82e4a4c3b25c76cde23e5d81ce5e4c0fc1299fe50ea0691b63f9",
+      "deployer": "0xAC575944f0696eF19e7f835fd28491c25e40Ca14",
+      "runtimeCodeHash": "0xe4e0e703a216347aa7f8e8881f1cecf208e6b5e786972af0dc2eba15d3a49a32",
+      "artifactRuntimeHash": "0xe4e0e703a216347aa7f8e8881f1cecf208e6b5e786972af0dc2eba15d3a49a32",
+      "abiHash": "0x76915b147a50f71e2dcfa22dc8abf8dc18cb4f46d375d653d10be01650cdbfac",
+      "constructorArgs": [
+        "0xAC575944f0696eF19e7f835fd28491c25e40Ca14",
+        "0x3ec086354a0DaDFb3ecb9A23B6B63229C4b91f25"
+      ],
+      "version": "1.0.0",
+      "owner": "0xAC575944f0696eF19e7f835fd28491c25e40Ca14"
+    }
+  ],
+  "createdAt": "2026-11-04T22:50:00.869Z",
+  "notes": []
+}

@@ -1,0 +1,26 @@
+VERIFIED — Portaldot V3 Testnet, 25/25 checks passed
+✔ pass        manifest.schema                      portalforge.deployment/v1
+✔ pass        network.chain_id                     rpc 420420777, manifest 420420777, profile 420420777
+✔ pass        network.genesis                      native 0xd4f9acbcf7f52388d8b095abe3c198d19fc510e0343e643e87cfbccb155283bd, manifest 0xd4f9acbcf7f52388d8b095abe3c198d19fc510e0343e643e87cfbccb155283bd
+✔ pass        JobRegistry.code_exists              1798 bytes at 0xd5dcf5a7d69354b07f776f8a961348f0a394d746
+✔ pass        JobRegistry.code_hash                chain 0x64b13a1c9a3cac7d200c60e5b54ee3cef557b55f4762b7ea21e6bf05cad3c379; manifest 0x64b13a1c9a3cac7d200c60e5b54ee3cef557b55f4762b7ea21e6bf05cad3c379; artifact 0x64b13a1c9a3cac7d200c60e5b54ee3cef557b55f4762b7ea21e6bf05cad3c379
+✔ pass        JobRegistry.receipt_status           status success
+✔ pass        JobRegistry.receipt_address          receipt.contractAddress 0xd5dcf5a7d69354b07f776f8a961348f0a394d746
+✔ pass        JobRegistry.receipt_block            block #326462 0x3712b2e6288f873580d402cfe4f0744775342186259830ac96bd45709b6e5912
+✔ pass        JobRegistry.deployer                 tx.from 0xac575944f0696ef19e7f835fd28491c25e40ca14
+✔ pass        JobRegistry.block_canonical          canonical #326462 = 0x3712b2e6288f873580d402cfe4f0744775342186259830ac96bd45709b6e5912
+✔ pass        JobRegistry.owner                    owner() = 0xAC575944f0696eF19e7f835fd28491c25e40Ca14
+✔ pass        JobRegistry.version                  VERSION() = 10000
+✔ pass        JobRegistry.executor                 executor() = 0x3ec086354a0DaDFb3ecb9A23B6B63229C4b91f25
+✔ pass        JobRegistry.start_block              no logs before deploy block (indexer start is safe)
+✔ pass        EvidenceRegistry.code_exists         1991 bytes at 0xf005d9e544a399196473ec167eda85c089d80cff
+✔ pass        EvidenceRegistry.code_hash           chain 0xe4e0e703a216347aa7f8e8881f1cecf208e6b5e786972af0dc2eba15d3a49a32; manifest 0xe4e0e703a216347aa7f8e8881f1cecf208e6b5e786972af0dc2eba15d3a49a32; artifact 0xe4e0e703a216347aa7f8e8881f1cecf208e6b5e786972af0dc2eba15d3a49a32
+✔ pass        EvidenceRegistry.receipt_status      status success
+✔ pass        EvidenceRegistry.receipt_address     receipt.contractAddress 0xf005d9e544a399196473ec167eda85c089d80cff
+✔ pass        EvidenceRegistry.receipt_block       block #326463 0xf1788ce1b4ad82e4a4c3b25c76cde23e5d81ce5e4c0fc1299fe50ea0691b63f9
+✔ pass        EvidenceRegistry.deployer            tx.from 0xac575944f0696ef19e7f835fd28491c25e40ca14
+✔ pass        EvidenceRegistry.block_canonical     canonical #326463 = 0xf1788ce1b4ad82e4a4c3b25c76cde23e5d81ce5e4c0fc1299fe50ea0691b63f9
+✔ pass        EvidenceRegistry.owner               owner() = 0xAC575944f0696eF19e7f835fd28491c25e40Ca14
+✔ pass        EvidenceRegistry.version             VERSION() = 10000
+✔ pass        EvidenceRegistry.writer              isWriter(0x3ec086354a0DaDFb3ecb9A23B6B63229C4b91f25) = true
+✔ pass        EvidenceRegistry.start_block         no logs before deploy block (indexer start is safe)

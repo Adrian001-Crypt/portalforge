@@ -1,0 +1,47 @@
+network   Portaldot V3 Testnet (chainId 420420777)
+deployer  0xAC575944f0696eF19e7f835fd28491c25e40Ca14  balance 469.9 tPOT
+executor  0x3ec086354a0DaDFb3ecb9A23B6B63229C4b91f25
+gasPrice  22548 wei/gas
+  JobRegistry                runtime  1798 B  sim ok, runtime matches  max fee 175.4262 tPOT  storage deposit 161.037 tPOT
+  EvidenceRegistry           runtime  1991 B  sim ok, runtime matches  max fee 191.822 tPOT  storage deposit 176.091 tPOT
+total max fee 367.2482 tPOT
+total storage deposit 337.128 tPOT (dry-run origin 0xAC575944f0696eF19e7f835fd28491c25e40Ca14)
+warning: pallet-revive folds the storage deposit (≈ depositPerByte × code size × 1.3 lockup) into gas; most of the fee is a held deposit, not burned gas (to be confirmed from receipts).
+budget (worst case, before anything is sent)
+  contracts still to deploy, max fee  367.2482 tPOT
+  executor top-up + transfer gas      35.1 tPOT
+  3 × requestJob                     11.8245 tPOT
+  deployer needs                      414.1727 tPOT
+  deployer holds                      469.9 tPOT
+  margin                              55.7272 tPOT
+  executor needs for 3 job(s)         28.649 tPOT (holds 0 tPOT)
+JobRegistry: sent 0x421b5ce147e513dc86ad8a4890f9909a7f78e28e86ef8ac1bd985acd54e3d30f
+JobRegistry: 0xd5dcf5a7d69354b07f776f8a961348f0a394d746 at block #326462 (gasUsed 7295612387710437, fee 161.2695 tPOT; predicted 0xD5dcf5A7D69354b07F776f8a961348F0A394d746 ✓)
+EvidenceRegistry: sent 0x72fcb1f2c043f366320e056e9ea800a02db189122f7212ed859429ea7344ec42
+EvidenceRegistry: 0xf005d9e544a399196473ec167eda85c089d80cff at block #326463 (gasUsed 7977480749148581, fee 176.3422 tPOT; predicted 0xF005D9e544A399196473ec167Eda85c089D80cFf ✓)
+funded executor 35 tPOT: 0x0f7b36827e16aacf1805c03a9ea24f35b5e449ff93530eacb2c7caf53f68eb04 success
+pass manifest.schema                      portalforge.deployment/v1
+pass network.chain_id                     rpc 420420777, manifest 420420777, profile 420420777
+pass network.genesis                      native 0xd4f9acbcf7f52388d8b095abe3c198d19fc510e0343e643e87cfbccb155283bd, manifest 0xd4f9acbcf7f52388d8b095abe3c198d19fc510e0343e643e87cfbccb155283bd
+pass JobRegistry.code_exists              1798 bytes at 0xd5dcf5a7d69354b07f776f8a961348f0a394d746
+pass JobRegistry.code_hash                chain 0x64b13a1c9a3cac7d200c60e5b54ee3cef557b55f4762b7ea21e6bf05cad3c379; manifest 0x64b13a1c9a3cac7d200c60e5b54ee3cef557b55f4762b7ea21e6bf05cad3c379; artifact 0x64b13a1c9a3cac7d200c60e5b54ee3cef557b55f4762b7ea21e6bf05cad3c379
+pass JobRegistry.receipt_status           status success
+pass JobRegistry.receipt_address          receipt.contractAddress 0xd5dcf5a7d69354b07f776f8a961348f0a394d746
+pass JobRegistry.receipt_block            block #326462 0x3712b2e6288f873580d402cfe4f0744775342186259830ac96bd45709b6e5912
+pass JobRegistry.deployer                 tx.from 0xac575944f0696ef19e7f835fd28491c25e40ca14
+pass JobRegistry.block_canonical          canonical #326462 = 0x3712b2e6288f873580d402cfe4f0744775342186259830ac96bd45709b6e5912
+pass JobRegistry.owner                    owner() = 0xAC575944f0696eF19e7f835fd28491c25e40Ca14
+pass JobRegistry.version                  VERSION() = 10000
+pass JobRegistry.executor                 executor() = 0x3ec086354a0DaDFb3ecb9A23B6B63229C4b91f25
+pass JobRegistry.start_block              no logs before deploy block (indexer start is safe)
+pass EvidenceRegistry.code_exists         1991 bytes at 0xf005d9e544a399196473ec167eda85c089d80cff
+pass EvidenceRegistry.code_hash           chain 0xe4e0e703a216347aa7f8e8881f1cecf208e6b5e786972af0dc2eba15d3a49a32; manifest 0xe4e0e703a216347aa7f8e8881f1cecf208e6b5e786972af0dc2eba15d3a49a32; artifact 0xe4e0e703a216347aa7f8e8881f1cecf208e6b5e786972af0dc2eba15d3a49a32
+pass EvidenceRegistry.receipt_status      status success
+pass EvidenceRegistry.receipt_address     receipt.contractAddress 0xf005d9e544a399196473ec167eda85c089d80cff
+pass EvidenceRegistry.receipt_block       block #326463 0xf1788ce1b4ad82e4a4c3b25c76cde23e5d81ce5e4c0fc1299fe50ea0691b63f9
+pass EvidenceRegistry.deployer            tx.from 0xac575944f0696ef19e7f835fd28491c25e40ca14
+pass EvidenceRegistry.block_canonical     canonical #326463 = 0xf1788ce1b4ad82e4a4c3b25c76cde23e5d81ce5e4c0fc1299fe50ea0691b63f9
+pass EvidenceRegistry.owner               owner() = 0xAC575944f0696eF19e7f835fd28491c25e40Ca14
+pass EvidenceRegistry.version             VERSION() = 10000
+pass EvidenceRegistry.writer              isWriter(0x3ec086354a0DaDFb3ecb9A23B6B63229C4b91f25) = true
+pass EvidenceRegistry.start_block         no logs before deploy block (indexer start is safe)

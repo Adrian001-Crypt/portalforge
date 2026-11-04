@@ -70,7 +70,7 @@ pallet-revive 的规则（`packages/portaldot-native/src/address.ts`）：
 - 给一个 EVM 私钥（如 MetaMask）充值的方法：向它的 **fallback SS58 地址**（`h160 ++ 0xEE×12` 再按前缀 42 编码）转 tPOT。`npm run keygen` 会打印这个地址。
 - 余额单位：native 14 位小数；EVM 侧显示为 18 位小数（×10⁴）。`packages/domain/src/units.ts` 提供 `ethToNative / nativeToEth`，界面统一以 18 位 EVM 单位显示 gas 费用，以 14 位 native 单位显示存储押金。
 
-**待真实充值后确认**：fallback 账户收到 native 转账后 `eth_getBalance` 显示 ×10⁴ 的余额（与 pallet 设计一致，但本机尚无测试币，未实测）。
+**2026-11-04 真实充值后已确认**：向部署账户转入 470 tPOT 后，`eth_getBalance` 显示 469.9 tPOT（×10⁴ 后的数值），比原生 free 少 0.1，正好等于存在性押金（existential deposit）。所以 EVM 侧可花余额 = free − 0.1。
 
 ## 5. 存储押金 —— 影响合约设计的关键发现
 
@@ -91,9 +91,21 @@ pallet-revive 的规则（`packages/portaldot-native/src/address.ts`）：
 对设计的影响（均已实现）：
 1. 合约改为**存储精简**：每个 job 只占一个打包槽（requester|input|status），完成时再写一个 executionId 槽；证据只存一个 `keccak256(contentHash, kind, subject, writer)` 承诺槽，撤销时取反覆盖（不新增条目），完整字段放在事件里。
 2. 部署规划器 `planDeployment` 同时给出 gas 上限费用和**精确押金**（`dryRunDeposit`），控制台 Deployment Workbench 与 `pf deploy plan` 都显示。
-3. 测试网部署分两档：`minimal`（JobRegistry + EvidenceRegistry，押金约 337 tPOT）与 `full`（再加 WorkflowExecutionRegistry，约 509 tPOT）。minimal 档下，工作流版本/执行锚定作为 EvidenceRegistry 的证据类型登记。
+3. 测试网部署分两档：`minimal`（JobRegistry + EvidenceRegistry，押金约 337 tPOT，**已实际部署**）与 `full`（再加 WorkflowExecutionRegistry，约 509 tPOT）。minimal 档下，工作流版本/执行锚定作为 EvidenceRegistry 的证据类型登记。
 
 注意：dry-run 需要 origin 有足够余额，否则 runtime 返回 `Revive.StorageDepositNotEnoughFunds`。在部署者未充值前，规划器可用 `PF_DRYRUN_ORIGIN=<任一公开的有余额 H160>` 只做模拟（不签名）。报告中会标注用了哪个 origin。
+
+### 真实部署后的新发现（2026-11-04，已部署到 V3）
+
+| 现象 | 实测 | 含义 |
+|---|---|---|
+| 实际扣费 | JobRegistry 161.2695、EvidenceRegistry 176.3422 tPOT；押金 161.037、176.091 | gas 只占 0.23–0.25 tPOT，其余都是押金 |
+| 成交 gas 价格 | 交易报价 22548，实际按 22105（当时的 `eth_gasPrice`）扣费 | 报价多出的部分不扣 |
+| 单次写入费用 | `requestJob` 3.8565，`completeJob`/`register` 3.8662 tPOT | 3.8415 押金 + 0.015–0.025 gas |
+| 费用估算与 gas 价格 | `eth_estimateGas` 的 gas ≈ 总费用 ÷ `eth_gasPrice`，所以 gas × price 基本不随价格变化 | 预算不应随价格下降而下降 |
+| 代码已上传 | 相同字节码再次模拟时押金降到 48.957、52.431 tPOT | 同一代码的第二次部署不再收代码押金 |
+| 回执索引滞后 | `eth_getTransactionCount` 已更新时，`eth_getTransactionReceipt` 和 `eth_getTransactionByHash` 可能还查不到 | 不能凭 nonce 已用就判断交易被替换，详见 `docs/testnet-evidence/README.md` |
+| 公共 RPC 短暂故障 | 22:59 UTC 附近 `eth_blockNumber` 返回 HTTP 521，随后恢复 | 索引器记录错误并继续，没有丢事件 |
 
 ## 6. 双接口关联
 

@@ -6,15 +6,15 @@
 <title>PortalForge</title>
 <meta name="description" content="Open-source middleware for Portaldot V3: deploy, index, recoverable workflows and on-chain evidence.">
 <style>
-  :root { --bg: #f5f6f8; --card: #fff; --fg: #14213d; --muted: #4a5568; --line: #dde2ea; --accent: #1f5fd6; --warn-bg: #fff4dc; --warn-fg: #7a4d00; color-scheme: light dark; }
-  @media (prefers-color-scheme: dark) { :root { --bg: #0f1729; --card: #1b2a44; --fg: #f5f6f8; --muted: #c9d3e3; --line: #2b3d5c; --accent: #7db3ff; --warn-bg: #3a2c10; --warn-fg: #f5cf8a; } }
+  :root { --bg: #f5f6f8; --card: #fff; --fg: #14213d; --muted: #4a5568; --line: #dde2ea; --accent: #1f5fd6; --warn-bg: #e4f4e8; --warn-fg: #14532d; color-scheme: light dark; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #0f1729; --card: #1b2a44; --fg: #f5f6f8; --muted: #c9d3e3; --line: #2b3d5c; --accent: #7db3ff; --warn-bg: #12321f; --warn-fg: #b7ebc6; } }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
   main { max-width: 880px; margin: 0 auto; padding: 40px 16px 64px; }
   h1 { font-size: 40px; line-height: 1.1; margin: 0 0 8px; }
   h2 { font-size: 20px; margin: 36px 0 12px; }
   .lead { font-size: 19px; color: var(--muted); margin: 0 0 20px; }
-  .status { background: var(--warn-bg); color: var(--warn-fg); border-radius: 8px; padding: 12px 14px; }
+  .status { background: var(--warn-bg); color: var(--warn-fg); border-radius: 8px; padding: 12px 14px; overflow-wrap: anywhere; } .status a { color: inherit; }
   .links { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
   .links a { display: block; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 14px; color: inherit; text-decoration: none; }
   .links a:hover { border-color: var(--accent); }
@@ -34,28 +34,30 @@
 <main>
   <h1>PortalForge</h1>
   <p class="lead">Open-source middleware for Portaldot V3: deploy and verify contracts, index EVM and native events together, run workflows that survive failures, and check the results on-chain.</p>
-  <p class="status"><b>Current status:</b> contracts are not deployed on the Portaldot V3 testnet yet; deployment is prepared and waits for testnet tokens. The video and demo below come from a local Anvil chain, and each says so. Live V3 checks so far are read-only.</p>
+  <p class="status"><b>Current status:</b> deployed on the Portaldot V3 testnet, with two full jobs completed and their evidence verified on-chain. JobRegistry <code>0xd5dcf5a7d69354b07f776f8a961348f0a394d746</code>, EvidenceRegistry <code>0xf005d9e544a399196473ec167eda85c089d80cff</code>. <a href="https://github.com/Adrian001-Crypt/portalforge/blob/main/docs/testnet-evidence/README.md">All transactions</a>.</p>
 
   <h2>Try it, no login needed</h2>
   <div class="links">
-    <a href="demo/"><b>Read-only demo</b><span>Click through the real console. A static snapshot of local data.</span></a>
+    <a href="demo/"><b>Read-only demo</b><span>Click through the real console. A static snapshot of the V3 stack.</span></a>
     <a href="pitch/portalforge-pitch.pdf"><b>Pitch deck (PDF)</b><span>10 pages.</span></a>
     <a href="https://github.com/Adrian001-Crypt/portalforge"><b>Source code</b><span>Apache-2.0, on GitHub.</span></a>
+    <a href="https://github.com/Adrian001-Crypt/portalforge/blob/main/docs/testnet-evidence/README.md"><b>Testnet evidence</b><span>Every transaction hash, block and balance.</span></a>
     <a href="https://github.com/Adrian001-Crypt/portalforge/blob/main/docs/test-results.md"><b>Test results</b><span>What was run, what it proves, what it does not.</span></a>
   </div>
 
   <h2>Demo video</h2>
   <video controls preload="metadata" poster="media/screenshots/01-overview.png" src="media/portalforge-demo.mp4"></video>
-  <p><small>Synthetic narration with on-screen captions. Footage from a local Anvil chain, with live V3 read-only samples on the network page. <a href="media/portalforge-demo.mp4">Download MP4</a>.</small></p>
+  <p><small>Synthetic narration with on-screen captions. Deployment, job and evidence are V3 footage, with the wait for finality sped up. The wallet-deploy and fault-recovery scenes use a local Anvil chain and are labelled. <a href="media/portalforge-demo.mp4">Download MP4</a>.</small></p>
 
   <h2>What has been verified, and where</h2>
   <table>
     <tr><th>Claim</th><th>Runs against</th></tr>
-    <tr><td>Chain identity, opcodes, account mapping, exact deposits, EVM and native event correlation</td><td><b>Live V3</b>, read-only</td></tr>
+    <tr><td>Contracts deployed and verified; requestJob → indexed event → workflow → service → completeJob → evidence, twice; CLI verification</td><td><b>Live V3 testnet</b></td></tr>
+    <tr><td>Chain identity, opcodes, account mapping, exact deposits, EVM and native event correlation</td><td><b>Live V3 testnet</b></td></tr>
     <tr><td>Deploy with a browser wallet, crash recovery, duplicate protection</td><td>Local Anvil, real Chrome, test wallet</td></tr>
     <tr><td>Workflow recovery: lost responses, killed workers, RPC outage, replay</td><td>Local Anvil, real processes</td></tr>
     <tr><td>Webhook retries, duplicate handling, delivery after a worker is killed</td><td>Real workers, local HTTP receiver</td></tr>
-    <tr><td>PortalForge contracts deployed and a full job on V3</td><td><b>Not done yet</b></td></tr>
+    <tr><td>MetaMask or another extension wallet on V3</td><td><b>Not tested</b></td></tr>
   </table>
 
   <h2>Run it yourself</h2>

@@ -1,0 +1,10 @@
+VERIFIED — local hash 0x6101b908e8162455a94b25d34becbad58e5d8d65da988b477c3481f758dd025d
+✔ pass        network.chain_id                     rpc 420420777, expected 420420777
+✔ pass        evidence.exists                      commitment 0x20a0525a9d3b99e0b20e4391239d6b001f7ae4880a79b6a6b58cbe31731abed5
+✔ pass        evidence.event                       registered in tx 0x841cb5823adec2d0b5b230f047301f8cfbb25fff11ba4b8f868316d6d91638e8 at block #326486
+✔ pass        evidence.content_hash                local 0x6101b908e8162455a94b25d34becbad58e5d8d65da988b477c3481f758dd025d; event 0x6101b908e8162455a94b25d34becbad58e5d8d65da988b477c3481f758dd025d
+✔ pass        evidence.commitment                  active, commitment matches
+✔ pass        evidence.not_revoked                 active
+✔ pass        evidence.kind                        kind 0x70075212285cc072ee97ab50ecca893864cecbfe1359f71a4c5f0a18fa095617
+✔ pass        evidence.block_canonical             canonical #326486 = 0x744d714e845ec8348b6a905489c29f9f805d8569648af5c0200ed4b7c9a834f7
+Note: this proves the registry holds this hash from this writer; it does not prove the content is true.

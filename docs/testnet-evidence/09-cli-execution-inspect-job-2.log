@@ -1,0 +1,12 @@
+0xb3a8c7fa4c09f3e2f9733f99973a67a7ae777ad51afc58c1a299d7f7793210ee
+  workflow job-square v1 (0x6e32ace0ab…) · state succeeded
+  trigger event portaldot-v3-testnet:evm:0x8dda46d7ad5ae40ecce65fdf511049e46ecf07344e43ad4a214716b6e1448f25:1:3 · input 0xe19e2762ad47…
+  ✔ guard      condition      succeeded         attempts 1
+  ✔ compute    http           succeeded         attempts 1
+  ✔ check      validate       succeeded         attempts 1
+  ✔ complete   contract_call  succeeded         attempts 1
+  ✔ proof      evidence       succeeded         attempts 1
+  intent http confirmed key 0xb3a8c7fa4c09f3e2f9733f99973a67a7ae777ad51afc58c1a299d7f7793210ee:compute
+  intent chain_tx confirmed tx 0x09bb274acb8e81641a667417ef0fa0b1575d55bb30c89096c139378c0e1252fb key 0xb3a8c7fa4c09f3e2f9733f99973a67a7ae777ad51afc58c1a299d7f7793210ee:complete
+  intent chain_tx confirmed tx 0x4dd14dbcc648ec9d7a1774996cdbf53a983a497f4b2884fcca1e88d80431fc67 key 0xb3a8c7fa4c09f3e2f9733f99973a67a7ae777ad51afc58c1a299d7f7793210ee:proof
+  evidence 0xbdab6db94d67965700b6eb4d281d0695937ec2ef12098eee2261af3c71954963 registered content 0xd1aa3dc649d7383f4016c1c8ba9660e7684c4ac5c942f9b28017974a8ed70a27

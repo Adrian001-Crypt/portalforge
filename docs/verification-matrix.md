@@ -10,7 +10,7 @@ Status legend: **Verified-testnet** (observed on live Portaldot V3) · **Verifie
 | Network | EVM block hash == reviveApi.ethBlockHash | Verified-testnet | probe `correlation.block_numbers` |
 | Deploy | Artifact runtime == simulated runtime on V3 | Verified-testnet | `pf deploy plan`, smoke `deploy.simulation` |
 | Deploy | Exact storage deposit dry-run | Verified-testnet | smoke `deploy.deposit` |
-| Deploy | Real testnet deployment + manifest verification | **Pending** | needs funded deployer (docs/deployment.md) |
+| Deploy | Real testnet deployment + manifest verification | Verified-testnet | `docs/testnet-evidence/README.md`, 25/25 checks |
 | Deploy | Deploy journal: crash after intent / after send, idempotent rerun, stale manifest on a fresh chain | Verified-local | `scripts/test-deploy-resume.ts` (7/7) |
 | Deploy | Budget: extras refused before the first send; resume on a part-spent balance | Verified-local | `test-deploy-resume.ts` `budget.*`, `sdk/test/budget.test.ts` |
 | Deploy | One new storage slot per demo call | Unit (EVM) | `contracts/evm/test/StorageSlots.t.sol` |
@@ -31,9 +31,13 @@ Status legend: **Verified-testnet** (observed on live Portaldot V3) · **Verifie
 | Workflow | Schedules (worker-driven) | Unit | engine.test.ts |
 | Execution | Allowlist, budget, network mismatch refusal | Verified-local (Anvil) | chain.test.ts |
 | Execution | Sign → persist → broadcast; same-hash resume; lost receipt | Verified-local (Anvil) | chain.test.ts |
-| Execution | On-chain write on Portaldot testnet | **Pending** | executor not funded |
+| Execution | On-chain write on Portaldot testnet (`completeJob`, `register`, with allowlist and finality wait) | Verified-testnet | `docs/testnet-evidence/README.md` |
 | Evidence | Register + verify (local hash vs chain commitment) | Verified-local | chain.test.ts, E2E F, console |
-| Evidence | On Portaldot testnet | **Pending** | registry not deployed |
+| Evidence | Registered on V3 and verified independently with the CLI | Verified-testnet | `docs/testnet-evidence/README.md`, `05-cli-evidence-verify.log` |
+| Workflow | Full job on V3: requestJob → indexed → workflow → service → completeJob → evidence | Verified-testnet (2 jobs) | `docs/testnet-evidence/README.md` |
+| Execution | Receipt index lagging behind the account nonce | Verified-testnet (fix), Verified-local (simulated) | job 2 trace, `chain.test.ts` |
+| Recovery | Fault recovery on V3 | Not done on V3 by choice, to save tokens; local only | E2E B to E |
+| Wallet | MetaMask or other extension wallet | Not tested | test wallet only |
 | Ops | Incident aggregation/cooldown/reopen, rules | Unit | ops.test.ts |
 | Ops | rpc_unreachable incident open → auto-resolve | Verified-local | E2E D |
 | Ops | Webhook delivery: success, retry with backoff, permanent failure, give-up + operator retry, duplicate raises, re-open, severity escalation, lost response, unsafe target, worker SIGKILL, no worker running | Verified-local (real workers, real HTTP receiver) | `scripts/test-webhooks.ts`, `ops.test.ts` |

@@ -26,7 +26,7 @@ Current plan numbers (2026-11-03, `pf deploy plan`):
 | `minimal` (recommended) | JobRegistry + EvidenceRegistry | 337.13 tPOT | ≈ 367.2 tPOT |
 | `full` | + WorkflowExecutionRegistry | 508.85 tPOT | ≈ 554.3 tPOT |
 
-Each demo call creates exactly one new storage slot, measured at **3.8415 tPOT** on V3. A job therefore costs about 3.94 (requestJob, deployer) + 7.88 (completeJob + register, executor), gas included. `full` does not fit in the requested 450 tPOT. **The plan is in [funding-handoff.md](funding-handoff.md)**: 450 tPOT to the deployer, `--fund-executor 35`, 3 jobs.
+Each demo call creates exactly one new storage slot, measured at **3.8415 tPOT** on V3. A job therefore costs about 3.94 (requestJob, deployer) + 7.88 (completeJob + register, executor), gas included. `full` did not fit the tokens available. **This is what was deployed; the budget and actual costs are in [funding-handoff.md](funding-handoff.md)**, and the evidence in [testnet-evidence/README.md](testnet-evidence/README.md).
 
 ### Step 1 — get testnet tokens (you)
 Through the official channel only (Discord support ticket, or DM the admins listed on the DoraHacks page). Give them your **native SS58 address (starts with 5)** and a screenshot of your registration. Never share a seed phrase.
@@ -48,7 +48,7 @@ The SS58 addresses are the pallet-revive **fallback accounts** of those H160 key
 
 ### Step 3 — transfer tPOT (you, in your wallet)
 In polkadot.js Apps (custom endpoint `wss://test-node-v3.portaldot.dev`), Talisman or SubWallet, send from your faucet account:
-- **450 tPOT → deployer** `5Fxg3MEs…czF1t`. Other amounts: see the table in [funding-handoff.md](funding-handoff.md)
+- **450–470 tPOT → deployer** `5Fxg3MEs…czF1t`. Other amounts: see the table in [funding-handoff.md](funding-handoff.md)
 - nothing to the executor: the deploy step forwards its budget (`--fund-executor 35`)
 
 Then confirm the EVM view sees the balance:
@@ -75,7 +75,7 @@ npm run -s pf -- deployment verify deployments/portaldot-v3-testnet.json --execu
 ### Step 5 — run PortalForge against the testnet
 
 ```bash
-PF_MODE=testnet npm run dev
+PF_MODE=testnet PF_DATA_DIR=data/testnet npm run dev
 ```
 
 This seeds a public read-only project `portaldot-testnet-demo` from the manifest and loads the executor key (`.secrets/portaldot-v3-testnet-executor.json`). Request a job:
@@ -98,7 +98,7 @@ Copy the deploy tx hashes, contract addresses and one full job's tx hashes (`req
 
 ## C. Public read-only demo (outward-facing: you decide where and when)
 
-The permanent public demo is a static snapshot on GitHub Pages (published from `docs/` on `main`), rebuilt with `npx tsx scripts/media/capture-snapshot.ts` and checked with `npx tsx scripts/check-static-demo.ts <url>`. Everything below runs the live read-only stack instead, which needs a machine that stays on.
+The permanent public demo is a static snapshot on GitHub Pages (published from `docs/` on `main`), rebuilt with `npx tsx scripts/media/capture-snapshot.ts --testnet` and checked with `npx tsx scripts/check-static-demo.ts <url>`. It is built from the stack that ran the jobs (`--testnet`). Everything below runs the live read-only stack instead, which needs a machine that stays on. On testnet that stack runs no worker, so a fresh database cannot repeat a job or sign anything.
 
 ```bash
 npm ci && npm run contracts:build && npm run web:build

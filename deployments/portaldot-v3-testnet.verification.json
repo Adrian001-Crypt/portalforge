@@ -1,0 +1,132 @@
+{
+  "ok": true,
+  "checks": [
+    {
+      "id": "manifest.schema",
+      "status": "pass",
+      "detail": "portalforge.deployment/v1"
+    },
+    {
+      "id": "network.chain_id",
+      "status": "pass",
+      "detail": "rpc 420420777, manifest 420420777, profile 420420777"
+    },
+    {
+      "id": "network.genesis",
+      "status": "pass",
+      "detail": "native 0xd4f9acbcf7f52388d8b095abe3c198d19fc510e0343e643e87cfbccb155283bd, manifest 0xd4f9acbcf7f52388d8b095abe3c198d19fc510e0343e643e87cfbccb155283bd"
+    },
+    {
+      "id": "JobRegistry.code_exists",
+      "status": "pass",
+      "detail": "1798 bytes at 0xd5dcf5a7d69354b07f776f8a961348f0a394d746"
+    },
+    {
+      "id": "JobRegistry.code_hash",
+      "status": "pass",
+      "detail": "chain 0x64b13a1c9a3cac7d200c60e5b54ee3cef557b55f4762b7ea21e6bf05cad3c379; manifest 0x64b13a1c9a3cac7d200c60e5b54ee3cef557b55f4762b7ea21e6bf05cad3c379; artifact 0x64b13a1c9a3cac7d200c60e5b54ee3cef557b55f4762b7ea21e6bf05cad3c379"
+    },
+    {
+      "id": "JobRegistry.receipt_status",
+      "status": "pass",
+      "detail": "status success"
+    },
+    {
+      "id": "JobRegistry.receipt_address",
+      "status": "pass",
+      "detail": "receipt.contractAddress 0xd5dcf5a7d69354b07f776f8a961348f0a394d746"
+    },
+    {
+      "id": "JobRegistry.receipt_block",
+      "status": "pass",
+      "detail": "block #326462 0x3712b2e6288f873580d402cfe4f0744775342186259830ac96bd45709b6e5912"
+    },
+    {
+      "id": "JobRegistry.deployer",
+      "status": "pass",
+      "detail": "tx.from 0xac575944f0696ef19e7f835fd28491c25e40ca14"
+    },
+    {
+      "id": "JobRegistry.block_canonical",
+      "status": "pass",
+      "detail": "canonical #326462 = 0x3712b2e6288f873580d402cfe4f0744775342186259830ac96bd45709b6e5912"
+    },
+    {
+      "id": "JobRegistry.owner",
+      "status": "pass",
+      "detail": "owner() = 0xAC575944f0696eF19e7f835fd28491c25e40Ca14"
+    },
+    {
+      "id": "JobRegistry.version",
+      "status": "pass",
+      "detail": "VERSION() = 10000"
+    },
+    {
+      "id": "JobRegistry.executor",
+      "status": "pass",
+      "detail": "executor() = 0x3ec086354a0DaDFb3ecb9A23B6B63229C4b91f25"
+    },
+    {
+      "id": "JobRegistry.start_block",
+      "status": "pass",
+      "detail": "no logs before deploy block (indexer start is safe)"
+    },
+    {
+      "id": "EvidenceRegistry.code_exists",
+      "status": "pass",
+      "detail": "1991 bytes at 0xf005d9e544a399196473ec167eda85c089d80cff"
+    },
+    {
+      "id": "EvidenceRegistry.code_hash",
+      "status": "pass",
+      "detail": "chain 0xe4e0e703a216347aa7f8e8881f1cecf208e6b5e786972af0dc2eba15d3a49a32; manifest 0xe4e0e703a216347aa7f8e8881f1cecf208e6b5e786972af0dc2eba15d3a49a32; artifact 0xe4e0e703a216347aa7f8e8881f1cecf208e6b5e786972af0dc2eba15d3a49a32"
+    },
+    {
+      "id": "EvidenceRegistry.receipt_status",
+      "status": "pass",
+      "detail": "status success"
+    },
+    {
+      "id": "EvidenceRegistry.receipt_address",
+      "status": "pass",
+      "detail": "receipt.contractAddress 0xf005d9e544a399196473ec167eda85c089d80cff"
+    },
+    {
+      "id": "EvidenceRegistry.receipt_block",
+      "status": "pass",
+      "detail": "block #326463 0xf1788ce1b4ad82e4a4c3b25c76cde23e5d81ce5e4c0fc1299fe50ea0691b63f9"
+    },
+    {
+      "id": "EvidenceRegistry.deployer",
+      "status": "pass",
+      "detail": "tx.from 0xac575944f0696ef19e7f835fd28491c25e40ca14"
+    },
+    {
+      "id": "EvidenceRegistry.block_canonical",
+      "status": "pass",
+      "detail": "canonical #326463 = 0xf1788ce1b4ad82e4a4c3b25c76cde23e5d81ce5e4c0fc1299fe50ea0691b63f9"
+    },
+    {
+      "id": "EvidenceRegistry.owner",
+      "status": "pass",
+      "detail": "owner() = 0xAC575944f0696eF19e7f835fd28491c25e40Ca14"
+    },
+    {
+      "id": "EvidenceRegistry.version",
+      "status": "pass",
+      "detail": "VERSION() = 10000"
+    },
+    {
+      "id": "EvidenceRegistry.writer",
+      "status": "pass",
+      "detail": "isWriter(0x3ec086354a0DaDFb3ecb9A23B6B63229C4b91f25) = true"
+    },
+    {
+      "id": "EvidenceRegistry.start_block",
+      "status": "pass",
+      "detail": "no logs before deploy block (indexer start is safe)"
+    }
+  ],
+  "verifiedAt": "2026-11-04T22:50:54.633Z",
+  "networkId": "portaldot-v3-testnet"
+}

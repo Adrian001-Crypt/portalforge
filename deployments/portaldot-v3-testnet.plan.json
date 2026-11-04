@@ -3,7 +3,7 @@
   "chainId": 420420777,
   "deployer": "0xAC575944f0696eF19e7f835fd28491c25e40Ca14",
   "deployerBalance": "469900000000000000000",
-  "gasPrice": "22557",
+  "gasPrice": "22548",
   "contracts": [
     {
       "name": "JobRegistry",
@@ -394,8 +394,8 @@
         "ok": true,
         "runtimeMatches": true
       },
-      "gas": "7776607212128554",
-      "fee": "175416928883983792578",
+      "gas": "7780125242732328",
+      "fee": "175426263973128531744",
       "deposit": {
         "ok": true,
         "storageDeposit": "16103700000000000",
@@ -836,8 +836,8 @@
         "ok": true,
         "runtimeMatches": true
       },
-      "gas": "8503427091064467",
-      "fee": "191811804893141182119",
+      "gas": "8507273925048544",
+      "fee": "191822012461994570112",
       "deposit": {
         "ok": true,
         "storageDeposit": "17609100000000000",
@@ -845,10 +845,10 @@
       }
     }
   ],
-  "totalFee": "367228733777124974697",
+  "totalFee": "367248276435123101856",
   "blockers": [],
   "warnings": [
     "pallet-revive folds the storage deposit (≈ depositPerByte × code size × 1.3 lockup) into gas; most of the fee is a held deposit, not burned gas (to be confirmed from receipts)."
   ],
-  "createdAt": "2026-11-04T22:29:51.854Z"
+  "createdAt": "2026-11-04T22:49:48.165Z"
 }

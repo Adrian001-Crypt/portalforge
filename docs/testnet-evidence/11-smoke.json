@@ -1,0 +1,307 @@
+{
+  "schema": "portalforge.smoke/v1",
+  "network": "portaldot-v3-testnet",
+  "at": "2026-11-04T23:01:38.652Z",
+  "results": [
+    {
+      "id": "probe.identity",
+      "ok": true,
+      "detail": "28 supported checks, identity matches"
+    },
+    {
+      "id": "probe.correlation",
+      "ok": true,
+      "detail": "EVM block #326568 hash equals reviveApi.ethBlockHash(326568); native block hash at #326568 is a different (Substrate) hash"
+    },
+    {
+      "id": "probe.mapping",
+      "ok": true,
+      "detail": "supported, supported"
+    },
+    {
+      "id": "deploy.simulation",
+      "ok": true,
+      "detail": "JobRegistry: runtime matches; EvidenceRegistry: runtime matches"
+    },
+    {
+      "id": "deploy.deposit",
+      "ok": true,
+      "detail": "JobRegistry: 48.957 tPOT; EvidenceRegistry: 52.431 tPOT"
+    },
+    {
+      "id": "deploy.balance",
+      "ok": null,
+      "detail": "deployer balance 89462950800641104175 < estimated max fee 110811116206720757958 (wei, 18 dp)"
+    },
+    {
+      "id": "index.evm",
+      "ok": true,
+      "detail": "1 logs from 0xf005d9e544a399196473ec167eda85c089d80cff indexed (no ABI registered → stored undecoded, isolated)"
+    },
+    {
+      "id": "index.native",
+      "ok": true,
+      "detail": "1 native events (revive.ContractEmitted) decoded with runtime spec runtime:spec3002"
+    },
+    {
+      "id": "index.correlation",
+      "ok": true,
+      "detail": "1 EVM logs linked to Revive.ContractEmitted; 1 verified by ethBlockHash",
+      "data": [
+        {
+          "evm_id": "portaldot-v3-testnet:evm:0x214fd4891d66d57d6c71651f680cad08cad817c3b8c11cbda61ea2391838ac37:1:3",
+          "native_id": "portaldot-v3-testnet:native:0x725e84985923d1a3de96e462a52f645df38abfc2d72057cd8ef4fe6b8831ec98:1:3",
+          "block_number": 326541,
+          "evm_block_hash": "0x214fd4891d66d57d6c71651f680cad08cad817c3b8c11cbda61ea2391838ac37",
+          "revive_eth_hash": "0x214fd4891d66d57d6c71651f680cad08cad817c3b8c11cbda61ea2391838ac37",
+          "verified": 1
+        }
+      ]
+    },
+    {
+      "id": "deployment.verify",
+      "ok": true,
+      "detail": "23/23 checks passed",
+      "data": []
+    }
+  ],
+  "probe": {
+    "probedAt": "2026-11-04T23:01:14.353Z",
+    "checks": [
+      {
+        "id": "evm.chain_id",
+        "area": "identity",
+        "status": "supported",
+        "summary": "chainId 420420777 (expected 420420777)"
+      },
+      {
+        "id": "evm.client_version",
+        "area": "evm",
+        "status": "info",
+        "summary": "eth-rpc/main-fddd431/x86_64-unknown-linux-gnu/rustc1.98.0"
+      },
+      {
+        "id": "evm.block_tag.latest",
+        "area": "evm",
+        "status": "supported",
+        "summary": "latest = #326569"
+      },
+      {
+        "id": "evm.block_tag.safe",
+        "area": "evm",
+        "status": "supported",
+        "summary": "safe = #326567"
+      },
+      {
+        "id": "evm.block_tag.finalized",
+        "area": "evm",
+        "status": "supported",
+        "summary": "finalized = #326567"
+      },
+      {
+        "id": "evm.method.eth_gasPrice",
+        "area": "evm",
+        "status": "supported",
+        "summary": "\"0x5654\""
+      },
+      {
+        "id": "evm.method.eth_maxPriorityFeePerGas",
+        "area": "evm",
+        "status": "supported",
+        "summary": "\"0x0\""
+      },
+      {
+        "id": "evm.method.eth_syncing",
+        "area": "evm",
+        "status": "supported",
+        "summary": "false"
+      },
+      {
+        "id": "evm.method.net_version",
+        "area": "evm",
+        "status": "supported",
+        "summary": "\"420420777\""
+      },
+      {
+        "id": "evm.method.eth_newFilter",
+        "area": "evm",
+        "status": "unsupported",
+        "summary": "Method not found"
+      },
+      {
+        "id": "evm.method.eth_subscribe",
+        "area": "evm",
+        "status": "error",
+        "summary": "Internal error"
+      },
+      {
+        "id": "evm.method.eth_feeHistory",
+        "area": "evm",
+        "status": "supported",
+        "summary": "baseFee 0x5654"
+      },
+      {
+        "id": "evm.get_logs_range",
+        "area": "evm",
+        "status": "supported",
+        "summary": "50000-block range returned 1543 logs in 260ms"
+      },
+      {
+        "id": "evm.opcode.create_basic",
+        "area": "evm",
+        "status": "supported",
+        "summary": "frontier opcode probe returned 0x602a60005260206000…"
+      },
+      {
+        "id": "evm.opcode.push0",
+        "area": "evm",
+        "status": "supported",
+        "summary": "shanghai opcode probe returned 0x000000000000000000…"
+      },
+      {
+        "id": "evm.opcode.tstore_tload",
+        "area": "evm",
+        "status": "supported",
+        "summary": "cancun opcode probe returned 0x000000000000000000…"
+      },
+      {
+        "id": "evm.opcode.mcopy",
+        "area": "evm",
+        "status": "supported",
+        "summary": "cancun opcode probe returned 0x000000000000000000…"
+      },
+      {
+        "id": "evm.opcode.chainid",
+        "area": "evm",
+        "status": "supported",
+        "summary": "istanbul opcode probe returned 0x000000000000000000…"
+      },
+      {
+        "id": "evm.estimate_gas_create",
+        "area": "evm",
+        "status": "supported",
+        "summary": "estimate 418313884992161 gas units for a 22-byte create"
+      },
+      {
+        "id": "native.genesis",
+        "area": "identity",
+        "status": "supported",
+        "summary": "genesis 0xd4f9acbcf7f52388d8b095abe3c198d19fc510e0343e643e87cfbccb155283bd"
+      },
+      {
+        "id": "native.runtime",
+        "area": "native",
+        "status": "info",
+        "summary": "portaldot-v3 spec 3002 tx 2"
+      },
+      {
+        "id": "native.token",
+        "area": "native",
+        "status": "supported",
+        "summary": "tPOT, 14 decimals, ss58 42"
+      },
+      {
+        "id": "native.heads",
+        "area": "native",
+        "status": "info",
+        "summary": "best #326571, finalized #326569, lag 2"
+      },
+      {
+        "id": "native.metadata",
+        "area": "native",
+        "status": "info",
+        "summary": "api decoded metadata v16; state_getMetadata returns v14"
+      },
+      {
+        "id": "native.pallets",
+        "area": "native",
+        "status": "info",
+        "summary": "69 pallets"
+      },
+      {
+        "id": "native.pallet.revive",
+        "area": "native",
+        "status": "supported",
+        "summary": "pallet-revive (EVM/PVM contracts) present"
+      },
+      {
+        "id": "native.pallet.contracts",
+        "area": "native",
+        "status": "supported",
+        "summary": "pallet-contracts (ink!/WASM) present"
+      },
+      {
+        "id": "native.rpc_methods",
+        "area": "native",
+        "status": "info",
+        "summary": "135 RPC methods"
+      },
+      {
+        "id": "native.method.system_dryRun",
+        "area": "native",
+        "status": "supported",
+        "summary": "listed by rpc_methods"
+      },
+      {
+        "id": "native.method.payment_queryInfo",
+        "area": "native",
+        "status": "supported",
+        "summary": "listed by rpc_methods"
+      },
+      {
+        "id": "native.method.state_call",
+        "area": "native",
+        "status": "supported",
+        "summary": "listed by rpc_methods"
+      },
+      {
+        "id": "native.method.archive_v1_body",
+        "area": "native",
+        "status": "supported",
+        "summary": "listed by rpc_methods"
+      },
+      {
+        "id": "native.method.chainHead_v1_follow",
+        "area": "native",
+        "status": "supported",
+        "summary": "listed by rpc_methods"
+      },
+      {
+        "id": "native.unsafe_rpc_listed",
+        "area": "native",
+        "status": "info",
+        "summary": "11 operator-class methods are listed (not called by PortalForge)"
+      },
+      {
+        "id": "native.peers",
+        "area": "native",
+        "status": "info",
+        "summary": "peers 1, syncing false"
+      },
+      {
+        "id": "mapping.account_to_h160",
+        "area": "mapping",
+        "status": "supported",
+        "summary": "reviveApi.address(dev pubkey) = 0x9621dde636de098b43efb0fa9b61facfe328f99d; local keccak rule = 0x9621dde636de098b43efb0fa9b61facfe328f99d"
+      },
+      {
+        "id": "mapping.h160_to_account",
+        "area": "mapping",
+        "status": "supported",
+        "summary": "reviveApi.accountId(0x1000000000000000000000000000000000000001) = 0x1000000000000000000000000000000000000001eeeeeeeeeeeeeeeeeeeeeeee; local fallback rule = 0x1000000000000000000000000000000000000001eeeeeeeeeeeeeeeeeeeeeeee"
+      },
+      {
+        "id": "correlation.block_numbers",
+        "area": "correlation",
+        "status": "supported",
+        "summary": "EVM block #326568 hash equals reviveApi.ethBlockHash(326568); native block hash at #326568 is a different (Substrate) hash"
+      },
+      {
+        "id": "correlation.heads",
+        "area": "correlation",
+        "status": "info",
+        "summary": "EVM latest #326569, native best #326571"
+      }
+    ]
+  }
+}

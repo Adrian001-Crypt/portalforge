@@ -13,9 +13,9 @@ Status legend used in this file: **Prepared** (text ready here) · **Public** (l
 | Deployment instructions | `docs/deployment.md`, `docs/funding-handoff.md` | Prepared |
 | Project documentation | `docs/` (architecture, capabilities, security, state machine, tests) | Prepared |
 | Runnable demo | Read-only, no login: https://adrian001-crypt.github.io/portalforge/demo/ . Local: README “Quick start” (verified from a fresh clone) | **Public**, opened without login (30/30 anonymous checks) |
-| Demo video (≤ 3 min, public link) | https://adrian001-crypt.github.io/portalforge/media/portalforge-demo.mp4 (2:18, plays in the browser, also on https://adrian001-crypt.github.io/portalforge/) | **Public**, opened without login (30/30 anonymous checks); testnet shots pending |
+| Demo video (≤ 3 min, public link) | https://adrian001-crypt.github.io/portalforge/media/portalforge-demo.mp4 (2:24, plays in the browser, also on https://adrian001-crypt.github.io/portalforge/) | **Public** |
 | Pitch deck (PDF or public link) | https://adrian001-crypt.github.io/portalforge/pitch/portalforge-pitch.pdf | **Public**, opened without login (30/30 anonymous checks) |
-| Testnet deployment info | Not deployed yet. Values to fill in are listed in `docs/post-funding-evidence.md`. No block explorer; evidence is verified over RPC with `pf deployment verify` | **Pending funding** |
+| Testnet deployment info | JobRegistry `0xd5dcf5a7d69354b07f776f8a961348f0a394d746` (deploy tx `0x421b5ce147e513dc86ad8a4890f9909a7f78e28e86ef8ac1bd985acd54e3d30f`) · EvidenceRegistry `0xf005d9e544a399196473ec167eda85c089d80cff` (deploy tx `0x72fcb1f2c043f366320e056e9ea800a02db189122f7212ed859429ea7344ec42`) · example job: requestJob `0x1ceaecae6a9a1ece6cc181c97cb8e79517b4ca920c346a2b3c9906f4a8b384aa`, completeJob `0x09bb274acb8e81641a667417ef0fa0b1575d55bb30c89096c139378c0e1252fb`, register `0x4dd14dbcc648ec9d7a1774996cdbf53a983a497f4b2884fcca1e88d80431fc67` · all finalized · no block explorer; evidence and steps to check it: `docs/testnet-evidence/README.md` | **Public** |
 
 ## Description (paste into the long description)
 
@@ -39,11 +39,11 @@ The work is middleware and data components on Portaldot's modular runtime: index
 - Live capability probe: `docs/network-capabilities.md`, `docs/probe/portaldot-v3-testnet-latest.json` (spec 3002, chainId 420420777, tPOT 14 dp, ss58 42, Cancun opcodes, mapping checked against `reviveApi`).
 - Exact deposits via `reviveApi.instantiate` dry-run (JobRegistry 161.04, EvidenceRegistry 176.09, 3.8415 tPOT/slot).
 - Live smoke on V3 (8 passed): EVM logs indexed, native `revive.ContractEmitted` decoded, 2 log/event pairs linked and verified by `ethBlockHash`.
-- Testnet deployment and on-chain job: not done yet, pending testnet tokens.
+- Deployed on V3 testnet with two full jobs: requestJob → indexed event → workflow → real HTTP service → completeJob → evidence registered, all transactions finalized, verified independently with the `pf` CLI. Details: `docs/testnet-evidence/README.md`.
 
-## Test results (round 3, 2026-11-04)
+## Test results (round 4, 2026-11-04)
 
-22 Foundry tests · 66 unit/integration tests (incl. real Anvil chain tests) · 7/7 multi-process fault scenarios (lost response, worker SIGKILL, RPC outage, replay) · 11/11 deploy crash, resume and budget checks · 8 real-Chrome tests (wallet deploy, lost-hash recovery, two sessions racing) · 14/14 webhook delivery scenarios · 17/17 live read-only stack visitor checks · 30/30 checks on the public site · live V3 read-only smoke: 8 passed, 2 not applicable until deployment. Local results use Anvil, not testnet. Details: docs/test-results.md.
+**On live V3:** 18/18 cross-checks between chain, indexer, worker and CLI · 25/25 deployment checks · smoke 9 passed, 1 not applicable. **Local:** 22 Foundry tests · 69 unit/integration tests (incl. real Anvil) · 7/7 multi-process fault scenarios · 11/11 deploy crash, resume and budget checks · 8 real-Chrome tests · 14/14 webhook scenarios. Public site: 30/30 anonymous checks. Details: docs/test-results.md.
 
 ## Business model (hypothesis — not validated)
 
@@ -51,4 +51,4 @@ Open-source self-hosted core; possible paid hosted indexing with long history, t
 
 ## Known limitations
 
-Not yet deployed to testnet (waiting for tPOT); local results use Anvil. No ink!/WASM path; no EVM↔WASM calls or cross-chain features. Single-host SQLite store. Dev sign-in only. Not audited. AI-assisted development (Claude Code) disclosed; the demo narration is synthetic.
+On V3, transactions were signed by project keys, not a browser wallet; fault recovery was exercised on a local chain only, and local results use Anvil. No ink!/WASM path; no EVM↔WASM calls or cross-chain features. Single-host SQLite store. Dev sign-in only. Not audited. AI-assisted development (Claude Code) disclosed; the demo narration is synthetic.

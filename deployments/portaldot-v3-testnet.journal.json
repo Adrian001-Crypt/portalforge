@@ -1,0 +1,16 @@
+[
+  {
+    "name": "JobRegistry",
+    "nonce": 0,
+    "predictedAddress": "0xD5dcf5A7D69354b07F776f8a961348F0A394d746",
+    "state": "confirmed",
+    "txHash": "0x421b5ce147e513dc86ad8a4890f9909a7f78e28e86ef8ac1bd985acd54e3d30f"
+  },
+  {
+    "name": "EvidenceRegistry",
+    "nonce": 1,
+    "predictedAddress": "0xF005D9e544A399196473ec167Eda85c089D80cFf",
+    "state": "confirmed",
+    "txHash": "0x72fcb1f2c043f366320e056e9ea800a02db189122f7212ed859429ea7344ec42"
+  }
+]
