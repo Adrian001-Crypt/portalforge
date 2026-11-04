@@ -7,7 +7,7 @@ Legend: ☑ done · ☐ open · (you) = only you can do it.
 ## Eligibility and registration
 - ☐ (you) Ask organizers: judging eligibility without the Oct 24 check-in; multi-track selection — template in `docs/hackathon-requirements.md`.
 - ☐ (you) Confirm you are registered for the hackathon on DoraHacks (signed in, accept the platform terms yourself).
-- ☐ (you) Receive testnet tPOT on your native SS58 address via the official channel.
+- ☐ (you) Receive 450 tPOT on the deployer `5Fxg3MEs…czF1t` via the official channel (requested; budget in `docs/funding-handoff.md`).
 
 ## Code and repository
 - ☑ Independent git repo with real commits starting 2026-11-03, no empty commits. The 20 commits from 2026-11-03 were rewritten to use the current account's GitHub noreply identity when the repo moved to this account, with original dates and messages kept; two doc lines naming a personal email were also changed. Hashes changed; nothing was backdated.
@@ -18,21 +18,22 @@ Legend: ☑ done · ☐ open · (you) = only you can do it.
 - ☑ Public GitHub repo: https://github.com/Adrian001-Crypt/portalforge → **Public** (anonymous clone verified).
 
 ## Testnet evidence (after funding)
-- ☐ Deploy (`minimal`), verify, fund executor — commands and success criteria in `docs/funding-handoff.md`.
-- ☐ One full job on V3: requestJob → workflow → completeJob → evidence register → `pf evidence verify`.
-- ☐ Paste real addresses and tx hashes into `docs/submission-draft.md`, `docs/final-delivery.md`, README status line and deck slide 7.
+- ☐ Deploy (`minimal`), verify, forward 35 tPOT to the executor: commands and success criteria in `docs/funding-handoff.md`.
+- ☐ Two jobs on V3, one normal and one with a dropped response: requestJob → workflow → completeJob → evidence register → `pf evidence verify`.
+- ☐ Fill `docs/post-funding-evidence.md` with real addresses and tx hashes, and update the files it lists.
 - ☐ Finish before 2026-11-05 04:00 UTC if possible (deployment evidence is not a core-module code change, but earlier is safer).
 
 ## Media
-- ☑ Local demo video recorded: `docs/media/portalforge-demo.mp4` (2:08, labelled local, synthetic narration).
-- ☐ Optional: re-record with testnet shots (list in `docs/demo-script.md`) and/or your own voice.
-- ☐ (you) Upload the video (unlisted YouTube / Loom / Drive with “anyone with the link”) → **Uploaded**; check it plays logged-out.
-- ☑ Pitch deck PDF: `docs/pitch/portalforge-pitch.pdf` (public through the repo). ☑ repo link on slides 1 and 10. ☐ (you) team name on slide 1.
+- ☑ Local demo video recorded: `docs/media/portalforge-demo.mp4` (2:18, labelled local, synthetic narration).
+- ☐ After funding: add the testnet shots listed in `docs/post-funding-evidence.md`. Your own voice is optional.
+- ☑ Video public without login: https://adrian001-crypt.github.io/portalforge/media/portalforge-demo.mp4, plays in the browser. A YouTube copy is optional.
+- ☑ Pitch deck PDF: `docs/pitch/portalforge-pitch.pdf`, with the repo link on slides 1 and 10 and no placeholders.
 - ☑ Screenshots: `docs/media/screenshots/` (16).
 
 ## Public demo (optional but useful for judges)
 - ☑ Public read-only mode verified locally (17/17 visitor checks).
-- ☐ (you) Start it where judges can reach it: `npx tsx scripts/public-demo.ts --tunnel` (temporary URL, lives while the command runs) or a host of your choice → **Public**.
+- ☑ Static read-only demo public without login: https://adrian001-crypt.github.io/portalforge/demo/ (30/30 anonymous checks on the live URL, desktop and phone).
+- ☐ Optional: a live stack, `npx tsx scripts/public-demo.ts --tunnel`, on a machine that stays on. Its URL lasts only while it runs.
 
 ## DoraHacks form (you, signed in)
 - ☐ Project name, one-liner, long description, track, team, repo URL, video URL, deck link/PDF, contract addresses + tx hashes, demo URL — all values in `docs/submission-draft.md`.

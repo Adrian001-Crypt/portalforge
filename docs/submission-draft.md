@@ -7,15 +7,15 @@ Status legend used in this file: **Prepared** (text ready here) · **Public** (l
 | Project name | PortalForge | Prepared |
 | One-sentence overview | Open-source middleware for Portaldot V3 that deploys and verifies contracts, indexes EVM and native events together, and runs recoverable, evidence-producing workflows without duplicating business effects. | Prepared |
 | Track | Modular Cloud & Middleware (see rationale) | Prepared — multi-track question pending with organizers |
-| Team members | **[your name / handle]**, **[role]**, **[short bio]** | **Needs you** |
+| Team members | GitHub: `Adrian001-Crypt`. Display name, role and bio are not filled in | **Needs you** if the form requires them |
 | Public GitHub repository | https://github.com/Adrian001-Crypt/portalforge | **Public** |
 | Complete README | https://github.com/Adrian001-Crypt/portalforge#readme | **Public** |
 | Deployment instructions | `docs/deployment.md`, `docs/funding-handoff.md` | Prepared |
 | Project documentation | `docs/` (architecture, capabilities, security, state machine, tests) | Prepared |
-| Runnable demo | Local: README “Quick start” (verified from a fresh clone). Public read-only: **[URL]** | Local prepared; public URL **needs you** |
-| Demo video (≤ 3 min, public link) | File `docs/media/portalforge-demo.mp4` (2:08). Link **[unlisted YouTube/Loom/Drive URL]** | File prepared; **upload needs you**; testnet shots pending |
-| Pitch deck (PDF or public link) | https://github.com/Adrian001-Crypt/portalforge/blob/main/docs/pitch/portalforge-pitch.pdf | **Public**; team placeholder on slide 1 |
-| Testnet deployment info | Contract addresses **[pending]** · deploy tx **[pending]** · example job txs **[pending]** · explorer: none (RPC evidence via `pf deployment verify`) | **Pending funding** |
+| Runnable demo | Read-only, no login: https://adrian001-crypt.github.io/portalforge/demo/ . Local: README “Quick start” (verified from a fresh clone) | **Public**, opened without login (30/30 anonymous checks) |
+| Demo video (≤ 3 min, public link) | https://adrian001-crypt.github.io/portalforge/media/portalforge-demo.mp4 (2:18, plays in the browser, also on https://adrian001-crypt.github.io/portalforge/) | **Public**, opened without login (30/30 anonymous checks); testnet shots pending |
+| Pitch deck (PDF or public link) | https://adrian001-crypt.github.io/portalforge/pitch/portalforge-pitch.pdf | **Public**, opened without login (30/30 anonymous checks) |
+| Testnet deployment info | Not deployed yet. Values to fill in are listed in `docs/post-funding-evidence.md`. No block explorer; evidence is verified over RPC with `pf deployment verify` | **Pending funding** |
 
 ## Description (paste into the long description)
 
@@ -25,7 +25,7 @@ PortalForge turns this into one product:
 1. **Deployment Workbench** — every create is simulated on the live network (runtime must equal the artifact), the runtime reports the exact storage deposit, deploys are journaled and resume after crashes, and the manifest is re-verified on chain.
 2. **Dual-interface indexer** — EVM logs and native events from the deploy block, atomic cursors, reorg and finality handling, per-spec native decoding; an EVM log and its native event are linked only when `eth block hash == reviveApi.ethBlockHash(n)`.
 3. **Recoverable workflows** — versioned DAGs with deterministic execution ids, leases, retries with backoff and jitter, dead-letter, approvals and replay; every side effect persists an intent first; unknown outcomes are queried before any retry; chain writes are allowlisted, budgeted, signed and persisted before broadcast, and reconciled from contract state.
-4. **Observability** — RPC health from real samples only, incidents with facts / inference / suggestions, auto-resolve and webhook notifications.
+4. **Observability** — RPC health from real samples only, incidents with facts / inference / suggestions, auto-resolve, and webhook notifications with retries and duplicate protection.
 5. **Verifiable evidence** — canonical hashes registered in a storage-lean EvidenceRegistry and re-verified by the console or `pf evidence verify`, independent of the server.
 
 Delivered as web console, HTTP API (OpenAPI), TypeScript SDK, `pf` CLI, three template contracts and a reference idempotent receiver. Open source (Apache-2.0).
@@ -39,11 +39,11 @@ The work is middleware and data components on Portaldot's modular runtime: index
 - Live capability probe: `docs/network-capabilities.md`, `docs/probe/portaldot-v3-testnet-latest.json` (spec 3002, chainId 420420777, tPOT 14 dp, ss58 42, Cancun opcodes, mapping checked against `reviveApi`).
 - Exact deposits via `reviveApi.instantiate` dry-run (JobRegistry 161.04, EvidenceRegistry 176.09, 3.8415 tPOT/slot).
 - Live smoke on V3 (8 passed): EVM logs indexed, native `revive.ContractEmitted` decoded, 2 log/event pairs linked and verified by `ethBlockHash`.
-- Testnet deployment and on-chain job: **[pending funding — addresses and tx hashes go here]**.
+- Testnet deployment and on-chain job: not done yet, pending testnet tokens.
 
-## Test results (round 2, 2026-11-03)
+## Test results (round 3, 2026-11-04)
 
-21 Foundry tests · 59 unit/integration tests (incl. real Anvil chain tests) · 7/7 multi-process fault scenarios (lost response, worker SIGKILL, RPC outage, replay) · 7/7 deploy crash/resume checks · 3 real-Chrome tests · 17/17 public-visitor checks · 8 live V3 read-only checks. Details and gaps: `docs/test-results.md`.
+22 Foundry tests · 66 unit/integration tests (incl. real Anvil chain tests) · 7/7 multi-process fault scenarios (lost response, worker SIGKILL, RPC outage, replay) · 11/11 deploy crash, resume and budget checks · 8 real-Chrome tests (wallet deploy, lost-hash recovery, two sessions racing) · 14/14 webhook delivery scenarios · 17/17 live read-only stack visitor checks · 30/30 checks on the public site · live V3 read-only smoke: 8 passed, 2 not applicable until deployment. Local results use Anvil, not testnet. Details: docs/test-results.md.
 
 ## Business model (hypothesis — not validated)
 

@@ -1,7 +1,7 @@
 {
   "suite": "public site",
-  "ranAt": "2026-11-04T21:36:41.500Z",
-  "target": "docs/ served locally the way Pages does",
+  "ranAt": "2026-11-04T21:49:28.288Z",
+  "target": "https://adrian001-crypt.github.io/portalforge/",
   "passed": 30,
   "failed": 0,
   "results": [
@@ -23,12 +23,12 @@
     {
       "id": "video.plays_without_login",
       "ok": true,
-      "detail": "played to 1.5 s of 138 s"
+      "detail": "played to 1.3 s of 138 s"
     },
     {
       "id": "deck.pdf_public",
       "ok": true,
-      "detail": "HTTP 200, 265765 bytes"
+      "detail": "HTTP 200, 265088 bytes"
     },
     {
       "id": "desktop.demo_labelled_snapshot",
