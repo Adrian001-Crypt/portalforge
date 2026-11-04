@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { parseEther as e } from 'viem';
 import { demoBudget } from '../src/budget';
+import { withMargin } from '../src/deploy';
 
 const deployFee = e('367.22');
 describe('demoBudget', () => {
@@ -23,5 +24,13 @@ describe('demoBudget', () => {
   it('counts only what is left: a resume after one contract, an executor already funded', () => {
     const b = demoBudget({ deployFee: 0n, fundExecutor: e('35'), executorBalance: e('35'), jobs: 0, deployerBalance: e('60') });
     expect(b.executorTopUp).toBe(0n); expect(b.transferFee).toBe(0n); expect(b.required).toBe(0n); expect(b.blockers).toEqual([]);
+  });
+});
+
+describe('withMargin', () => {
+  it('never falls short of the percentage', () => {
+    for (const p of [22105n, 22115n, 22120n, 22125n]) expect(withMargin(p, 200n) * 100n >= p * 102n).toBe(true);
+    expect(withMargin(22105n, 200n)).toBe(22548n);
+    expect(withMargin(10000n, 200n)).toBe(10200n);
   });
 });

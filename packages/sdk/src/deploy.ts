@@ -44,6 +44,8 @@ export const DEPLOY_PROFILES = {
 
 const GAS_MARGIN_BPS = 500n; // +5% over estimate; storage deposit dominates, so keep the margin small.
 const PRICE_MARGIN_BPS = 200n; // +2% over eth_gasPrice
+/** Rounds up: a truncated price margin falls short of its percentage by a varying amount, so the max fee drifted as the price moved. */
+export const withMargin = (v: bigint, bps: bigint) => (v * (10_000n + bps) + 9_999n) / 10_000n;
 
 /**
  * Build a deployment plan without signing: identity check, eth_call simulation of each create
@@ -54,7 +56,7 @@ export async function planDeployment(profile: NetworkProfile, opts: { deployer: 
   const evm = new EvmReader(profile.evm.rpcUrl);
   const blockers: string[] = []; const warnings: string[] = [];
   const chainId = await evm.assertIdentity(profile);
-  const gasPrice = (await evm.gasPrice()) * (10_000n + PRICE_MARGIN_BPS) / 10_000n;
+  const gasPrice = withMargin(await evm.gasPrice(), PRICE_MARGIN_BPS);
   let deployerBalance: bigint | null = null;
   try { deployerBalance = await evm.balance(opts.deployer); } catch (e) { blockers.push(`balance read failed: ${(e as Error).message}`); }
   const contracts: PlannedContract[] = [];
@@ -69,7 +71,7 @@ export async function planDeployment(profile: NetworkProfile, opts: { deployer: 
     else if (!simulation.runtimeMatches) blockers.push(`${art.name}: simulated runtime code differs from artifact`);
     let gas: bigint | null = null;
     const est = await evm.raw<string>('eth_estimateGas', [{ from: opts.deployer, data: initCode }]);
-    if (est.ok) gas = BigInt(est.value) * (10_000n + GAS_MARGIN_BPS) / 10_000n; else blockers.push(`${art.name}: estimateGas failed (${est.error.message})`);
+    if (est.ok) gas = withMargin(BigInt(est.value), GAS_MARGIN_BPS); else blockers.push(`${art.name}: estimateGas failed (${est.error.message})`);
     let deposit: DepositDryRun | undefined;
     if (opts.native) {
       deposit = await dryRunDeposit(opts.native, opts.depositOrigin ?? opts.deployer, initCode);

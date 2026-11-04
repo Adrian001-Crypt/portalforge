@@ -1,7 +1,7 @@
 /**
  * PortalForge deployment: plan (read-only) and apply (signs + broadcasts, requires --confirm).
  *   npx tsx scripts/deploy.ts plan  <networkId> [--profile minimal|full] [--fund-executor <amount>] [--jobs <n>]
- *   npx tsx scripts/deploy.ts apply <networkId> [--profile minimal|full] --confirm [--fund-executor <amount>] [--jobs <n>]
+ *   npx tsx scripts/deploy.ts apply <networkId> [--profile minimal|full] --confirm [--fund-executor <amount>] [--jobs <n>] [--max-budget <amount>]
  * The journal (deployments/<networkId>.journal.json) records each intent BEFORE broadcast and the tx hash
  * right after, so a crash or RPC loss resumes by looking up the hash / nonce instead of redeploying.
  */
@@ -88,6 +88,9 @@ const budget = demoBudget({
 });
 formatBudget(budget, fmt).forEach((l) => console.log(l));
 budget.blockers.forEach((b) => console.log(`BLOCKER: ${b}`));
+// An agreed ceiling: stop rather than spend more than was approved if the estimate moved.
+const maxBudget = flag('--max-budget');
+if (maxBudget && budget.required > parseEther(maxBudget)) budget.blockers.push(`required ${fmt(budget.required)} is above the agreed limit of ${maxBudget}`);
 const blocked = plan.blockers.some((b) => !isBalance(b)) || budget.blockers.length > 0;
 if (mode === 'plan') process.exit(blocked ? 1 : 0);
 
