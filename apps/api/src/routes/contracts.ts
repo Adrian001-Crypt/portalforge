@@ -423,7 +423,7 @@ contracts.post('/wallet-intents/:id/manifest', async (c) => {
   const manifest = {
     schema: 'portalforge.deployment/v1' as const,
     network: { id: profile.id, chainId: profile.evm.chainId, ...(profile.native ? { genesisHash: profile.native.genesisHash, specName: profile.native.specName } : {}) },
-    source: { repo: 'portalforge', commit, dirty: git('git status --porcelain') !== '' }, compiler: art.compiler,
+    source: { repo: 'portalforge', commit, dirty: git('git status --porcelain contracts/evm/src') !== '' }, compiler: art.compiler,
     contracts: [manifestContract(art, b.constructorArgs as Hex[], { address: r.contractAddress, txHash: r.transactionHash, blockNumber: r.blockNumber, blockHash: r.blockHash, deployer: w.from_address, runtimeCodeHash: keccak256(code) })],
     createdAt: now(), notes: ['Deployed from the PortalForge Deployment Workbench with a browser wallet.'],
   };

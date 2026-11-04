@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PortalForge</title>
+<meta name="description" content="Open-source middleware for Portaldot V3: deploy, index, recoverable workflows and on-chain evidence.">
+<style>
+  :root { --bg: #f5f6f8; --card: #fff; --fg: #14213d; --muted: #4a5568; --line: #dde2ea; --accent: #1f5fd6; --warn-bg: #fff4dc; --warn-fg: #7a4d00; color-scheme: light dark; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #0f1729; --card: #1b2a44; --fg: #f5f6f8; --muted: #c9d3e3; --line: #2b3d5c; --accent: #7db3ff; --warn-bg: #3a2c10; --warn-fg: #f5cf8a; } }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+  main { max-width: 880px; margin: 0 auto; padding: 40px 16px 64px; }
+  h1 { font-size: 40px; line-height: 1.1; margin: 0 0 8px; }
+  h2 { font-size: 20px; margin: 36px 0 12px; }
+  .lead { font-size: 19px; color: var(--muted); margin: 0 0 20px; }
+  .status { background: var(--warn-bg); color: var(--warn-fg); border-radius: 8px; padding: 12px 14px; }
+  .links { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .links a { display: block; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 14px; color: inherit; text-decoration: none; }
+  .links a:hover { border-color: var(--accent); }
+  .links b { display: block; color: var(--accent); }
+  .links span { color: var(--muted); font-size: 14px; }
+  video { width: 100%; display: block; border-radius: 8px; background: #000; }
+  table { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; font-size: 15px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  a { color: var(--accent); }
+  code { font-size: 14px; }
+  pre { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 12px; overflow-x: auto; font-size: 14px; }
+  footer { margin-top: 40px; color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>PortalForge</h1>
+  <p class="lead">Open-source middleware for Portaldot V3: deploy and verify contracts, index EVM and native events together, run workflows that survive failures, and check the results on-chain.</p>
+  <p class="status"><b>Current status:</b> contracts are not deployed on the Portaldot V3 testnet yet; deployment is prepared and waits for testnet tokens. The video and demo below come from a local Anvil chain, and each says so. Live V3 checks so far are read-only.</p>
+
+  <h2>Try it, no login needed</h2>
+  <div class="links">
+    <a href="demo/"><b>Read-only demo</b><span>Click through the real console. A static snapshot of local data.</span></a>
+    <a href="pitch/portalforge-pitch.pdf"><b>Pitch deck (PDF)</b><span>10 pages.</span></a>
+    <a href="https://github.com/Adrian001-Crypt/portalforge"><b>Source code</b><span>Apache-2.0, on GitHub.</span></a>
+    <a href="https://github.com/Adrian001-Crypt/portalforge/blob/main/docs/test-results.md"><b>Test results</b><span>What was run, what it proves, what it does not.</span></a>
+  </div>
+
+  <h2>Demo video</h2>
+  <video controls preload="metadata" poster="media/screenshots/01-overview.png" src="media/portalforge-demo.mp4"></video>
+  <p><small>Synthetic narration with on-screen captions. Footage from a local Anvil chain, with live V3 read-only samples on the network page. <a href="media/portalforge-demo.mp4">Download MP4</a>.</small></p>
+
+  <h2>What has been verified, and where</h2>
+  <table>
+    <tr><th>Claim</th><th>Runs against</th></tr>
+    <tr><td>Chain identity, opcodes, account mapping, exact deposits, EVM and native event correlation</td><td><b>Live V3</b>, read-only</td></tr>
+    <tr><td>Deploy with a browser wallet, crash recovery, duplicate protection</td><td>Local Anvil, real Chrome, test wallet</td></tr>
+    <tr><td>Workflow recovery: lost responses, killed workers, RPC outage, replay</td><td>Local Anvil, real processes</td></tr>
+    <tr><td>Webhook retries, duplicate handling, delivery after a worker is killed</td><td>Real workers, local HTTP receiver</td></tr>
+    <tr><td>PortalForge contracts deployed and a full job on V3</td><td><b>Not done yet</b></td></tr>
+  </table>
+
+  <h2>Run it yourself</h2>
+<pre><code>git clone https://github.com/Adrian001-Crypt/portalforge.git &amp;&amp; cd portalforge
+npm ci
+npm run contracts:build
+npm run dev   # console on http://localhost:5180</code></pre>
+  <p><small>Needs Node 24 or later and Foundry. Details in the <a href="https://github.com/Adrian001-Crypt/portalforge#readme">README</a>.</small></p>
+
+  <footer>Built for the Portaldot Hacker House 2026, Modular Cloud &amp; Middleware track. Development used Claude Code as an AI coding assistant.</footer>
+</main>
+</body>
+</html>

@@ -14,6 +14,7 @@ import { Incidents, IncidentDetail } from './pages/Incidents';
 import { EvidenceList, EvidenceDetail } from './pages/Evidence';
 import { Developers } from './pages/Developers';
 import { Settings } from './pages/Settings';
+import { SNAPSHOT, loadSnapshot } from './api';
 
 function Sidebar({ open, close }: { open: boolean; close: () => void }) {
   const loc = useLocation();
@@ -61,6 +62,12 @@ function Sidebar({ open, close }: { open: boolean; close: () => void }) {
 
 const localStorageGet = (k: string) => { try { return localStorage.getItem(k); } catch { return null; } };
 const localStorageSet = (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* private mode */ } };
+
+function SnapshotNotice() {
+  const [at, setAt] = useState('');
+  useEffect(() => { loadSnapshot().then((s) => setAt(s.capturedAt.slice(0, 10))).catch(() => {}); }, []);
+  return <div className="notice warn small" role="note" style={{ margin: '12px 24px 0' }}>Static snapshot{at && ` captured ${at}`} of a local stack (Anvil), for reading only. It is not live and not testnet data, and buttons that send data do nothing. <a href="https://github.com/Adrian001-Crypt/portalforge#quick-start-from-a-fresh-clone">Run it yourself</a>.</div>;
+}
 
 function TopBar({ menu }: { menu: () => void }) {
   const { me, login, logout } = useSession();
@@ -128,6 +135,7 @@ export function App() {
         <Sidebar open={open} close={() => setOpen(false)} />
         <div className="main">
           <TopBar menu={() => setOpen(true)} />
+          {SNAPSHOT && <SnapshotNotice />}
           <main>
             <Routes>
               <Route path="/" element={<Overview />} />

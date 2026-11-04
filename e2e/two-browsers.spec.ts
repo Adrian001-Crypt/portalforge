@@ -35,7 +35,7 @@ async function signIn(page: Page, handle: string) {
 
 async function openRequestJob(page: Page) {
   await page.goto('/p/local-demo/contracts');
-  await page.getByRole('cell', { name: /^jobs/ }).first().click();
+  await page.getByRole('cell', { name: /^jobs(?!-)/ }).first().click();
   await expect(page.getByRole('heading', { name: 'jobs' })).toBeVisible();
   const form = page.locator('form', { hasText: 'requestJob' });
   return form;

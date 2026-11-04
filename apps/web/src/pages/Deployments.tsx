@@ -81,7 +81,7 @@ function Workbench({ p, onDone }: { p: any; onDone: () => void }) {
           <label className="f">Owner / deployer (your wallet)<div className="row"><input value={from} onChange={(e) => setFrom(e.target.value)} placeholder="0x…" style={{ flex: 1 }} /><button className="btn sm" type="button" onClick={async () => { try { const w = await connect(); setFrom(w.account); } catch (x) { setErr(x); } }}>Use wallet</button></div></label>
           <label className="f">{tmpl?.constructor[1] ?? 'executor'} address (PortalForge executor)<input value={executor} onChange={(e) => setExecutor(e.target.value)} placeholder="0x… (defaults to owner)" /></label>
           <button className="btn" disabled={!from || !!busy} onClick={doPlan}>{busy ?? 'Plan (simulate + estimate)'}</button>
-          {net && <button className="btn ghost sm" type="button" onClick={() => switchChain({ chainId: net.evm.chainId, name: net.name, rpcUrl: net.evm.rpcUrl, symbol: net.evm.nativeCurrency.symbol }).catch(setErr)}>Add / switch wallet to {net.name}</button>}
+          {net && <button className="btn ghost sm" type="button" style={{ whiteSpace: 'normal' }} onClick={() => switchChain({ chainId: net.evm.chainId, name: net.name, rpcUrl: net.evm.rpcUrl, symbol: net.evm.nativeCurrency.symbol }).catch(setErr)}>Add / switch wallet to {net.name}</button>}
         </div>
         <div>
           {!plan ? <div className="empty"><b>Plan before you sign</b>The plan runs the create through <code>eth_call</code> on the live network, checks the runtime code equals the compiled artifact, and asks the runtime for the exact storage deposit.</div> : (
