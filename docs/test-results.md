@@ -25,13 +25,13 @@ Every hash and block: [testnet-evidence/README.md](testnet-evidence/README.md).
 | Contracts | `npm run contracts:test` | **22 passed**, 0 failed (incl. 256-run fuzz) | Foundry EVM |
 | Unit + integration | `npx vitest run` | **69 passed**, 0 failed, 10 files | temp SQLite, real HTTP demo service, **real Anvil** for chain tests |
 | Production web build | `npm run web:build` | pass | Vite |
-| **Fresh clone from the public URL** | anonymous `git clone` → `npm ci` → `npm run contracts:build` → `npm run verify` | FRESH_CLONE | public GitHub repo |
+| **Fresh clone from the public URL** | anonymous `git clone` → `npm ci` → `npm run contracts:build` → `npm run verify` | pass at `be37e70`: 22 + 69 tests, build OK, no diff in generated files; `pf deployment verify` 25/25 from the clone; 34 commits, all under the noreply identity | public GitHub repo |
 | Multi-process local E2E | `npx tsx scripts/e2e-local.ts` | **7/7 scenarios** | real processes, real Anvil, TCP fault proxy |
 | Deploy recovery and budget | `npx tsx scripts/test-deploy-resume.ts` | **11/11** | throwaway Anvil; live testnet only for a refusal with a budget limit of 0 |
 | Browser | `npx playwright test` (starts the stack itself) | **8 passed** | system Chrome; injected wallet that really signs, **not MetaMask** |
 | Webhook delivery | `npx tsx scripts/test-webhooks.ts` | **14/14** | real worker processes, real local HTTP receiver |
 | Minimal-profile rehearsal | `npx tsx scripts/rehearse-minimal.ts` | one job, 3 transactions, 1 new slot each | throwaway Anvil |
-| Public site | `npx tsx scripts/check-static-demo.ts <url>` | SITE_RESULT | anonymous Chrome, desktop and phone width |
+| Public site | `npx tsx scripts/check-static-demo.ts <url>` | rerun after the final deploy; see `docs/test-results/public-site-latest.json` | anonymous Chrome, desktop and phone width |
 | Video | `record-demo.ts`, `record-testnet.ts`, `build-final-video.py` | 2:24 MP4, H.264 1280×720 + AAC; frames inspected | V3 and local footage, labelled |
 | Deck PDF | `scripts/media/build-deck-pdf.ts` | 10 pages | Chrome print |
 
