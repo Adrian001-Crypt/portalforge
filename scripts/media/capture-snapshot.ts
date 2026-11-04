@@ -7,7 +7,7 @@
  */
 import { chromium } from '@playwright/test';
 import { spawn, spawnSync } from 'node:child_process';
-import { copyFileSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { waitFor, httpOk } from '../lib/proc';
 
 const BASE = 'http://127.0.0.1:4400', OUT = 'docs/demo';
@@ -67,7 +67,9 @@ try {
   if (b.status !== 0) throw new Error('vite build failed');
   mkdirSync(OUT, { recursive: true });
   writeFileSync(`${OUT}/snapshot.json`, bundle);
-  copyFileSync(`${OUT}/index.html`, `${OUT}/404.html`); // Pages serves this for deep links; the router takes over
+  // Pages serves only the site root's 404.html, so deep demo links boot the console from there; anything else goes home.
+  const html = readFileSync(`${OUT}/index.html`, 'utf8');
+  writeFileSync('docs/404.html', html.replace('<head>', `<head>\n    <script>if (!location.pathname.startsWith('/portalforge/demo/')) location.replace('/portalforge/');</script>`));
   console.log(`snapshot: ${Object.keys(responses).length} responses, ${seen.size} pages, ${(bundle.length / 1024).toFixed(0)} KB`);
 } finally {
   stack.kill('SIGTERM');

@@ -23,7 +23,7 @@ const server = remote ? null : createServer((req, res) => {
   let f = normalize(join('docs', path.slice('/portalforge/'.length)));
   if (existsSync(f) && statSync(f).isDirectory()) f = join(f, 'index.html');
   const fallback = !existsSync(f);
-  if (fallback) f = path.startsWith('/portalforge/demo/') ? 'docs/demo/404.html' : 'docs/index.html';
+  if (fallback) f = 'docs/404.html'; // like Pages: only the site root's 404.html
   res.writeHead(fallback ? 404 : 200, { 'content-type': MIME[extname(f)] ?? 'application/octet-stream', 'accept-ranges': 'bytes' });
   createReadStream(f).pipe(res);
 });
