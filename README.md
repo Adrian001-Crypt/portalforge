@@ -6,10 +6,14 @@
 PortalForge is open-source middleware for teams shipping applications on Portaldot V3. One product loop:
 **deploy** contracts with a simulation and an exact storage-deposit preview, **index** EVM logs *and* native runtime events, **automate** with versioned workflows, **recover** from lost responses / crashed workers / RPC outages without duplicating business effects, and **verify** deployments and execution evidence against the chain.
 
-> **Status (2026-11-04).** Everything runs and is tested locally; live Portaldot V3 is probed, simulated and indexed read-only.
-> **PortalForge contracts are not yet deployed to the testnet** — the deploy is prepared and waits for testnet tPOT ([docs/funding-handoff.md](docs/funding-handoff.md)). Local results use Anvil (plain EVM) and are **not** testnet evidence.
+> **Status (2026-11-04).** Deployed and running on the **Portaldot V3 testnet**, with two full jobs completed end to end. Evidence with every transaction hash: [docs/testnet-evidence/README.md](docs/testnet-evidence/README.md).
+>
+> | Contract | V3 testnet address (chainId 420420777) |
+> |---|---|
+> | JobRegistry | `0xd5dcf5a7d69354b07f776f8a961348f0a394d746` |
+> | EvidenceRegistry | `0xf005d9e544a399196473ec167eda85c089d80cff` |
 
-**Try it without installing anything:** [project page with video and deck](https://adrian001-crypt.github.io/portalforge/) · [read-only demo](https://adrian001-crypt.github.io/portalforge/demo/). The video and demo use a local Anvil chain and say so. Screenshots: [docs/media/screenshots](docs/media/screenshots). Pitch deck: [PDF](docs/pitch/portalforge-pitch.pdf).
+**Try it without installing anything:** [project page with video and deck](https://adrian001-crypt.github.io/portalforge/) · [read-only demo](https://adrian001-crypt.github.io/portalforge/demo/). The demo is a snapshot of the V3 stack. The video shows the deployment, a job and evidence on V3; its fault recovery and wallet-deploy scenes use a local chain and say so. Screenshots: [docs/media/screenshots](docs/media/screenshots). Pitch deck: [PDF](docs/pitch/portalforge-pitch.pdf).
 
 ## The problem
 
@@ -94,7 +98,7 @@ Tested on macOS (arm64). Linux should work for everything except the video tooli
 git clone https://github.com/Adrian001-Crypt/portalforge.git && cd portalforge
 npm ci
 npm run contracts:build          # forge build + export ABIs
-npm run verify                   # typecheck · 22 contract tests · 66 Vitest tests (incl. real Anvil) · web build
+npm run verify                   # typecheck · 22 contract tests · 69 Vitest tests (incl. real Anvil) · web build
 npm run dev                      # Anvil :8547 → deploy contracts → demo service :4310 → API :4300 → indexer → worker → console :5180
 ```
 
@@ -120,12 +124,13 @@ Open http://localhost:5180 → **Start here** walks through the six key pages. S
 npx pf network inspect                                   # live, read-only capability probe
 npx pf deploy plan --profile minimal --fund-executor 35 --jobs 3   # simulation + exact deposits + budget check
 npm run keygen -- portaldot-v3-testnet                   # dedicated deployer/executor keys (addresses printed, keys never)
-# fund the printed deployer SS58 address (450 tPOT covers this plan with 35.85 to spare, see docs/funding-handoff.md), then:
+# fund the printed deployer SS58 address (this plan spent about 396 tPOT for 2 jobs, see docs/funding-handoff.md), then:
 npm run deploy:apply -- portaldot-v3-testnet --profile minimal --confirm --fund-executor 35 --jobs 3
 npm run deploy:verify -- portaldot-v3-testnet
-PF_MODE=testnet npm run dev
+PF_MODE=testnet PF_DATA_DIR=data/testnet npm run dev
 npx tsx scripts/request-job.ts portaldot-v3-testnet 12 --confirm
 npm run smoke:testnet
+npx tsx scripts/collect-testnet-evidence.ts               # rebuilds the evidence from the chain, with the stack running
 ```
 
 `deploy:apply` refuses to broadcast while the plan has a blocker (e.g. insufficient balance) and resumes from its journal after interruption. Full runbook with success criteria: [docs/funding-handoff.md](docs/funding-handoff.md), [docs/deployment.md](docs/deployment.md).
@@ -196,11 +201,13 @@ Latest results, environment and coverage gaps: [docs/test-results.md](docs/test-
 
 ## Public read-only demo
 
-The [public read-only demo](https://adrian001-crypt.github.io/portalforge/demo/) is a static snapshot of this stack, rebuilt with `npx tsx scripts/media/capture-snapshot.ts`. To run it live, `npx tsx scripts/public-demo.ts` starts an isolated stack with dev sign-in off, real seeded local jobs and read-only V3 observation; `--tunnel` adds a temporary Cloudflare quick tunnel to the API port only. Hosting options and guarantees: [docs/deployment.md](docs/deployment.md).
+The [public read-only demo](https://adrian001-crypt.github.io/portalforge/demo/) is a static snapshot of the stack that ran the V3 jobs, rebuilt with `npx tsx scripts/media/capture-snapshot.ts --testnet`. To run it live, `npx tsx scripts/public-demo.ts` starts an isolated stack with dev sign-in off, real seeded local jobs and read-only V3 observation; `--tunnel` adds a temporary Cloudflare quick tunnel to the API port only. Hosting options and guarantees: [docs/deployment.md](docs/deployment.md).
 
 ## Known limitations
 
-- Not yet deployed to Portaldot testnet (waiting for tPOT). Local Anvil is plain EVM.
+- On V3, transactions were signed by the project's own keys. No browser wallet such as MetaMask was tested there, or anywhere else; the browser tests use a signing test wallet.
+- Fault recovery was exercised on a local chain only, to save testnet tokens. Local Anvil is plain EVM.
+- The demo service called by the workflow runs next to the worker. It is a real HTTP service, not hosted.
 - ink!/WASM (pallet-contracts) not implemented; EVM↔WASM calls and cross-chain features not claimed.
 - Single-host SQLite store; a hosted multi-tenant service would need PostgreSQL.
 - Dev sign-in only (no external identity provider yet).

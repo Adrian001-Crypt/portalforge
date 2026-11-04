@@ -7,7 +7,7 @@ Legend: ☑ done · ☐ open · (you) = only you can do it.
 ## Eligibility and registration
 - ☐ (you) Ask organizers: judging eligibility without the Oct 24 check-in; multi-track selection — template in `docs/hackathon-requirements.md`.
 - ☐ (you) Confirm you are registered for the hackathon on DoraHacks (signed in, accept the platform terms yourself).
-- ☐ (you) Receive 450 tPOT on the deployer `5Fxg3MEs…czF1t` via the official channel (requested; budget in `docs/funding-handoff.md`).
+- ☑ Testnet tPOT received: 500 tPOT, 470 forwarded to the deployer.
 
 ## Code and repository
 - ☑ Independent git repo with real commits starting 2026-11-03, no empty commits. The 20 commits from 2026-11-03 were rewritten to use the current account's GitHub noreply identity when the repo moved to this account, with original dates and messages kept; two doc lines naming a personal email were also changed. Hashes changed; nothing was backdated.
@@ -18,17 +18,17 @@ Legend: ☑ done · ☐ open · (you) = only you can do it.
 - ☑ Public GitHub repo: https://github.com/Adrian001-Crypt/portalforge → **Public** (anonymous clone verified).
 
 ## Testnet evidence (after funding)
-- ☐ Deploy (`minimal`), verify, forward 35 tPOT to the executor: commands and success criteria in `docs/funding-handoff.md`.
-- ☐ Two jobs on V3, one normal and one with a dropped response: requestJob → workflow → completeJob → evidence register → `pf evidence verify`.
-- ☐ Fill `docs/post-funding-evidence.md` with real addresses and tx hashes, and update the files it lists.
-- ☐ Finish before 2026-11-05 04:00 UTC if possible (deployment evidence is not a core-module code change, but earlier is safer).
+- ☑ Deployed (`minimal`), verified 25/25, 35 tPOT forwarded to the executor. `docs/testnet-evidence/README.md`.
+- ☑ Two full jobs on V3: requestJob → workflow → completeJob → evidence register → `pf evidence verify`. Fault recovery stayed on a local chain, to save tokens.
+- ☑ Real addresses and tx hashes in the README, project page, deck slide 7 and submission draft.
+- ☑ Finished before 2026-11-05 04:00 UTC.
 
 ## Media
-- ☑ Local demo video recorded: `docs/media/portalforge-demo.mp4` (2:18, labelled local, synthetic narration).
-- ☐ After funding: add the testnet shots listed in `docs/post-funding-evidence.md`. Your own voice is optional.
+- ☑ Demo video: `docs/media/portalforge-demo.mp4` (2:24, V3 footage plus labelled local scenes, synthetic narration).
+- ☑ Testnet shots included. Your own voice is optional.
 - ☑ Video public without login: https://adrian001-crypt.github.io/portalforge/media/portalforge-demo.mp4, plays in the browser. A YouTube copy is optional.
 - ☑ Pitch deck PDF: `docs/pitch/portalforge-pitch.pdf`, with the repo link on slides 1 and 10 and no placeholders.
-- ☑ Screenshots: `docs/media/screenshots/` (16).
+- ☑ Screenshots: `docs/media/screenshots/` (22, of which 6 on V3).
 
 ## Public demo (optional but useful for judges)
 - ☑ Public read-only mode verified locally (17/17 visitor checks).
