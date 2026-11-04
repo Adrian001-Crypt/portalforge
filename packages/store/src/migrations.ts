@@ -144,4 +144,22 @@ CREATE INDEX wallet_intents_open ON wallet_intents(project_id, from_address, sta
 CREATE UNIQUE INDEX wallet_intents_hash ON wallet_intents(tx_hash) WHERE tx_hash IS NOT NULL;
 `,
   },
+  {
+    version: 4,
+    name: 'delivery_outbox',
+    sql: `
+ALTER TABLE incidents ADD COLUMN generation INTEGER NOT NULL DEFAULT 1;
+ALTER TABLE notifications ADD COLUMN delivery_key TEXT;
+ALTER TABLE notifications ADD COLUMN payload TEXT;
+ALTER TABLE notifications ADD COLUMN attempts INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE notifications ADD COLUMN next_attempt_at INTEGER;
+ALTER TABLE notifications ADD COLUMN lease_until INTEGER;
+ALTER TABLE notifications ADD COLUMN claimed_by TEXT;
+CREATE UNIQUE INDEX notifications_key ON notifications(delivery_key) WHERE delivery_key IS NOT NULL;
+CREATE INDEX notifications_due ON notifications(status, next_attempt_at);
+DELETE FROM notification_channels WHERE rowid NOT IN (SELECT MIN(rowid) FROM notification_channels GROUP BY project_id, connector);
+CREATE UNIQUE INDEX notification_channels_connector ON notification_channels(project_id, connector);
+ALTER TABLE wallet_intents ADD COLUMN deployment_id TEXT;
+`,
+  },
 ];

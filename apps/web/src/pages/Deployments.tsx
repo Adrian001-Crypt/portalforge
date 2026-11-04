@@ -31,13 +31,13 @@ export function Deployments({ p }: { p: any }) {
         </tbody></table> : <div className="empty"><b>No deployments recorded</b>Deploy a template above, or import a manifest produced by <code>npm run deploy:apply</code>.</div>}</Async>
       </Card>
       <div style={{ height: 14 }} />
+      <ErrorBox error={err} />
       <div className="grid g2">
         <Card title="Browser signing requests" flush>
-          <Async q={intents}>{(d) => d.items.length ? <table className="t"><tbody>{d.items.map((w) => <tr key={w.id}><td className="small"><b>{w.kind}</b> {w.contract_alias ? `${w.contract_alias}.${w.function_name}` : ''}<div className="faint">{w.note}</div></td><td><Tag s={w.state} /></td><td><Hash v={w.tx_hash} n={8} /></td><td>{me?.user && ['awaiting_signature', 'submitted', 'unknown'].includes(w.state) && <button className="btn sm" onClick={async () => { await api(`/wallet-intents/${w.id}/refresh`, { method: 'POST' }); intents.reload(); }}>Reconcile</button>}</td></tr>)}</tbody></table> : <div className="empty"><b>No signing requests</b></div>}</Async>
+          <Async q={intents}>{(d) => d.items.length ? <table className="t"><tbody>{d.items.map((w) => <tr key={w.id}><td className="small"><b>{w.kind}</b> {w.contract_alias ? `${w.contract_alias}.${w.function_name}` : ''}<div className="faint">{w.note}</div></td><td><Tag s={w.state} /></td><td><Hash v={w.tx_hash} n={8} /></td><td>{me?.user && ['awaiting_signature', 'submitted', 'unknown'].includes(w.state) && <button className="btn sm" onClick={async () => { setErr(null); try { const r = await api(`/wallet-intents/${w.id}/refresh`, { method: 'POST' }); if (r.state === w.state) toast('Not on chain yet. Try again after the next block.'); intents.reload(); } catch (x) { setErr(x); } }}>Reconcile</button>}{writable && w.kind === 'deploy' && w.state === 'confirmed' && !w.deployment_id && <button className="btn sm" onClick={async () => { setErr(null); try { const r = await api(`/wallet-intents/${w.id}/manifest`, { method: 'POST', body: {} }); toast(r.verification.ok ? 'Deployment registered and verified' : 'Deployment registered; verification reported failures'); list.reload(); intents.reload(); } catch (x) { setErr(x); } }}>Register deployment</button>}</td></tr>)}</tbody></table> : <div className="empty"><b>No signing requests</b></div>}</Async>
         </Card>
         {writable && <Card title="Import manifest">
           <textarea rows={7} placeholder='{"schema":"portalforge.deployment/v1", …}' value={manifest} onChange={(e) => setManifest(e.target.value)} aria-label="Manifest JSON" />
-          <ErrorBox error={err} />
           <div className="row" style={{ marginTop: 8 }}><button className="btn primary" disabled={!manifest} onClick={importManifest}>Verify & import</button><span className="small faint">Every claim is re-read from RPC before it is stored.</span></div>
         </Card>}
       </div>
@@ -65,16 +65,16 @@ function Workbench({ p, onDone }: { p: any; onDone: () => void }) {
   const deploy = async () => {
     setErr(null); setResult(null);
     try {
-      const r = await sendWithIntent({ projectId: p.id, kind: 'deploy', data: plan.initCode, note: `deploy ${t}`, expectedChainId: plan.network.chainId }, setPhase);
+      const r = await sendWithIntent({ projectId: p.id, kind: 'deploy', data: plan.initCode, functionName: t, args: plan.constructorArgs, note: `deploy ${t}`, expectedChainId: plan.network.chainId }, setPhase);
       if (r.state === 'confirmed') {
-        const m = await api(`/wallet-intents/${r.intentId}/manifest`, { method: 'POST', body: { template: t, constructorArgs: plan.constructorArgs } });
-        setResult(m); toast(m.verification.ok ? 'Deployed and verified' : 'Deployed; verification reported failures'); onDone();
+        const m = await api(`/wallet-intents/${r.intentId}/manifest`, { method: 'POST', body: {} });
+        setResult(m); toast(m.verification.ok ? 'Deployed and verified' : 'Deployed; verification reported failures');
       }
-    } catch (x) { setErr(x); }
+    } catch (x) { setErr(x); } finally { onDone(); }
   };
   return (
     <Card title="Deployment Workbench" right={<Src kind={net?.kind === 'local-dev' ? 'local' : 'live'} />}>
-      <div className="grid g3">
+      <div className="grid workbench">
         <div className="form">
           <label className="f">Template<select value={t} onChange={(e) => { setT(e.target.value); setPlan(null); }}>{tpl.data?.items.map((x) => <option key={x.name} value={x.name}>{x.title}{x.compiled ? '' : ' (not compiled)'}</option>)}</select></label>
           <div className="small muted">{tmpl?.description}</div>
@@ -83,7 +83,7 @@ function Workbench({ p, onDone }: { p: any; onDone: () => void }) {
           <button className="btn" disabled={!from || !!busy} onClick={doPlan}>{busy ?? 'Plan (simulate + estimate)'}</button>
           {net && <button className="btn ghost sm" type="button" onClick={() => switchChain({ chainId: net.evm.chainId, name: net.name, rpcUrl: net.evm.rpcUrl, symbol: net.evm.nativeCurrency.symbol }).catch(setErr)}>Add / switch wallet to {net.name}</button>}
         </div>
-        <div style={{ gridColumn: 'span 2' }}>
+        <div>
           {!plan ? <div className="empty"><b>Plan before you sign</b>The plan runs the create through <code>eth_call</code> on the live network, checks the runtime code equals the compiled artifact, and asks the runtime for the exact storage deposit.</div> : (
             <div className="stack">
               <KV items={[

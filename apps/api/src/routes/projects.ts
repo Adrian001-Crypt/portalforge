@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { PfError, API_SCOPES, ROLES, hashCanonical, validateWorkflow, address as addressSchema } from '@portalforge/domain';
 import { newId, now, json, parse, randomToken, sha256 } from '@portalforge/store';
 import { parseConnectorUrl, assertPublicTarget } from '@portalforge/workflow-engine';
+import { retryDelivery } from '@portalforge/ops';
 import { type Env, requireUser, requireProject, audit, page } from '../context';
 
 export const projects = new Hono<Env>();
@@ -207,7 +208,16 @@ projects.post('/:pid/channels', async (c) => {
   const b = z.object({ connector: z.string(), minSeverity: z.enum(['info', 'warning', 'critical']) }).parse(await c.req.json());
   const { db } = c.get('deps');
   if (!db.get('SELECT 1 FROM connectors WHERE project_id = ? AND name = ?', project.id, b.connector)) throw new PfError('NOT_FOUND', 'connector not found');
-  db.run('INSERT INTO notification_channels (id, project_id, kind, connector, min_severity, created_at) VALUES (?, ?, ?, ?, ?, ?)', newId('chn'), project.id, 'webhook', b.connector, b.minSeverity, now());
+  db.run('INSERT INTO notification_channels (id, project_id, kind, connector, min_severity, created_at) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (project_id, connector) DO UPDATE SET min_severity = excluded.min_severity', newId('chn'), project.id, 'webhook', b.connector, b.minSeverity, now());
   audit(db, project.id, actor, 'channel.create', b.connector, b);
   return c.json({ ok: true }, 201);
+});
+projects.post('/:pid/notifications/:id/retry', (c) => {
+  const { project, actor } = requireProject(c, c.req.param('pid'), 'incident.manage');
+  const { db } = c.get('deps');
+  const n = db.get('SELECT n.id FROM notifications n JOIN notification_channels ch ON ch.id = n.channel_id WHERE n.id = ? AND ch.project_id = ?', Number(c.req.param('id')), project.id);
+  if (!n) throw new PfError('NOT_FOUND', 'delivery not found');
+  if (!retryDelivery(db, n.id).changes) throw new PfError('CONFLICT', 'only a delivery that gave up can be retried');
+  audit(db, project.id, actor, 'notification.retry', String(n.id), {});
+  return c.json({ ok: true });
 });

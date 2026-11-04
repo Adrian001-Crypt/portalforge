@@ -315,7 +315,7 @@ contracts.post('/projects/:pid/wallet-intents', async (c) => {
 
 contracts.get('/projects/:pid/wallet-intents', (c) => {
   const { project } = requireProject(c, c.req.param('pid'), 'project.read');
-  return c.json({ items: c.get('deps').db.all('SELECT id, kind, from_address, to_address, contract_alias, function_name, args, state, tx_hash, error, note, created_at, updated_at FROM wallet_intents WHERE project_id = ? ORDER BY created_at DESC LIMIT 50', project.id).map((r) => ({ ...r, args: parse(r.args) })) });
+  return c.json({ items: c.get('deps').db.all('SELECT id, kind, from_address, to_address, contract_alias, function_name, args, state, tx_hash, error, note, deployment_id, created_at, updated_at FROM wallet_intents WHERE project_id = ? ORDER BY created_at DESC LIMIT 50', project.id).map((r) => ({ ...r, args: parse(r.args) })) });
 });
 
 /** Step 2: the wallet answered. A hash moves the intent to submitted; 4001 → rejected; anything else → unknown (kept for recovery). */
@@ -345,14 +345,8 @@ contracts.post('/wallet-intents/:id/refresh', async (c) => {
   const evm = new EvmReader(profileFor(c, w.network_id).evm.rpcUrl);
   const set = (state: string, extra: { txHash?: string | null; receipt?: unknown; error?: string | null } = {}) => db.run('UPDATE wallet_intents SET state = ?, tx_hash = COALESCE(?, tx_hash), receipt = COALESCE(?, receipt), error = ?, updated_at = ? WHERE id = ?', state, extra.txHash ?? null, extra.receipt ? json(extra.receipt) : null, extra.error ?? null, now(), w.id);
   if (['confirmed', 'failed', 'rejected', 'replaced'].includes(w.state)) return c.json(db.get('SELECT * FROM wallet_intents WHERE id = ?', w.id));
-  if (w.tx_hash) {
-    const r = await evm.receipt(w.tx_hash);
-    if (r) set(r.status === 'success' ? 'confirmed' : 'failed', { receipt: { blockNumber: r.blockNumber, blockHash: r.blockHash, status: r.status, contractAddress: r.contractAddress, gasUsed: r.gasUsed }, error: r.status === 'success' ? null : 'reverted' });
-    else if (!(await evm.transaction(w.tx_hash))) {
-      const latest = await evm.nonce(w.from_address, 'latest');
-      if (latest > w.expected_nonce) set('replaced', { error: `nonce ${w.expected_nonce} was used by another transaction (replaced or cancelled in wallet)` });
-    }
-  } else {
+  let hash: string | null = w.tx_hash;
+  if (!hash) {
     const latest = await evm.nonce(w.from_address, 'latest');
     if (latest > w.expected_nonce) {
       // The wallet signed and sent, but the hash never reached us. Search recent blocks for (from, nonce).
@@ -362,10 +356,18 @@ contracts.post('/wallet-intents/:id/refresh', async (c) => {
         const b = await evm.raw<any>('eth_getBlockByNumber', [`0x${n.toString(16)}`, true]);
         if (b.ok && b.value) found = (b.value.transactions as any[]).find((t) => t.from?.toLowerCase() === w.from_address && Number.parseInt(t.nonce, 16) === w.expected_nonce) ?? null;
       }
-      if (found && keccak256(found.input) === w.data_hash) set('submitted', { txHash: found.hash.toLowerCase(), error: null });
+      if (found && keccak256(found.input) === w.data_hash) { hash = found.hash.toLowerCase(); set('submitted', { txHash: hash, error: null }); }
       else if (found) set('replaced', { txHash: found.hash.toLowerCase(), error: 'the account nonce was used by a transaction with different calldata' });
       else set('unknown', { error: 'nonce consumed but the transaction was not found in the last 200 blocks' });
     } else if (Date.now() > w.expires_at && w.state === 'awaiting_signature') set('expired');
+  }
+  if (hash) {
+    const r = await evm.receipt(hash as Hex);
+    if (r) set(r.status === 'success' ? 'confirmed' : 'failed', { receipt: { blockNumber: r.blockNumber, blockHash: r.blockHash, status: r.status, contractAddress: r.contractAddress, gasUsed: r.gasUsed }, error: r.status === 'success' ? null : 'reverted' });
+    else if (!(await evm.transaction(hash as Hex))) {
+      const latest = await evm.nonce(w.from_address, 'latest');
+      if (latest > w.expected_nonce) set('replaced', { error: `nonce ${w.expected_nonce} was used by another transaction (replaced or cancelled in wallet)` });
+    }
   }
   return c.json(db.get('SELECT * FROM wallet_intents WHERE id = ?', w.id));
 });
@@ -392,14 +394,20 @@ contracts.post('/projects/:pid/deploy/plan', async (c) => {
   } finally { await native?.disconnect().catch(() => {}); }
 });
 
-/** After a wallet-signed deploy confirms: build a manifest from the receipt, verify it live, register the contract. */
+/**
+ * After a wallet-signed deploy confirms: build a manifest from the receipt, verify it live, register the contract.
+ * Works from what the intent recorded, so it can be finished after a reload. Repeating it returns the same record.
+ */
 contracts.post('/wallet-intents/:id/manifest', async (c) => {
   const { db } = c.get('deps');
   const w = db.get('SELECT * FROM wallet_intents WHERE id = ?', c.req.param('id'));
   if (!w || w.kind !== 'deploy') throw new PfError('NOT_FOUND', 'deploy intent not found');
   const { project, actor } = requireProject(c, w.project_id, 'resource.write');
   if (w.state !== 'confirmed') throw new PfError('CONFLICT', `intent is ${w.state}; refresh it first`);
-  const b = z.object({ template: z.enum(['JobRegistry', 'EvidenceRegistry', 'WorkflowExecutionRegistry']), constructorArgs: z.array(z.string()) }).parse(await c.req.json());
+  const existing = () => { const id = db.get('SELECT deployment_id id FROM wallet_intents WHERE id = ?', w.id)?.id; const d = id ? db.get('SELECT * FROM deployments WHERE id = ?', id) : null; return d ? c.json({ deploymentId: d.id, manifest: parse(d.manifest), verification: parse(d.verification), alreadyRegistered: true }) : null; };
+  const done = existing();
+  if (done) return done;
+  const b = z.object({ template: z.enum(['JobRegistry', 'EvidenceRegistry', 'WorkflowExecutionRegistry']), constructorArgs: z.array(z.string()) }).parse({ template: w.function_name, constructorArgs: parse(w.args), ...(await c.req.json().catch(() => ({}))) });
   const profile = profileFor(c, project.network_id);
   const evm = new EvmReader(profile.evm.rpcUrl);
   const r = await evm.receipt(w.tx_hash);
@@ -410,21 +418,26 @@ contracts.post('/wallet-intents/:id/manifest', async (c) => {
   if (keccak256(encodeDeployData({ abi: art.abi, bytecode: art.bytecode, args: b.constructorArgs } as any)) !== w.data_hash) throw new PfError('VERIFICATION_FAILED', 'signed calldata does not match this template + constructor args');
   const code = await evm.code(r.contractAddress);
   const { execSync } = await import('node:child_process');
-  const commit = (() => { try { return execSync('git rev-parse HEAD').toString().trim(); } catch { return 'unknown'; } })();
+  const git = (cmd: string) => { try { return execSync(cmd, { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim(); } catch { return null; } };
+  const commit = git('git rev-parse HEAD') ?? 'unknown';
   const manifest = {
     schema: 'portalforge.deployment/v1' as const,
     network: { id: profile.id, chainId: profile.evm.chainId, ...(profile.native ? { genesisHash: profile.native.genesisHash, specName: profile.native.specName } : {}) },
-    source: { repo: 'portalforge', commit, dirty: false }, compiler: art.compiler,
+    source: { repo: 'portalforge', commit, dirty: git('git status --porcelain') !== '' }, compiler: art.compiler,
     contracts: [manifestContract(art, b.constructorArgs as Hex[], { address: r.contractAddress, txHash: r.transactionHash, blockNumber: r.blockNumber, blockHash: r.blockHash, deployer: w.from_address, runtimeCodeHash: keccak256(code) })],
     createdAt: now(), notes: ['Deployed from the PortalForge Deployment Workbench with a browser wallet.'],
   };
   const report = await verifyManifest(manifest, profile, { expectedExecutor: b.constructorArgs[1] as Hex });
   const mh = hashCanonical(manifest);
   const did = newId('dep');
-  db.tx(() => {
-    db.run(`INSERT INTO deployments (id, project_id, network_id, manifest, manifest_hash, verification, verified_at, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING`, did, project.id, profile.id, json(manifest), mh, json(report), now(), report.ok ? 'verified' : 'failed', now());
+  const raced = db.tx(() => {
+    if (db.get('SELECT deployment_id id FROM wallet_intents WHERE id = ?', w.id)?.id) return true; // a concurrent request finished first
+    db.run(`INSERT INTO deployments (id, project_id, network_id, manifest, manifest_hash, verification, verified_at, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`, did, project.id, profile.id, json(manifest), mh, json(report), now(), report.ok ? 'verified' : 'failed', now());
+    db.run('UPDATE wallet_intents SET deployment_id = ?, updated_at = ? WHERE id = ?', did, now(), w.id);
     if (report.ok) registerManifestContracts(db, project, manifest, mh);
+    return false;
   });
+  if (raced) return existing()!;
   audit(db, project.id, actor, 'deployment.browser', did, { tx: w.tx_hash, ok: report.ok });
   return c.json({ deploymentId: did, manifest, verification: report }, 201);
 });

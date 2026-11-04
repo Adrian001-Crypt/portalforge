@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { seed } from '../../store/test/fixtures';
-import { raiseIncident, resolveByFingerprint, transitionIncident, endpointStats, storeSample, evaluateNetworkRules, evaluateIndexerRules, signalToIncident, type RaiseInput } from '../src';
+import { deliverDue, retryDelivery, raiseIncident, resolveByFingerprint, transitionIncident, endpointStats, storeSample, evaluateNetworkRules, evaluateIndexerRules, signalToIncident, type RaiseInput } from '../src';
 
 const diag = { facts: [{ label: 'x', value: '1' }], inference: { source: 'rule:test', text: 't' }, suggestion: ['s'] };
 const inc = (fp = 'fp1'): RaiseInput => ({ fingerprint: fp, kind: 'test', severity: 'warning', title: 'T', diagnosis: diag, cooldownMs: 60_000 });
@@ -88,5 +88,56 @@ describe('health rules', () => {
     expect(db.get(`SELECT state FROM incidents WHERE kind = 'unknown_outcome'`).state).toBe('open');
     signalToIncident(db, { kind: 'succeeded', projectId, executionId: '0xabc', workflowId: 'w1', detail: 'ok' });
     expect(db.get(`SELECT state FROM incidents WHERE kind = 'unknown_outcome'`).state).toBe('resolved');
+  });
+});
+
+describe('webhook delivery outbox', () => {
+  const channel = (db: any, projectId: string, minSeverity = 'warning') => {
+    db.run(`INSERT INTO connectors (id, project_id, name, url, allow_private_host, created_at) VALUES ('c1', ?, 'hook', 'https://93.184.216.34/x', 0, '2026-01-01')`, projectId);
+    db.run(`INSERT INTO notification_channels (id, project_id, kind, connector, min_severity, created_at) VALUES ('ch1', ?, 'webhook', 'hook', ?, '2026-01-01')`, projectId, minSeverity);
+  };
+  const row = (db: any) => db.get('SELECT * FROM notifications ORDER BY id DESC LIMIT 1');
+  const reply = (status: number) => (async () => new Response('{}', { status })) as unknown as typeof fetch;
+
+  it('queues atomically with the incident; retries with backoff; gives up after the limit', async () => {
+    const { db, projectId } = seed(); channel(db, projectId);
+    let t = 1_000_000; const clock = () => t;
+    raiseIncident(db, { ...inc(), projectId }, clock);
+    expect(row(db)).toMatchObject({ status: 'pending', attempts: 0 });
+    const opts = { workerId: 'w', clock, baseBackoffMs: 1000, maxAttempts: 2, fetchImpl: reply(503) };
+    expect(await deliverDue(db, opts)).toMatchObject({ claimed: 1, retrying: 1 });
+    expect(row(db)).toMatchObject({ status: 'retrying', attempts: 1, response_code: 503 });
+    expect((await deliverDue(db, opts)).claimed).toBe(0);                 // not due yet
+    t += 2000;
+    expect(await deliverDue(db, opts)).toMatchObject({ claimed: 1, dead: 1 });
+    expect(row(db)).toMatchObject({ status: 'dead', attempts: 2 });
+    expect(retryDelivery(db, row(db).id, clock).changes).toBe(1);
+    expect(await deliverDue(db, { ...opts, fetchImpl: reply(200) })).toMatchObject({ delivered: 1 });
+    expect(retryDelivery(db, row(db).id, clock).changes).toBe(0);          // nothing to retry once delivered
+  });
+
+  it('a stale worker cannot overwrite the attempt that took over its lease', async () => {
+    const { db, projectId } = seed(); channel(db, projectId);
+    let t = 1_000_000; const clock = () => t;
+    raiseIncident(db, { ...inc(), projectId }, clock);
+    let releaseSlow: (r: Response) => void = () => {};
+    const slow = (() => new Promise<Response>((r) => { releaseSlow = r; })) as unknown as typeof fetch;
+    const first = deliverDue(db, { workerId: 'slow', clock, leaseMs: 100, timeoutMs: 60_000, fetchImpl: slow });
+    await new Promise((r) => setTimeout(r, 30));
+    t += 200;                                                             // lease expired while the request hangs
+    expect(await deliverDue(db, { workerId: 'fast', clock, fetchImpl: reply(200) })).toMatchObject({ delivered: 1 });
+    releaseSlow(new Response('{}', { status: 500 }));
+    await first;
+    expect(row(db)).toMatchObject({ status: 'delivered', claimed_by: 'fast', attempts: 2 });
+  });
+
+  it('an incident without a matching channel queues nothing; removing the connector ends the delivery', async () => {
+    const { db, projectId } = seed(); channel(db, projectId, 'critical');
+    raiseIncident(db, { ...inc(), projectId });
+    expect(row(db)).toBeUndefined();
+    raiseIncident(db, { ...inc('fp2'), projectId, severity: 'critical' });
+    db.run('DELETE FROM connectors WHERE id = ?', 'c1');
+    expect(await deliverDue(db, { workerId: 'w', fetchImpl: reply(200) })).toMatchObject({ dead: 1 });
+    expect(row(db).error).toMatch(/removed/);
   });
 });

@@ -3,7 +3,7 @@ import type { NetworkProfile } from '@portalforge/domain';
 import { type Db, type Logger, parse } from '@portalforge/store';
 import { EvmReader } from '@portalforge/portaldot-evm';
 import { NativeReader } from '@portalforge/portaldot-native';
-import { sampleEvm, sampleNative, storeSample, evaluateNetworkRules, evaluateIndexerRules, raiseIncident, raiseCodeMismatch, deliverNotifications, type RaiseInput } from '@portalforge/ops';
+import { sampleEvm, sampleNative, storeSample, evaluateNetworkRules, evaluateIndexerRules, raiseIncident, raiseCodeMismatch, type RaiseInput } from '@portalforge/ops';
 
 /** Periodic observation: RPC samples, rule evaluation, contract code drift. Read-only against chains. */
 export class Monitor {
@@ -13,7 +13,7 @@ export class Monitor {
 
   private raise = (r: RaiseInput) => {
     const res = raiseIncident(this.db, r);
-    if (res.isNew || res.reopened) { this.log('incident', { id: res.id, kind: r.kind, severity: r.severity, title: r.title }, 'warn'); deliverNotifications(this.db, res.id).catch(() => {}); }
+    if (res.isNew || res.reopened) { this.log('incident', { id: res.id, kind: r.kind, severity: r.severity, title: r.title }, 'warn'); }
   };
 
   async tick() {

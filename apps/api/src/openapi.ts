@@ -26,6 +26,7 @@ export const OPENAPI = {
     '/api/v1/projects/{pid}/api-keys/{kid}': { delete: op('Revoke API key', 'write', ['project']) },
     '/api/v1/projects/{pid}/connectors': { get: op('Webhook connectors', 'read', ['workflow']), post: op('Create/update connector (SSRF-checked)', 'write', ['workflow']) },
     '/api/v1/projects/{pid}/policies': { get: op('Executor allowlist', 'read', ['execution']), post: op('Allowlist a contract function', 'write', ['execution']) },
+    '/api/v1/projects/{pid}/notifications/{id}/retry': { post: op('Retry a webhook delivery that gave up (same key and payload)', 'write', ['incident']) },
     '/api/v1/projects/{pid}/channels': { get: op('Notification channels + deliveries', 'read', ['incident']), post: op('Add webhook channel', 'write', ['incident']) },
     '/api/v1/projects/{pid}/contracts': { get: op('Registered contracts', 'read', ['contract']), post: op('Register existing contract (code checked live)', 'write', ['contract']) },
     '/api/v1/contracts/{cid}': { get: op('Contract detail with live on-chain roles', 'read', ['contract']) },

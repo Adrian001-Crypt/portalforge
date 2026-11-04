@@ -2,7 +2,7 @@
 import { randomBytes } from 'node:crypto';
 import { Db, createLogger, loadConfig, seedNetworks } from '@portalforge/store';
 import { WorkflowEngine } from '@portalforge/workflow-engine';
-import { heartbeat, signalToIncident, deliverNotifications } from '@portalforge/ops';
+import { heartbeat, signalToIncident, deliverDue } from '@portalforge/ops';
 import { buildExecutors } from './executors';
 import { Monitor } from './monitor';
 
@@ -20,10 +20,7 @@ const engine = new WorkflowEngine({
   onSignal: (s) => {
     log('signal', s as unknown as Record<string, unknown>, s.kind === 'succeeded' ? 'info' : 'warn');
     try {
-      const before = db.get('SELECT COUNT(*) n FROM incidents')!.n;
       signalToIncident(db, s);
-      const latest = db.get('SELECT id FROM incidents ORDER BY first_seen DESC LIMIT 1');
-      if (latest && db.get('SELECT COUNT(*) n FROM incidents')!.n > before) deliverNotifications(db, latest.id).catch(() => {});
     } catch (e) { log('signal handling failed', { error: (e as Error).message }, 'error'); }
   },
 });
@@ -36,6 +33,16 @@ async function execLoop(slot: number) {
     let worked = false;
     try { inflight++; worked = await engine.runNext(); } catch (e) { log('runNext failed', { slot, error: (e as Error).message }, 'error'); } finally { inflight--; }
     if (!worked) await new Promise((r) => setTimeout(r, 500));
+  }
+}
+
+// Webhook deliveries live in the database; this loop only sends what is due, so a restart loses nothing.
+async function deliveryLoop() {
+  const opts = { workerId, baseBackoffMs: Number(process.env.PF_NOTIFY_BACKOFF_MS ?? 15_000), leaseMs: Number(process.env.PF_NOTIFY_LEASE_MS ?? 30_000), timeoutMs: Number(process.env.PF_NOTIFY_TIMEOUT_MS ?? 5_000) };
+  while (!stopping) {
+    let claimed = 0;
+    try { inflight++; const r = await deliverDue(db, opts); claimed = r.claimed; if (r.dead) log('webhook delivery gave up', { dead: r.dead }, 'warn'); } catch (e) { log('webhook delivery failed', { error: (e as Error).message }, 'error'); } finally { inflight--; }
+    if (!claimed) await new Promise((r) => setTimeout(r, Number(process.env.PF_NOTIFY_POLL_MS ?? 1_000)));
   }
 }
 
@@ -66,4 +73,5 @@ process.on('SIGINT', () => shutdown('SIGINT'));
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 log('worker started', { workerId, concurrency, networks: cfg.networks.map((n) => n.id), executors: [...chains.keys()], monitor: monitorEnabled });
 for (let i = 0; i < concurrency; i++) execLoop(i);
+deliveryLoop();
 controlLoop();

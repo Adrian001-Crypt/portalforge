@@ -5,11 +5,11 @@
  */
 import { existsSync, readFileSync, writeFileSync, statSync } from 'node:fs';
 import { execSync } from 'node:child_process';
-import { keccak256, type Hex } from 'viem';
+import { keccak256, parseEther, type Hex } from 'viem';
 import { BUILTIN_NETWORKS, PfError, isPfError, validateWorkflow, formatUnits, type NetworkProfile } from '@portalforge/domain';
 import { EvmReader } from '@portalforge/portaldot-evm';
 import { NativeReader } from '@portalforge/portaldot-native';
-import { probeNetwork, verifyManifest, verifyEvidence, loadFoundryArtifact, planDeployment, DEPLOY_PROFILES, PortalForgeClient } from '@portalforge/sdk';
+import { probeNetwork, verifyManifest, verifyEvidence, loadFoundryArtifact, planDeployment, demoBudget, formatBudget, DEPLOY_PROFILES, PortalForgeClient } from '@portalforge/sdk';
 
 const argv = process.argv.slice(2);
 const flags = new Map<string, string | true>();
@@ -56,7 +56,7 @@ Usage: pf <command> [options]
   doctor                               Check toolchain, config, RPC reachability, secrets hygiene
   network inspect                      Live capability probe of the network (read-only)
   project init [--project s] [--api u] Write portalforge.config.json
-  deploy plan [--profile minimal|full] [--from 0x…]
+  deploy plan [--profile minimal|full] [--from 0x…] [--fund-executor <amount>] [--jobs <n>]
                                        Simulate creates on the network, exact fees, balance check
   deployment verify <manifest.json> [--executor 0x…]
                                        Re-read every manifest claim from the chain
@@ -133,11 +133,14 @@ async function main(): Promise<number> {
     const plan = await planDeployment(p, { deployer: from, executor, artifacts: DEPLOY_PROFILES[profile].map((n) => loadFoundryArtifact(outDir, n)), native, depositOrigin: flag('deposit-origin') as Hex | undefined });
     await native?.disconnect();
     const f = (v: bigint | null) => (v === null ? 'n/a' : `${formatUnits(v, 18, 4)} ${p.evm.nativeCurrency.symbol}`);
+    const otherBlockers = plan.blockers.filter((b) => !b.startsWith('deployer balance'));
+    const budget = demoBudget({ deployFee: plan.totalFee, fundExecutor: flag('fund-executor') ? parseEther(flag('fund-executor')!) : 0n, executorBalance: await new EvmReader(p.evm.rpcUrl, timeoutMs).balance(executor), jobs: Number(flag('jobs') ?? 0), deployerBalance: plan.deployerBalance ?? 0n, costs: p.kind === 'portaldot-testnet' ? undefined : { slotDeposit: 0n, callGas: 0n, transferGas: 0n, executorReserve: 0n } });
     const lines = [`${p.name} · deployer ${from} · balance ${f(plan.deployerBalance)} · gasPrice ${plan.gasPrice}`,
       ...plan.contracts.map((c) => `  ${c.name.padEnd(26)} ${String(c.artifact.runtimeBytes).padStart(5)} B  simulation ${c.simulation.ok ? (c.simulation.runtimeMatches ? 'ok (runtime matches artifact)' : 'RUNTIME DIFFERS') : `FAILED ${c.simulation.error}`}  max fee ${f(c.fee)}${c.deposit ? `  deposit ${c.deposit.ok ? formatUnits(c.deposit.storageDeposit!, p.native!.token.decimals, 4) + ' ' + p.native!.token.symbol : `n/a (${c.deposit.error})`}` : ''}`),
-      `  total max fee ${f(plan.totalFee)}`, ...plan.warnings.map((w) => `warning: ${w}`), ...plan.blockers.map((b) => `BLOCKER: ${b}`)];
+      `  total max fee ${f(plan.totalFee)}`, ...plan.warnings.map((w) => `warning: ${w}`), ...otherBlockers.map((b) => `BLOCKER: ${b}`),
+      ...formatBudget(budget, (v) => f(v)), ...budget.blockers.map((b) => `BLOCKER: ${b}`)];
     out(lines.join('\n'), { ...plan, contracts: plan.contracts.map(({ initCode, artifact, ...c }) => ({ ...c, runtimeBytes: artifact.runtimeBytes, artifactRuntimeHash: artifact.artifactRuntimeHash, initCodeHash: keccak256(initCode) })) });
-    return plan.blockers.length ? 1 : 0;
+    return otherBlockers.length || budget.blockers.length ? 1 : 0;
   }
 
   if (cmd === 'deployment' && sub === 'verify') {
