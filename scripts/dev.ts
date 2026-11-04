@@ -30,7 +30,7 @@ async function main() {
     svcs.push(startService('anvil', existsSync(anvilBin) ? anvilBin : 'anvil', ['--port', '8547', '--block-time', '2', '--silent'], {}, logs));
     await waitFor('anvil', () => rpcUp('http://127.0.0.1:8547'), 20_000);
     if (!existsSync('contracts/evm/out/JobRegistry.sol/JobRegistry.json')) execSync('npm run -s contracts:build', { stdio: 'inherit' });
-    execSync('node --import tsx scripts/deploy.ts apply local-anvil --profile full --confirm', { stdio: ['ignore', 'ignore', 'inherit'] });
+    execSync(`node --import tsx scripts/deploy.ts apply local-anvil --profile ${process.env.PF_LOCAL_PROFILE ?? 'full'} --confirm`, { stdio: ['ignore', 'ignore', 'inherit'] });
     console.log('contracts deployed to local Anvil (deployments/local-anvil.json)');
   } else if (!existsSync(`deployments/${net}.json`)) {
     console.warn(`deployments/${net}.json not found: the demo project will have no contracts until you deploy (docs/deployment.md).`);

@@ -2,8 +2,8 @@
   "networkId": "portaldot-v3-testnet",
   "chainId": 420420777,
   "deployer": "0xAC575944f0696eF19e7f835fd28491c25e40Ca14",
-  "deployerBalance": "0",
-  "gasPrice": "22603",
+  "deployerBalance": "469900000000000000000",
+  "gasPrice": "22567",
   "contracts": [
     {
       "name": "JobRegistry",
@@ -394,12 +394,12 @@
         "ok": true,
         "runtimeMatches": true
       },
-      "gas": "7760815366365314",
-      "fee": "175417709725955192342",
+      "gas": "7773092361607119",
+      "fee": "175415375324387854473",
       "deposit": {
         "ok": true,
         "storageDeposit": "16103700000000000",
-        "origin": "0x69367866b2a90f14aecfc503bc1c70cb9e8115db"
+        "origin": "0xAC575944f0696eF19e7f835fd28491c25e40Ca14"
       }
     },
     {
@@ -836,21 +836,19 @@
         "ok": true,
         "runtimeMatches": true
       },
-      "gas": "8486159302418465",
-      "fee": "191812658712564564395",
+      "gas": "8499583734385419",
+      "fee": "191810106133875750573",
       "deposit": {
         "ok": true,
         "storageDeposit": "17609100000000000",
-        "origin": "0x69367866b2a90f14aecfc503bc1c70cb9e8115db"
+        "origin": "0xAC575944f0696eF19e7f835fd28491c25e40Ca14"
       }
     }
   ],
-  "totalFee": "367230368438519756737",
-  "blockers": [
-    "deployer balance 0 < estimated max fee 367230368438519756737 (wei, 18 dp)"
-  ],
+  "totalFee": "367225481458263605046",
+  "blockers": [],
   "warnings": [
     "pallet-revive folds the storage deposit (≈ depositPerByte × code size × 1.3 lockup) into gas; most of the fee is a held deposit, not burned gas (to be confirmed from receipts)."
   ],
-  "createdAt": "2026-11-04T21:11:11.531Z"
+  "createdAt": "2026-11-04T22:14:41.380Z"
 }
