@@ -2,51 +2,51 @@
   "schema": "portalforge.e2e/v1",
   "kind": "local-anvil",
   "note": "Local Anvil (plain EVM). Not Portaldot testnet evidence.",
-  "startedAt": "2026-11-04T23-10-28-010Z",
-  "finishedAt": "2026-11-04T23:11:26.626Z",
+  "startedAt": "2026-11-05T00-44-48-527Z",
+  "finishedAt": "2026-11-05T00:45:45.539Z",
   "node": "v26.13.0",
   "results": [
     {
       "id": "A",
       "title": "happy path: event → workflow → demo service → completeJob → evidence",
       "ok": true,
-      "detail": "job 1 completed by 0xb8433bf6…, evidence 0xd8970617… registered",
-      "ms": 6566
+      "detail": "job 1 completed by 0xdced3ebd…, evidence 0x35f2ff40… registered",
+      "ms": 5558
     },
     {
       "id": "B",
       "title": "remote success, response lost → query before retry → processed once",
       "ok": true,
       "detail": "attempts 2, receiver requests 3 (1 processed, rest query/replay), result 81",
-      "ms": 6548
+      "ms": 6554
     },
     {
       "id": "C",
       "title": "worker SIGKILL while the HTTP request is in flight → lease expiry → new worker reconciles",
       "ok": true,
       "detail": "attempts by worker → worker2; receiver processed once; job completed once",
-      "ms": 15090
+      "ms": 15086
     },
     {
       "id": "D",
       "title": "RPC outage: cursor holds, incident raised, catches up after recovery",
       "ok": true,
-      "detail": "indexer error recorded, incident inc_i22eCCeBr00n opened then auto-resolved, job 4 completed after recovery",
-      "ms": 18593
+      "detail": "indexer error recorded, incident inc_edMx2uDTTYhF opened then auto-resolved, job 4 completed after recovery",
+      "ms": 18076
     },
     {
       "id": "E",
       "title": "replay cannot complete a job twice",
       "ok": true,
-      "detail": "replay 0x86b691f5… failed as expected: step complete: conflict: jobs.completeJob was applied by a different execution (",
-      "ms": 517
+      "detail": "replay 0x5261cf5c… failed as expected: step complete: conflict: jobs.completeJob was applied by a different execution (",
+      "ms": 514
     },
     {
       "id": "F",
       "title": "CLI verifies deployment, execution and evidence independently",
       "ok": true,
       "detail": "deployment 32 checks, evidence 8 checks — all pass",
-      "ms": 1948
+      "ms": 2005
     },
     {
       "id": "G",
@@ -58,5 +58,5 @@
   ],
   "passed": 7,
   "failed": 0,
-  "logs": "data/e2e-2026-11-04T23-10-28-010Z/logs"
+  "logs": "data/e2e-2026-11-05T00-44-48-527Z/logs"
 }

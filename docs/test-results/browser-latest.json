@@ -1,6 +1,6 @@
 {
   "suite": "browser",
-  "ranAt": "2026-11-04T23:12:26.552Z",
+  "ranAt": "2026-11-05T00:46:47.807Z",
   "runsAgainst": "system Chrome, local stack on Anvil; injected test wallet, not MetaMask, not Portaldot",
   "status": "passed",
   "passed": 8,
@@ -10,49 +10,49 @@
       "file": "e2e/two-browsers.spec.ts",
       "title": "two browsers: one open signing request per account, both jobs execute exactly once",
       "status": "passed",
-      "ms": 34452
+      "ms": 37030
     },
     {
       "file": "e2e/two-browsers.spec.ts",
       "title": "wallet rejection and wrong network never leave a pending business operation",
       "status": "passed",
-      "ms": 947
+      "ms": 1070
     },
     {
       "file": "e2e/two-browsers.spec.ts",
       "title": "public visitor can read but every write control is absent or refused",
       "status": "passed",
-      "ms": 405
+      "ms": 441
     },
     {
       "file": "e2e/wallet-deploy.spec.ts",
       "title": "plan, sign, confirm: the deployed contract is verified, recorded and registered",
       "status": "passed",
-      "ms": 4072
+      "ms": 4087
     },
     {
       "file": "e2e/wallet-deploy.spec.ts",
       "title": "rejecting in the wallet sends nothing and records nothing",
       "status": "passed",
-      "ms": 1082
+      "ms": 1034
     },
     {
       "file": "e2e/wallet-deploy.spec.ts",
       "title": "wallet on the wrong chain: refused before any intent or signature",
       "status": "passed",
-      "ms": 992
+      "ms": 915
     },
     {
       "file": "e2e/wallet-deploy.spec.ts",
       "title": "an unfunded account gets a blocker and no deploy button",
       "status": "passed",
-      "ms": 969
+      "ms": 917
     },
     {
       "file": "e2e/wallet-deploy.spec.ts",
       "title": "wallet loses the hash after broadcast: reload, reconcile, finish registration once",
       "status": "passed",
-      "ms": 3107
+      "ms": 3108
     }
   ]
 }
