@@ -6,7 +6,7 @@ Legend: ☑ done · ☐ open · (you) = only you can do it.
 
 ## Eligibility and registration
 - ☐ (you) Ask organizers: judging eligibility without the Oct 24 check-in; multi-track selection — template in `docs/hackathon-requirements.md`.
-- ☐ (you) Confirm you are registered for the hackathon on DoraHacks (signed in, accept the platform terms yourself).
+- ☑ Registered for the hackathon on DoraHacks.
 - ☑ Testnet tPOT received: 500 tPOT, 470 forwarded to the deployer.
 
 ## Code and repository
@@ -35,6 +35,6 @@ Legend: ☑ done · ☐ open · (you) = only you can do it.
 - ☑ Static read-only demo public without login: https://adrian001-crypt.github.io/portalforge/demo/ (38/38 anonymous checks on the live URL, desktop and phone).
 - ☐ Optional: a live stack, `npx tsx scripts/public-demo.ts --tunnel`, on a machine that stays on. Its URL lasts only while it runs.
 
-## DoraHacks form (you, signed in)
-- ☐ Project name, one-liner, long description, track, team, repo URL, video URL, deck link/PDF, contract addresses + tx hashes, demo URL — all values in `docs/submission-draft.md`.
-- ☐ Submit → check the build page shows it as submitted → **Submitted**. Only then call it submitted.
+## DoraHacks form
+- ☑ Build created and submitted on 2026-11-05, before the 2026-11-06 04:00 UTC deadline. The platform says “Build Submitted!” and lists it as **Under Review**, track Modular Cloud & Middleware.
+- ☐ (you) Organizer answer on eligibility without the Oct 24 check-in, and whether the prize terms apply to you. Under review is not an award or an eligibility decision.

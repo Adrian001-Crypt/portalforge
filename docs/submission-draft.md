@@ -1,13 +1,13 @@
 # DoraHacks submission draft — PortalForge
 
-Status legend used in this file: **Prepared** (text ready here) · **Public** (link reachable without login) · **Uploaded** (on the platform) · **Submitted** (DoraHacks shows the build as submitted). Nothing below is Submitted yet.
+Status legend used in this file: **Prepared** (text ready here) · **Public** (link reachable without login) · **Uploaded** (on the platform) · **Submitted** (DoraHacks shows the build as submitted). **Submitted to DoraHacks on 2026-11-05; the platform shows “Under Review”.**
 
 | Field (DoraHacks) | Value | Status |
 |---|---|---|
 | Project name | PortalForge | Prepared |
 | One-sentence overview | PortalForge turns finalized Portaldot contract events into recoverable workflows and lets developers verify the results on-chain. | Prepared |
 | Track | Modular Cloud & Middleware (see rationale) | Prepared — multi-track question pending with organizers |
-| Team members | GitHub: `Adrian001-Crypt`. Display name, role and bio are not filled in | **Needs you** if the form requires them |
+| Team members | GitHub: `Adrian001-Crypt`. Team info was optional on the form and left empty | Not required |
 | Public GitHub repository | https://github.com/Adrian001-Crypt/portalforge | **Public** |
 | Complete README | https://github.com/Adrian001-Crypt/portalforge#readme | **Public** |
 | Deployment instructions | `docs/deployment.md`, `docs/funding-handoff.md` | Prepared |

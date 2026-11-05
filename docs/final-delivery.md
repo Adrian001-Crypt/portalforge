@@ -10,7 +10,7 @@
 | Read-only demo | **Public:** https://adrian001-crypt.github.io/portalforge/demo/ (static snapshot of the V3 stack) |
 | Video | **Public:** https://adrian001-crypt.github.io/portalforge/media/portalforge-demo.mp4 (2:24, V3 footage plus labelled local scenes) |
 | Pitch deck | **Public:** https://adrian001-crypt.github.io/portalforge/pitch/portalforge-pitch.pdf |
-| Submission | Draft and field mapping in `docs/submission-draft.md`: **not submitted** |
+| Submission | **Submitted on DoraHacks 2026-11-05; status Under Review** |
 
 ## How to start
 
@@ -44,10 +44,9 @@ npx tsx scripts/public-demo.ts                # live read-only stack on http://1
 ## What you need to do
 
 1. **Organizers:** send the template in `docs/hackathon-requirements.md` (eligibility without check-in; multi-track).
-2. **Team info:** the materials name only the GitHub account `Adrian001-Crypt`. If the form needs a display name, role or bio, fill them in or send them to me.
-3. **Old repository:** still public under your previous account. Make it private or delete it when you decide.
-4. **DoraHacks form:** sign in, fill it from `docs/submission-draft.md`, submit, and confirm the build page shows it. Code freeze: 2026-11-06 04:00 UTC.
+2. **Old repository:** still public under your previous account. Make it private or delete it when you decide.
+3. **After the deadline:** code freeze applies, so report any serious fix to the organizers and keep a record of it.
 
 ## Not claimed
 
-Fault recovery on V3 (local only), a browser wallet on V3, ink!/WASM, EVM↔WASM calls, cross-chain features, performance numbers, users/customers/revenue, exactly-once against arbitrary services, any submission or registration status.
+Fault recovery on V3 (local only), a browser wallet on V3, ink!/WASM, EVM↔WASM calls, cross-chain features, performance numbers, users/customers/revenue, exactly-once against arbitrary services, any award or eligibility decision.
