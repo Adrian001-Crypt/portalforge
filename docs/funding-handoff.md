@@ -20,7 +20,7 @@
 
 A third job would still fit: it costs about 11.6 tPOT.
 
-**Why the budget moved while the gas price fell.** On V3, `eth_estimateGas` returns about total fee ÷ gas price, so gas × price does not depend on the price. The plan's 2% price margin was truncated to a whole number, so the real margin varied slightly with each price, moving the estimate by a few thousandths of a tPOT. Units and decimals were correct. The margin now rounds up (commit `81b3d77`), which made the estimate 0.02 tPOT higher. Nothing was overpaid: transactions were charged at the current gas price, 22105, not the 22548 offered.
+**Why the budget moved while the gas price fell.** On V3, `eth_estimateGas` returns about total fee ÷ gas price, so gas × price does not depend on the price. The plan's 2% price margin was truncated to a whole number, so the real margin varied slightly with each price, moving the estimate by a few thousandths of a tPOT. Units and decimals were correct. The margin now rounds up (commit `ac16e94`), which made the estimate 0.02 tPOT higher. Nothing was overpaid: transactions were charged at the current gas price, 22105, not the 22548 offered.
 
 ## 1. Accounts (already generated; keep them)
 

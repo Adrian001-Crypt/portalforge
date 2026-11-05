@@ -118,7 +118,7 @@ Worker record for \`completeJob\`: ${j.completeStepOutput.replacedTx ? '**took t
 
 Job 1 succeeded and its transactions are real, but the trace showed \`alreadyApplied\` and \`replacedTx\` for \`completeJob\`, and that intent stayed \`sent\`. Portaldot's \`eth-rpc\` had already served the new account nonce while the transaction and its receipt were not yet indexed. The worker read that as "replaced by another transaction", checked the contract, found the job complete, and moved on without waiting for finality.
 
-The fix (commit \`7f50435\`) gives the index two minutes before concluding anything, and is tested with a simulated lag on a local chain. Job 2 ran on the fixed code and took the normal path. The job 1 record is kept as it happened in [03-execution-job-1-input-12.json](03-execution-job-1-input-12.json). Job 2 used one of the two spare jobs because the fix could only be proven on V3. The third job was not used.
+The fix (commit \`1c05d38\`) gives the index two minutes before concluding anything, and is tested with a simulated lag on a local chain. Job 2 ran on the fixed code and took the normal path. The job 1 record is kept as it happened in [03-execution-job-1-input-12.json](03-execution-job-1-input-12.json). Job 2 used one of the two spare jobs because the fix could only be proven on V3. The third job was not used.
 
 ## Balances when collected (tPOT)
 

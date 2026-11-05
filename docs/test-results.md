@@ -25,7 +25,7 @@ Every hash and block: [testnet-evidence/README.md](testnet-evidence/README.md).
 | Contracts | `npm run contracts:test` | **22 passed**, 0 failed (incl. 256-run fuzz) | Foundry EVM |
 | Unit + integration | `npx vitest run` | **69 passed**, 0 failed, 10 files | temp SQLite, real HTTP demo service, **real Anvil** for chain tests |
 | Production web build | `npm run web:build` | pass | Vite |
-| **Fresh clone from the public URL** | anonymous `git clone` → `npm ci` → `npm run contracts:build` → `npm run verify` | pass at `be37e70`: 22 + 69 tests, build OK, no diff in generated files; `pf deployment verify` 25/25 from the clone; 34 commits, all under the noreply identity | public GitHub repo |
+| **Fresh clone from the public URL** | anonymous `git clone` → `npm ci` → `npm run contracts:build` → `npm run verify` | pass at `8001aac`: 22 + 69 tests, build OK, no diff in generated files; `pf deployment verify` 25/25 from the clone; all commits under the noreply identity | public GitHub repo |
 | Multi-process local E2E | `npx tsx scripts/e2e-local.ts` | **7/7 scenarios** | real processes, real Anvil, TCP fault proxy |
 | Deploy recovery and budget | `npx tsx scripts/test-deploy-resume.ts` | **11/11** | throwaway Anvil; live testnet only for a refusal with a budget limit of 0 |
 | Browser | `npx playwright test` (starts the stack itself) | **8 passed** | system Chrome; injected wallet that really signs, **not MetaMask** |
@@ -87,6 +87,7 @@ Every hash and block: [testnet-evidence/README.md](testnet-evidence/README.md).
 - The browser-wallet deploy and webhook delivery have not run on V3.
 - The demo service called on V3 runs on the operator's machine. It is a real HTTP service, not hosted.
 - Webhook requests are not signed. Delivery is at-least-once.
+- History was rewritten once more on 2026-11-05 to remove private search terms from two test scripts. Commit hashes from that point changed; contract sources, dates and messages did not. The old commit may stay reachable on GitHub by direct hash for a while.
 - The public site's first deploy of this round stalled on GitHub's side (one run timed out after 10 minutes and its retry stayed queued). A new commit deployed normally about an hour later.
 - The static demo is a snapshot: its V3 samples are from the capture time, and its Verify buttons do nothing.
 - Dropped-broadcast handling in the deploy journal is code-reviewed, not exercised.

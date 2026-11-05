@@ -8,7 +8,7 @@
   },
   "source": {
     "repo": "portalforge",
-    "commit": "81b3d775e59b5eb5ba5a515601d9a9a4077b2239",
+    "commit": "ac16e94d4c8c4bcf26ffdcb2e6fe707bad419ac1",
     "dirty": false
   },
   "compiler": {
@@ -57,5 +57,7 @@
     }
   ],
   "createdAt": "2026-11-04T22:50:00.869Z",
-  "notes": []
+  "notes": [
+    "The repository history was rewritten once on 2026-11-05 to remove private search terms from two test scripts. source.commit is the rewritten commit; contract sources and everything on chain are unchanged."
+  ]
 }
