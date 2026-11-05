@@ -33,14 +33,16 @@ async function tx(hash: string, label: string) {
   const r = await retry(async () => { const x = await evm.receipt(hash as Hex); if (!x) throw new Error(`no receipt ${hash}`); return x; });
   const t: any = await retry(async () => evm.transaction(hash as Hex));
   const nativeHash = (await a.rpc.chain.getBlockHash(r.blockNumber)).toHex();
+  // reviveApi.ethBlockHash answers only the last 255 blocks, so older blocks are checked through the EVM view instead.
   const ethHash = (await a.call.reviveApi.ethBlockHash(r.blockNumber)).toString();
-  return { label, hash, from: t.from, to: t.to ?? null, nonce: parseInt(t.nonce, 16), status: r.status, block: r.blockNumber, evmBlockHash: r.blockHash, nativeBlockHash: nativeHash, evmHashEqualsReviveApi: ethHash === r.blockHash, state: r.status !== 'success' ? 'failed' : r.blockNumber <= finalized ? 'finalized' : 'in block', gasLimit: BigInt(t.gas).toString(), gasPrice: BigInt(t.gasPrice).toString(), effectiveGasPrice: r.effectiveGasPrice.toString(), gasUsed: r.gasUsed.toString(), feeTpot: tpot(r.gasUsed * r.effectiveGasPrice), logs: r.logs };
+  const atHeight: any = await evm.raw<any>('eth_getBlockByNumber', [`0x${r.blockNumber.toString(16)}`, false]);
+  return { label, hash, from: t.from, to: t.to ?? null, nonce: parseInt(t.nonce, 16), status: r.status, block: r.blockNumber, evmBlockHash: r.blockHash, nativeBlockHash: nativeHash, canonical: atHeight.value?.hash === r.blockHash, reviveApiHash: ethHash ? (ethHash === r.blockHash ? 'equal' : 'different') : 'outside its 255-block window', state: r.status !== 'success' ? 'failed' : r.blockNumber <= finalized ? 'finalized' : 'in block', gasLimit: BigInt(t.gas).toString(), gasPrice: BigInt(t.gasPrice).toString(), effectiveGasPrice: r.effectiveGasPrice.toString(), gasUsed: r.gasUsed.toString(), feeTpot: tpot(r.gasUsed * r.effectiveGasPrice), logs: r.logs };
 }
 const strip = ({ logs, ...rest }: any) => rest;
 const m = JSON.parse(readFileSync('deployments/portaldot-v3-testnet.json', 'utf8'));
 const journal = JSON.parse(readFileSync('deployments/portaldot-v3-testnet.journal.json', 'utf8'));
 const deployTxs = [];
-for (const c of m.contracts) { const t = await tx(c.deployTx, `deploy ${c.name}`); deployTxs.push({ ...strip(t), contract: c.name, address: c.address, deposit: null }); rec(`deploy.${c.name}`, t.status === 'success' && t.state === 'finalized' && t.evmHashEqualsReviveApi, `${c.address} block ${t.block}, ${t.state}, fee ${t.feeTpot} tPOT`); }
+for (const c of m.contracts) { const t = await tx(c.deployTx, `deploy ${c.name}`); deployTxs.push({ ...strip(t), contract: c.name, address: c.address, deposit: null }); rec(`deploy.${c.name}`, t.status === 'success' && t.state === 'finalized' && t.canonical, `${c.address} block ${t.block}, ${t.state}, fee ${t.feeTpot} tPOT`); }
 rec('deploy.journal', journal.every((j: any) => j.state === 'confirmed') && journal.length === m.contracts.length, `${journal.length} entries, all confirmed, no duplicate create`);
 const funding = strip(await tx(readFileSync('docs/testnet-evidence/01-deploy-apply.log', 'utf8').match(/funded executor [^:]+: (0x[0-9a-f]{64})/)![1], 'fund executor'));
 

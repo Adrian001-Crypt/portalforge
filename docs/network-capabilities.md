@@ -105,6 +105,7 @@ pallet-revive 的规则（`packages/portaldot-native/src/address.ts`）：
 | 费用估算与 gas 价格 | `eth_estimateGas` 的 gas ≈ 总费用 ÷ `eth_gasPrice`，所以 gas × price 基本不随价格变化 | 预算不应随价格下降而下降 |
 | 代码已上传 | 相同字节码再次模拟时押金降到 48.957、52.431 tPOT | 同一代码的第二次部署不再收代码押金 |
 | 回执索引滞后 | `eth_getTransactionCount` 已更新时，`eth_getTransactionReceipt` 和 `eth_getTransactionByHash` 可能还查不到 | 不能凭 nonce 已用就判断交易被替换，详见 `docs/testnet-evidence/README.md` |
+| `reviveApi.ethBlockHash` 范围 | 只回答最近 255 个区块，更早的返回空（实测距链头 255 块有值，256 块为空） | EVM 与原生事件的关联要在索引时验证；索引器落后超过 255 块时只能标记为未验证 |
 | 公共 RPC 短暂故障 | 22:59 UTC 附近 `eth_blockNumber` 返回 HTTP 521，随后恢复 | 索引器记录错误并继续，没有丢事件 |
 
 ## 6. 双接口关联
