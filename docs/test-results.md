@@ -87,6 +87,7 @@ Every hash and block: [testnet-evidence/README.md](testnet-evidence/README.md).
 - The browser-wallet deploy and webhook delivery have not run on V3.
 - The demo service called on V3 runs on the operator's machine. It is a real HTTP service, not hosted.
 - Webhook requests are not signed. Delivery is at-least-once.
+- The public site's first deploy of this round stalled on GitHub's side (run #4 timed out after 10 minutes and run #5 stayed queued), so the site updated later than the code.
 - The static demo is a snapshot: its V3 samples are from the capture time, and its Verify buttons do nothing.
 - Dropped-broadcast handling in the deploy journal is code-reviewed, not exercised.
 - No load/performance testing; no latency targets are claimed.
