@@ -1,6 +1,6 @@
 # DoraHacks submission draft — PortalForge
 
-Status legend used in this file: **Prepared** (text ready here) · **Public** (link reachable without login) · **Uploaded** (on the platform) · **Submitted** (DoraHacks shows the build as submitted). Nothing below is Uploaded or Submitted yet.
+Status legend used in this file: **Prepared** (text ready here) · **Public** (link reachable without login) · **Uploaded** (on the platform) · **Submitted** (DoraHacks shows the build as submitted). Nothing below is Submitted yet.
 
 | Field (DoraHacks) | Value | Status |
 |---|---|---|
@@ -12,9 +12,9 @@ Status legend used in this file: **Prepared** (text ready here) · **Public** (l
 | Complete README | https://github.com/Adrian001-Crypt/portalforge#readme | **Public** |
 | Deployment instructions | `docs/deployment.md`, `docs/funding-handoff.md` | Prepared |
 | Project documentation | `docs/` (architecture, capabilities, security, state machine, tests) | Prepared |
-| Runnable demo | Read-only, no login: https://adrian001-crypt.github.io/portalforge/demo/ . Local: README “Quick start” (verified from a fresh clone) | **Public**, opened without login (30/30 anonymous checks) |
+| Runnable demo | Read-only, no login: https://adrian001-crypt.github.io/portalforge/demo/ . Local: README “Quick start” (verified from a fresh clone) | **Public**, opened without login (38/38 anonymous checks) |
 | Demo video (≤ 3 min, public link) | https://adrian001-crypt.github.io/portalforge/media/portalforge-demo.mp4 (2:24, plays in the browser, also on https://adrian001-crypt.github.io/portalforge/) | **Public** |
-| Pitch deck (PDF or public link) | https://adrian001-crypt.github.io/portalforge/pitch/portalforge-pitch.pdf | **Public**, opened without login (30/30 anonymous checks) |
+| Pitch deck (PDF or public link) | https://adrian001-crypt.github.io/portalforge/pitch/portalforge-pitch.pdf | **Public**, opened without login (38/38 anonymous checks) |
 | Testnet deployment info | JobRegistry `0xd5dcf5a7d69354b07f776f8a961348f0a394d746` (deploy tx `0x421b5ce147e513dc86ad8a4890f9909a7f78e28e86ef8ac1bd985acd54e3d30f`) · EvidenceRegistry `0xf005d9e544a399196473ec167eda85c089d80cff` (deploy tx `0x72fcb1f2c043f366320e056e9ea800a02db189122f7212ed859429ea7344ec42`) · example job: requestJob `0x1ceaecae6a9a1ece6cc181c97cb8e79517b4ca920c346a2b3c9906f4a8b384aa`, completeJob `0x09bb274acb8e81641a667417ef0fa0b1575d55bb30c89096c139378c0e1252fb`, register `0x4dd14dbcc648ec9d7a1774996cdbf53a983a497f4b2884fcca1e88d80431fc67` · all finalized · no block explorer; evidence and steps to check it: `docs/testnet-evidence/README.md` | **Public** |
 
 ## Description (paste into the long description)
@@ -43,7 +43,7 @@ The work is middleware and data components on Portaldot's modular runtime: index
 
 ## Test results (round 4, 2026-11-04)
 
-**On live V3:** 18/18 cross-checks between chain, indexer, worker and CLI · 25/25 deployment checks · smoke 9 passed, 1 not applicable. **Local:** 22 Foundry tests · 69 unit/integration tests (incl. real Anvil) · 7/7 multi-process fault scenarios · 11/11 deploy crash, resume and budget checks · 8 real-Chrome tests · 14/14 webhook scenarios. Public site: 30/30 anonymous checks. Details: docs/test-results.md.
+**On live V3:** 18/18 cross-checks between chain, indexer, worker and CLI · 25/25 deployment checks · smoke 9 passed, 1 not applicable. **Local:** 22 Foundry tests · 69 unit/integration tests (incl. real Anvil) · 7/7 multi-process fault scenarios · 11/11 deploy crash, resume and budget checks · 8 real-Chrome tests · 14/14 webhook scenarios. Public site: 38/38 anonymous checks. Details: docs/test-results.md.
 
 ## Business model (hypothesis — not validated)
 

@@ -1,8 +1,8 @@
 {
   "suite": "public site",
-  "ranAt": "2026-11-05T00:48:34.101Z",
-  "target": "docs/ served locally the way Pages does",
-  "passed": 30,
+  "ranAt": "2026-11-05T00:50:57.583Z",
+  "target": "https://adrian001-crypt.github.io/portalforge/",
+  "passed": 38,
   "failed": 0,
   "results": [
     {
@@ -23,7 +23,7 @@
     {
       "id": "video.plays_without_login",
       "ok": true,
-      "detail": "played to 1.5 s of 144 s"
+      "detail": "played to 1.3 s of 144 s"
     },
     {
       "id": "deck.pdf_public",
@@ -154,6 +154,46 @@
       "id": "phone.nothing_sent",
       "ok": true,
       "detail": "0 non-GET requests"
+    },
+    {
+      "id": "demo.contracts_exist_on_chain",
+      "ok": true,
+      "detail": "jobs 0xd5dcf5a7, evidence 0xf005d9e5"
+    },
+    {
+      "id": "demo.deployment_verified",
+      "ok": true,
+      "detail": "verified, 25 checks"
+    },
+    {
+      "id": "demo.evidence_matches_chain",
+      "ok": true,
+      "detail": "2 registered, receipts agree"
+    },
+    {
+      "id": "demo.jobs_succeeded",
+      "ok": true,
+      "detail": "succeeded, succeeded"
+    },
+    {
+      "id": "demo.no_sign_in",
+      "ok": true,
+      "detail": "dev sign-in off in the snapshot"
+    },
+    {
+      "id": "links.public_without_login",
+      "ok": true,
+      "detail": "9 links answer 200"
+    },
+    {
+      "id": "materials.no_placeholders",
+      "ok": true,
+      "detail": "landing page, README, submission draft"
+    },
+    {
+      "id": "materials.no_private_terms",
+      "ok": true,
+      "detail": "old account and personal terms absent"
     }
   ]
 }

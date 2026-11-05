@@ -11,7 +11,7 @@ Legend: ☑ done · ☐ open · (you) = only you can do it.
 
 ## Code and repository
 - ☑ Independent git repo with real commits starting 2026-11-03, no empty commits. The 20 commits from 2026-11-03 were rewritten to use the current account's GitHub noreply identity when the repo moved to this account, with original dates and messages kept; two doc lines naming a personal email were also changed. Hashes changed; nothing was backdated.
-- ☑ Pre-publish scan of all history: no keys, `.env`, `.secrets`, databases or tokens; `.claude/` local config untracked; no absolute local paths in docs at HEAD (older versions of `docs/handoff.md` and `.claude/launch.json` in history contain a local home path).
+- ☑ Pre-publish scan of all history: no keys, `.env`, `.secrets`, databases or tokens; `.claude/` local config untracked; no absolute local paths at HEAD (older versions of `docs/handoff.md` and `.claude/launch.json` in history contain a local home path, and that old handoff names the user's other projects, without any of their files).
 - ☑ LICENSE (Apache-2.0), THIRD_PARTY.md, AI-assistance disclosure in README.
 - ☑ README verified from a fresh clone (install → build → verify → dev).
 - ☑ Commit author and committer: GitHub noreply identity on every commit.
@@ -32,7 +32,7 @@ Legend: ☑ done · ☐ open · (you) = only you can do it.
 
 ## Public demo (optional but useful for judges)
 - ☑ Public read-only mode verified locally (17/17 visitor checks).
-- ☑ Static read-only demo public without login: https://adrian001-crypt.github.io/portalforge/demo/ (30/30 anonymous checks on the live URL, desktop and phone).
+- ☑ Static read-only demo public without login: https://adrian001-crypt.github.io/portalforge/demo/ (38/38 anonymous checks on the live URL, desktop and phone).
 - ☐ Optional: a live stack, `npx tsx scripts/public-demo.ts --tunnel`, on a machine that stays on. Its URL lasts only while it runs.
 
 ## DoraHacks form (you, signed in)

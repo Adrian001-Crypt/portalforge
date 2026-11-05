@@ -10,7 +10,7 @@ Environment: macOS 26 (darwin arm64), Node 26.13.0, npm 11.20, Foundry 1.8.7 (so
 | Deployment | `npm run deploy:apply -- portaldot-v3-testnet --profile minimal --confirm --fund-executor 35 --jobs 3 --max-budget 415` | 2 contracts + executor funding, all **finalized**: `0xd5dcf5a7d69354b07f776f8a961348f0a394d746`, `0xf005d9e544a399196473ec167eda85c089d80cff` |
 | Deployment verification | `npm run deploy:verify`, `pf deployment verify … --executor …` | **25/25** |
 | Full jobs | `scripts/request-job.ts` + worker | **2 of 2 succeeded**, all 6 transactions **finalized** |
-| Cross-checks: chain, indexer, worker, CLI | `npx tsx scripts/collect-testnet-evidence.ts` | **18/18** |
+| Cross-checks: chain, indexer, worker, CLI | `npx tsx scripts/collect-testnet-evidence.ts` | **18/18** (re-run after the history rewrite) |
 | Evidence, independent | `pf evidence verify` | **VERIFIED** for both jobs |
 | Smoke | `PF_DRYRUN_ORIGIN=<any public funded H160> npm run smoke:testnet` | **9 passed, 0 failed, 1 not applicable** (the deployer can no longer afford a second deploy, as expected); `deployment.verify` passes |
 | Console | Deployments, Event Explorer, Executions, Evidence on the testnet stack | Same addresses, hashes and states; screenshots 17–22 |
@@ -25,13 +25,13 @@ Every hash and block: [testnet-evidence/README.md](testnet-evidence/README.md).
 | Contracts | `npm run contracts:test` | **22 passed**, 0 failed (incl. 256-run fuzz) | Foundry EVM |
 | Unit + integration | `npx vitest run` | **69 passed**, 0 failed, 10 files | temp SQLite, real HTTP demo service, **real Anvil** for chain tests |
 | Production web build | `npm run web:build` | pass | Vite |
-| **Fresh clone from the public URL** | anonymous `git clone` → `npm ci` → `npm run contracts:build` → `npm run verify` | pass at `8001aac`: 22 + 69 tests, build OK, no diff in generated files; `pf deployment verify` 25/25 from the clone; all commits under the noreply identity | public GitHub repo |
+| **Fresh clone from the public URL** | anonymous `git clone` → `npm ci` → `npm run contracts:build` → `npm run verify` | pass at `4e29343`: 22 + 69 tests, build OK, no diff in generated files; `pf deployment verify` 25/25 from the clone; all 41 commits under the noreply identity | public GitHub repo |
 | Multi-process local E2E | `npx tsx scripts/e2e-local.ts` | **7/7 scenarios** | real processes, real Anvil, TCP fault proxy |
 | Deploy recovery and budget | `npx tsx scripts/test-deploy-resume.ts` | **11/11** | throwaway Anvil; live testnet only for a refusal with a budget limit of 0 |
 | Browser | `npx playwright test` (starts the stack itself) | **8 passed** | system Chrome; injected wallet that really signs, **not MetaMask** |
 | Webhook delivery | `npx tsx scripts/test-webhooks.ts` | **14/14** | real worker processes, real local HTTP receiver |
 | Minimal-profile rehearsal | `npx tsx scripts/rehearse-minimal.ts` | one job, 3 transactions, 1 new slot each | throwaway Anvil |
-| Public site | `npx tsx scripts/check-static-demo.ts <url>` | **30/30** on the live URL https://adrian001-crypt.github.io/portalforge/ : `docs/test-results/public-site-latest.json` | anonymous Chrome, desktop and phone width |
+| Public site | `npx tsx scripts/check-static-demo.ts <url>` | **38/38** on the live URL https://adrian001-crypt.github.io/portalforge/ , including contracts, evidence and receipts against the chain, and every public link: `docs/test-results/public-site-latest.json` | anonymous Chrome, desktop and phone width |
 | Video | `record-demo.ts`, `record-testnet.ts`, `build-final-video.py` | 2:24 MP4, H.264 1280×720 + AAC; frames inspected | V3 and local footage, labelled |
 | Deck PDF | `scripts/media/build-deck-pdf.ts` | 10 pages | Chrome print |
 
@@ -57,6 +57,7 @@ Every hash and block: [testnet-evidence/README.md](testnet-evidence/README.md).
 | Deployment page said "Not verified yet" for a verified deployment, because the seed dropped the report | seed keeps the report; re-verify also checks the executor | screenshot 18 |
 | Budget estimate drifted by thousandths of a tPOT as the gas price moved, from a truncated margin | margin rounds up; `--max-budget` stops a deploy over its limit | `budget.test.ts`; explained in `funding-handoff.md` |
 | The budget test ran `apply --confirm` on the live network and relied on an empty account to refuse | it now sets a budget of 0, so it cannot broadcast | `testnet.over_budget_refuses` |
+| Re-collecting evidence later failed 2 of 18: `reviveApi.ethBlockHash` answers only the last 255 blocks | old blocks are checked through the EVM view; recorded in `network-capabilities.md` | 18/18 again |
 | The live testnet stack, started on a fresh database, could have re-run past jobs and spent tokens | public testnet stack runs no worker and holds no key; the snapshot reads the stack that ran the jobs | code review |
 
 ## What the recovery tests prove
@@ -88,6 +89,7 @@ Every hash and block: [testnet-evidence/README.md](testnet-evidence/README.md).
 - The demo service called on V3 runs on the operator's machine. It is a real HTTP service, not hosted.
 - Webhook requests are not signed. Delivery is at-least-once.
 - History was rewritten once more on 2026-11-05 to remove private search terms from two test scripts. Commit hashes from that point changed; contract sources, dates and messages did not. The old commit may stay reachable on GitHub by direct hash for a while.
+- After a restart an hour later, the indexer reported a reorg at #326635 among blocks that were not final when it stopped, with 0 events orphaned. All job events stayed finalized; whether a real fork occurred was not investigated further.
 - The public site's first deploy of this round stalled on GitHub's side (one run timed out after 10 minutes and its retry stayed queued). A new commit deployed normally about an hour later.
 - The static demo is a snapshot: its V3 samples are from the capture time, and its Verify buttons do nothing.
 - Dropped-broadcast handling in the deploy journal is code-reviewed, not exercised.

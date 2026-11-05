@@ -25,7 +25,7 @@ npx tsx scripts/public-demo.ts                # live read-only stack on http://1
 
 **Live V3:** deployment 25/25 ✔ · 2 of 2 jobs ✔ · cross-checks 18/18 ✔ · CLI evidence verified ✔ · smoke 9 pass / 1 n.a.
 **Local:** typecheck ✔ · 22 contract tests ✔ · 69 Vitest ✔ · web build ✔ · E2E 7/7 ✔ · deploy recovery and budget 11/11 ✔ · Chrome 8/8 ✔ · webhooks 14/14 ✔.
-**Public site:** 30/30 ✔. Details: `docs/test-results.md`.
+**Public site:** 38/38 ✔. Details: `docs/test-results.md`.
 
 ## Files
 
