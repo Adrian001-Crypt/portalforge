@@ -31,7 +31,7 @@ Every hash and block: [testnet-evidence/README.md](testnet-evidence/README.md).
 | Browser | `npx playwright test` (starts the stack itself) | **8 passed** | system Chrome; injected wallet that really signs, **not MetaMask** |
 | Webhook delivery | `npx tsx scripts/test-webhooks.ts` | **14/14** | real worker processes, real local HTTP receiver |
 | Minimal-profile rehearsal | `npx tsx scripts/rehearse-minimal.ts` | one job, 3 transactions, 1 new slot each | throwaway Anvil |
-| Public site | `npx tsx scripts/check-static-demo.ts <url>` | rerun after the final deploy; see `docs/test-results/public-site-latest.json` | anonymous Chrome, desktop and phone width |
+| Public site | `npx tsx scripts/check-static-demo.ts <url>` | **30/30** on the live URL https://adrian001-crypt.github.io/portalforge/ : `docs/test-results/public-site-latest.json` | anonymous Chrome, desktop and phone width |
 | Video | `record-demo.ts`, `record-testnet.ts`, `build-final-video.py` | 2:24 MP4, H.264 1280×720 + AAC; frames inspected | V3 and local footage, labelled |
 | Deck PDF | `scripts/media/build-deck-pdf.ts` | 10 pages | Chrome print |
 
@@ -87,7 +87,7 @@ Every hash and block: [testnet-evidence/README.md](testnet-evidence/README.md).
 - The browser-wallet deploy and webhook delivery have not run on V3.
 - The demo service called on V3 runs on the operator's machine. It is a real HTTP service, not hosted.
 - Webhook requests are not signed. Delivery is at-least-once.
-- The public site's first deploy of this round stalled on GitHub's side (run #4 timed out after 10 minutes and run #5 stayed queued), so the site updated later than the code.
+- The public site's first deploy of this round stalled on GitHub's side (one run timed out after 10 minutes and its retry stayed queued). A new commit deployed normally about an hour later.
 - The static demo is a snapshot: its V3 samples are from the capture time, and its Verify buttons do nothing.
 - Dropped-broadcast handling in the deploy journal is code-reviewed, not exercised.
 - No load/performance testing; no latency targets are claimed.
