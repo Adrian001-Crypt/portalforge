@@ -6,7 +6,7 @@
  */
 import { chromium } from '@playwright/test';
 import { createServer } from 'node:http';
-import { createReadStream, existsSync, mkdirSync, statSync, writeFileSync } from 'node:fs';
+import { createReadStream, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { extname, join, normalize } from 'node:path';
 
 // Extra terms to refuse (names, domains) come from the environment, so they never appear in this public file.
@@ -69,6 +69,38 @@ for (const [label, viewport] of [['desktop', { width: 1280, height: 800 }], ['ph
 }
 await browser.close();
 server?.close();
+
+// ---- Remote only: every public link, and the demo's data against the chain itself.
+if (remote) {
+  const RPC = 'https://test-evm-rpc-v3.portaldot.dev';
+  const rpc = async (method: string, params: unknown[]) => (await (await fetch(RPC, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params }) })).json()).result;
+  const snap = await (await fetch(new URL('demo/snapshot.json', base))).json();
+  const r = snap.responses as Record<string, any>;
+  const pick = (part: string) => r[Object.keys(r).find((k) => k.includes(part))!];
+  const contracts = pick('/contracts').items as any[];
+  const code = await Promise.all(contracts.map((c) => rpc('eth_getCode', [c.address, 'latest'])));
+  rec('demo.contracts_exist_on_chain', contracts.length === 2 && code.every((c) => c && c !== '0x'), contracts.map((c) => `${c.alias} ${c.address.slice(0, 10)}`).join(', '));
+  const dep = pick('/deployments').items[0];
+  rec('demo.deployment_verified', dep.status === 'verified' && dep.verification.ok && dep.verification.checks.length === 25, `${dep.status}, ${dep.verification.checks.length} checks`);
+  const evidence = pick('/evidence').items as any[];
+  const receipts = await Promise.all(evidence.map((e) => rpc('eth_getTransactionReceipt', [e.tx_hash])));
+  rec('demo.evidence_matches_chain', evidence.length === 2 && evidence.every((e, i) => e.status === 'registered' && receipts[i]?.status === '0x1' && parseInt(receipts[i].blockNumber, 16) === e.block_number && receipts[i].logs.some((l: any) => l.topics.includes(e.evidence_id))), `${evidence.length} registered, receipts agree`);
+  const execs = pick('/executions?limit=40').items as any[];
+  rec('demo.jobs_succeeded', execs.length === 2 && execs.every((x) => x.state === 'succeeded'), execs.map((x) => x.state).join(', '));
+  rec('demo.no_sign_in', r['/auth/me']?.devLogin === false && r['/health']?.devLogin === false, 'dev sign-in off in the snapshot');
+  const sources = ['README.md', 'docs/submission-draft.md', 'docs/final-delivery.md', 'docs/index.html'];
+  const links = new Set<string>();
+  for (const f of sources) for (const m of readFileSync(f, 'utf8').matchAll(/https:\/\/(?:github\.com\/Adrian001-Crypt|adrian001-crypt\.github\.io)[^\s)`"'<>|]*/g)) links.add(m[0].replace(/[.,]$/, ''));
+  const dead: string[] = [];
+  for (const u of links) { const s = await fetch(u, { redirect: 'follow' }).then((x) => x.status, () => 0); if (s !== 200) dead.push(`${s} ${u}`); }
+  rec('links.public_without_login', links.size > 3 && dead.length === 0, dead[0] ?? `${links.size} links answer 200`);
+  const page = await (await fetch(base)).text();
+  const stale = /\[to fill\]|\[pending|\*\*\[|<you>|not deployed/i;
+  const texts = [page, ...sources.slice(0, 2).map((f) => readFileSync(f, 'utf8'))];
+  rec('materials.no_placeholders', !texts.some((x) => stale.test(x)), 'landing page, README, submission draft');
+  const privateTerms = process.env.PF_PRIVATE_TERMS ? new RegExp(process.env.PF_PRIVATE_TERMS.split(',').join('|'), 'i') : null;
+  if (privateTerms) rec('materials.no_private_terms', !texts.concat(JSON.stringify(snap)).some((x) => privateTerms.test(x)), 'old account and personal terms absent');
+}
 const failed = results.filter((r) => !r.ok);
 mkdirSync('docs/test-results', { recursive: true });
 writeFileSync('docs/test-results/public-site-latest.json', JSON.stringify({ suite: 'public site', ranAt: new Date().toISOString(), target: remote ?? 'docs/ served locally the way Pages does', passed: results.length - failed.length, failed: failed.length, results }, null, 2) + '\n');
