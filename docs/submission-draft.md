@@ -5,19 +5,35 @@ Status legend used in this file: **Prepared** (text ready here) · **Public** (l
 | Field (DoraHacks) | Value | Status |
 |---|---|---|
 | Project name | PortalForge | Prepared |
-| One-sentence overview | Open-source middleware for Portaldot V3 that deploys and verifies contracts, indexes EVM and native events together, and runs recoverable, evidence-producing workflows without duplicating business effects. | Prepared |
+| One-sentence overview | PortalForge turns finalized Portaldot contract events into recoverable workflows and lets developers verify the results on-chain. | Prepared |
 | Track | Modular Cloud & Middleware (see rationale) | Prepared — multi-track question pending with organizers |
 | Team members | GitHub: `Adrian001-Crypt`. Display name, role and bio are not filled in | **Needs you** if the form requires them |
 | Public GitHub repository | https://github.com/Adrian001-Crypt/portalforge | **Public** |
 | Complete README | https://github.com/Adrian001-Crypt/portalforge#readme | **Public** |
 | Deployment instructions | `docs/deployment.md`, `docs/funding-handoff.md` | Prepared |
 | Project documentation | `docs/` (architecture, capabilities, security, state machine, tests) | Prepared |
-| Runnable demo | Read-only, no login: https://adrian001-crypt.github.io/portalforge/demo/ . Local: README “Quick start” (verified from a fresh clone) | **Public**, opened without login (38/38 anonymous checks) |
+| Runnable demo | https://adrian001-crypt.github.io/portalforge/demo/ Explore a read-only snapshot of a real V3 testnet run; no wallet or test tokens required. Local: README “Quick start” (verified from a fresh clone) | **Public**, opened without login (38/38 anonymous checks) |
 | Demo video (≤ 3 min, public link) | https://adrian001-crypt.github.io/portalforge/media/portalforge-demo.mp4 (2:24, plays in the browser, also on https://adrian001-crypt.github.io/portalforge/) | **Public** |
 | Pitch deck (PDF or public link) | https://adrian001-crypt.github.io/portalforge/pitch/portalforge-pitch.pdf | **Public**, opened without login (38/38 anonymous checks) |
 | Testnet deployment info | JobRegistry `0xd5dcf5a7d69354b07f776f8a961348f0a394d746` (deploy tx `0x421b5ce147e513dc86ad8a4890f9909a7f78e28e86ef8ac1bd985acd54e3d30f`) · EvidenceRegistry `0xf005d9e544a399196473ec167eda85c089d80cff` (deploy tx `0x72fcb1f2c043f366320e056e9ea800a02db189122f7212ed859429ea7344ec42`) · example job: requestJob `0x1ceaecae6a9a1ece6cc181c97cb8e79517b4ca920c346a2b3c9906f4a8b384aa`, completeJob `0x09bb274acb8e81641a667417ef0fa0b1575d55bb30c89096c139378c0e1252fb`, register `0x4dd14dbcc648ec9d7a1774996cdbf53a983a497f4b2884fcca1e88d80431fc67` · all finalized · no block explorer; evidence and steps to check it: `docs/testnet-evidence/README.md` | **Public** |
 
 ## Description (paste into the long description)
+
+PortalForge turns finalized Portaldot contract events into recoverable workflows and lets developers verify the results on-chain.
+
+**Follow one real job on Portaldot V3 testnet.** A user requests the square of 9. Every step can be checked on chain or in the published evidence:
+
+| Step | Evidence |
+|---|---|
+| `requestJob(9)` | tx `0x1ceaecae6a9a1ece6cc181c97cb8e79517b4ca920c346a2b3c9906f4a8b384aa`, block 326534 |
+| Event indexed, workflow execution created | execution `0xb3a8c7fa4c09f3e2f9733f99973a67a7ae777ad51afc58c1a299d7f7793210ee` |
+| Service called, result 81, `completeJob` | tx `0x09bb274acb8e81641a667417ef0fa0b1575d55bb30c89096c139378c0e1252fb`, block 326538 |
+| Evidence registered | tx `0x4dd14dbcc648ec9d7a1774996cdbf53a983a497f4b2884fcca1e88d80431fc67`, block 326541 |
+| `pf evidence verify` | The local content hash `0xd1aa3dc6…8e70a27` matches the record in block 326541. [Raw CLI output](https://github.com/Adrian001-Crypt/portalforge/blob/main/docs/testnet-evidence/08-cli-evidence-verify-job-2.log) |
+
+All transactions are finalized. [All testnet evidence](https://github.com/Adrian001-Crypt/portalforge/blob/main/docs/testnet-evidence/README.md).
+
+Explore a read-only snapshot of a real V3 testnet run; no wallet or test tokens required: https://adrian001-crypt.github.io/portalforge/demo/
 
 On Portaldot V3, Solidity runs inside pallet-revive on a Substrate chain. That gives every contract event two views (an EVM log and a native `Revive.ContractEmitted`), makes storage carry deposits (~0.06 tPOT per byte, 3.84 tPOT per storage slot), shows 14-decimal tPOT as 18 decimals on the EVM side, and offers no `eth_newFilter`. Teams end up gluing indexers, scripts and webhooks that duplicate or lose work when a response is lost or a worker crashes.
 
@@ -30,6 +46,21 @@ PortalForge turns this into one product:
 
 Delivered as web console, HTTP API (OpenAPI), TypeScript SDK, `pf` CLI, three template contracts and a reference idempotent receiver. Open source (Apache-2.0).
 
+## Organizer questions on the form (paste as is)
+
+| Question | Answer |
+|---|---|
+| Project name | PortalForge |
+| Track | Modular Cloud & Middleware |
+| One-sentence overview | See above |
+| Current project progress | Complete. Contracts, indexer, recoverable workflow engine, API, console, SDK and CLI are built and tested. JobRegistry and EvidenceRegistry are deployed on Portaldot V3 testnet, and two full jobs ran end to end with all transactions finalized. |
+| Outstanding items | None required for submission. Not done: fault recovery on V3 (run on a local chain to save tokens), a browser wallet on V3, ink!/WASM. |
+| GitHub repository | https://github.com/Adrian001-Crypt/portalforge |
+| Testnet deployment details | Chain ID 420420777. JobRegistry `0xd5dcf5a7d69354b07f776f8a961348f0a394d746`, deploy tx `0x421b5ce147e513dc86ad8a4890f9909a7f78e28e86ef8ac1bd985acd54e3d30f`. EvidenceRegistry `0xf005d9e544a399196473ec167eda85c089d80cff`, deploy tx `0x72fcb1f2c043f366320e056e9ea800a02db189122f7212ed859429ea7344ec42`. Example job: `0x1ceaecae6a9a1ece6cc181c97cb8e79517b4ca920c346a2b3c9906f4a8b384aa`, `0x09bb274acb8e81641a667417ef0fa0b1575d55bb30c89096c139378c0e1252fb`, `0x4dd14dbcc648ec9d7a1774996cdbf53a983a497f4b2884fcca1e88d80431fc67`. All evidence: https://github.com/Adrian001-Crypt/portalforge/blob/main/docs/testnet-evidence/README.md |
+| Demo video link | https://adrian001-crypt.github.io/portalforge/media/portalforge-demo.mp4 |
+| Pitch deck link | https://adrian001-crypt.github.io/portalforge/pitch/portalforge-pitch.pdf |
+| If an existing project is used | None. Built from scratch during the event, starting 2026-11-03. Third-party dependencies are listed in THIRD_PARTY.md. |
+
 ## Why this track
 
 The work is middleware and data components on Portaldot's modular runtime: indexer, workflow/automation layer, API and SDK, plus verifiable data (evidence registry). RPC/finality observability is built on the same data and is relevant to Node Operations & Tooling, but it is not the main product, so a single primary track is chosen unless organizers confirm multi-track entries.
@@ -38,7 +69,7 @@ The work is middleware and data components on Portaldot's modular runtime: index
 
 - Live capability probe: `docs/network-capabilities.md`, `docs/probe/portaldot-v3-testnet-latest.json` (spec 3002, chainId 420420777, tPOT 14 dp, ss58 42, Cancun opcodes, mapping checked against `reviveApi`).
 - Exact deposits via `reviveApi.instantiate` dry-run (JobRegistry 161.04, EvidenceRegistry 176.09, 3.8415 tPOT/slot).
-- Live smoke on V3 (8 passed): EVM logs indexed, native `revive.ContractEmitted` decoded, 2 log/event pairs linked and verified by `ethBlockHash`.
+- Live smoke on V3: 9 passed, 1 not applicable. EVM logs indexed, native `revive.ContractEmitted` decoded, 1 log/event pair linked and verified by `ethBlockHash` in this run. The check that does not apply is whether the deployer could afford another deploy: after this deployment it cannot, which is expected. It does not concern the deployed contracts.
 - Deployed on V3 testnet with two full jobs: requestJob → indexed event → workflow → real HTTP service → completeJob → evidence registered, all transactions finalized, verified independently with the `pf` CLI. Details: `docs/testnet-evidence/README.md`.
 
 ## Test results (round 4, 2026-11-04)
